@@ -1,3 +1,8 @@
+<?php 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -98,13 +103,30 @@
                     <a href="about.php" class="<?php echo isActive('about.php', $current_page); ?>">About Us</a>
                     <a href="churches.php" class="<?php echo isActive('churches.php', $current_page); ?>">Churches</a>
                     <a href="contact.php" class="<?php echo isActive('contact.php', $current_page); ?>">Contact</a>
+                    <?php if(isset($_SESSION['user_id'])): ?>
+                    <a href="candidates.php" class="<?php echo isActive('candidates.php', $current_page); ?>">Candidates</a>
+                    <?php endif; ?>
                     
                     <div class="h-6 w-px bg-gray-200 mx-2"></div>
 
-                    <a href="login.php" class="px-4 py-2 rounded-full text-gray-600 hover:text-primary hover:bg-gray-50 font-medium transition-all">Login</a>
-                    <a href="register.php" class="px-5 py-2.5 rounded-full bg-primary text-white font-medium hover:bg-primary-hover transition-all duration-300 shadow-lg shadow-primary/20 transform hover:-translate-y-0.5">
-                        Register
-                    </a>
+                    <?php if(isset($_SESSION['user_id'])): ?>
+                        <?php 
+                            $dashboardLink = ($_SESSION['role'] === 'admin') ? 'admin_dashboard.php' : 'candidates.php';
+                        ?>
+                        <div class="relative group">
+                            <a href="<?php echo $dashboardLink; ?>" class="flex items-center gap-2 px-3 py-2 rounded-full text-gray-700 hover:bg-gray-100 transition-all">
+                                <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold">
+                                    <?php echo strtoupper(substr($_SESSION['username'], 0, 1)); ?>
+                                </div>
+                                <span class="font-medium"><?php echo htmlspecialchars($_SESSION['username']); ?></span>
+                            </a>
+                        </div>
+                    <?php else: ?>
+                        <a href="login.php" class="px-4 py-2 rounded-full text-gray-600 hover:text-primary hover:bg-gray-50 font-medium transition-all">Login</a>
+                        <a href="register.php" class="px-5 py-2.5 rounded-full bg-primary text-white font-medium hover:bg-primary-hover transition-all duration-300 shadow-lg shadow-primary/20 transform hover:-translate-y-0.5">
+                            Register
+                        </a>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Mobile Menu Button -->
@@ -125,9 +147,20 @@
                 <a href="about.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('about.php', $current_page); ?>">About Us</a>
                 <a href="churches.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('churches.php', $current_page); ?>">Churches</a>
                 <a href="contact.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('contact.php', $current_page); ?>">Contact Us</a>
+                <?php if(isset($_SESSION['user_id'])): ?>
+                <a href="candidates.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('candidates.php', $current_page); ?>">Candidates</a>
+                <?php endif; ?>
                 <div class="border-t border-gray-100 my-2"></div>
-                <a href="login.php" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-primary">Login</a>
-                <a href="register.php" class="block px-3 py-2 rounded-md text-base font-medium text-primary font-bold hover:bg-gray-50">Register</a>
+                <?php if(isset($_SESSION['user_id'])): ?>
+                    <?php $dashboardLink = ($_SESSION['role'] === 'admin') ? 'admin_dashboard.php' : 'candidates.php'; ?>
+                    <a href="<?php echo $dashboardLink; ?>" class="block px-3 py-2 rounded-md text-base font-medium text-primary bg-blue-50">
+                        <span class="mr-2">👤</span> My Profile (<?php echo htmlspecialchars($_SESSION['username']); ?>)
+                    </a>
+                    <a href="logout.php" class="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50">Logout</a>
+                <?php else: ?>
+                    <a href="login.php" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-primary">Login</a>
+                    <a href="register.php" class="block px-3 py-2 rounded-md text-base font-medium text-primary font-bold hover:bg-gray-50">Register</a>
+                <?php endif; ?>
             </div>
         </div>
     </nav>
