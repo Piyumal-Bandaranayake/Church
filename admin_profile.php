@@ -29,7 +29,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
             $update_stmt = $pdo->prepare("UPDATE admins SET password = ? WHERE id = ?");
             $update_stmt->execute([$hashed_password, $_SESSION['user_id']]);
-            $success = "Password updated successfully!";
+            
+            // End session and redirect to login
+            session_destroy();
+            header("Location: login.php?reset=success");
+            exit();
         } else {
             $error = "Current password is incorrect!";
         }
