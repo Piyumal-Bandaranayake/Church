@@ -16,19 +16,19 @@
         <div class="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
             <div class="mb-12 lg:mb-0 relative">
                  <div class="absolute -top-4 -left-4 w-24 h-24 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
-                <img src="assets/images/history.jpg" alt="Church History" class="rounded-lg shadow-2xl relative z-10 w-full h-auto object-cover transform hover:scale-[1.02] transition-transform duration-500">
+                <img src="assets/images/god.jpg" alt="Church History" class="rounded-lg shadow-2xl relative z-10 w-full h-auto object-cover transform hover:scale-[1.02] transition-transform duration-500">
             </div>
             <div>
                 <h2 class="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
                 <div class="prose prose-lg text-gray-600">
                     <p class="mb-4">
-                        Founded in 1985, Grace Community Church started as a small bible study in a living room. We had a simple dream: to create a church where everyone is welcome, and where the message of Jesus is clear and accessible.
+                        Grace Community Church began as a small Bible study in a living room, born out of a simple dream—to create a church where everyone is welcome and where the message of Jesus is clear, meaningful, and accessible to all.
                     </p>
                     <p class="mb-4">
-                        Over the ensuing decades, we've seen God do amazing things. We've grown from a handful of families to a vibrant community with multiple campuses, yet our core mission remains the same.
+                       Over time, we have witnessed God do incredible things. What started with just a few families has grown into a vibrant and diverse community with multiple campuses, while our heart and purpose have remained unchanged.
                     </p>
                     <p>
-                        We are committed to being a light in our city, serving our neighbors, and helping people find their way back to God.
+                        Today, we continue to be committed to serving our city, loving our neighbors, and being a guiding light that helps people find their way back to God.
                     </p>
                 </div>
             </div>
@@ -71,62 +71,7 @@
     </div>
 </div>
 
-<!-- Leadership Section -->
-<div class="py-24 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Leadership</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto">
-                Meet the dedicated team that serves our community and leads our church family.
-            </p>
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <!-- Leader 1 -->
-            <div class="group text-center">
-                <div class="relative overflow-hidden rounded-xl mb-6 shadow-lg aspect-w-1 aspect-h-1 mx-auto max-w-[280px]">
-                    <img src="assets/images/leader1.jpg" alt="John Doe" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
-                        <div class="text-white space-x-4">
-                            <!-- Social Icons could go here -->
-                        </div>
-                    </div>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-1">Dr. John Doe</h3>
-                <p class="text-blue-600 font-medium text-sm uppercase tracking-wide">Senior Pastor</p>
-            </div>
 
-            <!-- Leader 2 -->
-            <div class="group text-center">
-                <div class="relative overflow-hidden rounded-xl mb-6 shadow-lg aspect-w-1 aspect-h-1 mx-auto max-w-[280px]">
-                    <img src="assets/images/leader2.jpg" alt="Jane Smith" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
-                     <div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6"></div>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-1">Jane Smith</h3>
-                <p class="text-blue-600 font-medium text-sm uppercase tracking-wide">Executive Pastor</p>
-            </div>
-
-             <!-- Leader 3 -->
-             <div class="group text-center">
-                <div class="relative overflow-hidden rounded-xl mb-6 shadow-lg aspect-w-1 aspect-h-1 mx-auto max-w-[280px]">
-                    <img src="assets/images/leader3.jpg" alt="Michael Brown" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
-                     <div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6"></div>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-1">Michael Brown</h3>
-                <p class="text-blue-600 font-medium text-sm uppercase tracking-wide">Worship Director</p>
-            </div>
-
-             <!-- Leader 4 -->
-             <div class="group text-center">
-                <div class="relative overflow-hidden rounded-xl mb-6 shadow-lg aspect-w-1 aspect-h-1 mx-auto max-w-[280px]">
-                    <img src="assets/images/leader4.jpg" alt="Sarah Wilson" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
-                     <div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6"></div>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-1">Sarah Wilson</h3>
-                <p class="text-blue-600 font-medium text-sm uppercase tracking-wide">Kids Director</p>
-            </div>
-        </div>
-    </div>
-</div>
 
 <?php include 'includes/footer.php'; ?>

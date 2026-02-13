@@ -169,11 +169,12 @@ if (!$candidate) {
                         </div>
                     </section>
 
-                    <!-- Contact Alert -->
-                    <div class="p-6 bg-gray-50 rounded-[2rem] border border-gray-100">
-                        <h4 class="text-sm font-black text-gray-900 mb-2">Interested in knowing more?</h4>
-                        <p class="text-xs text-gray-500 mb-4 leading-relaxed line-clamp-2">Direct contact details are hidden for privacy. Please contact the church office or express your interest through the official channels.</p>
-                        <button class="w-full py-3 bg-white border border-gray-200 text-primary font-bold rounded-2xl hover:bg-primary hover:text-white transition-all shadow-sm">Express Interest</button>
+                    <!-- Express Interest Action -->
+                    <div class="mt-8">
+                        <button onclick="toggleModal('interestModal')" class="w-full py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary-hover hover:scale-[1.02] transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                            Express Interest
+                        </button>
                     </div>
                 </div>
 
@@ -181,5 +182,47 @@ if (!$candidate) {
         </div>
     </div>
 </main>
+
+<!-- Interest Popup Modal -->
+<div id="interestModal" class="fixed inset-0 z-[100] hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onclick="toggleModal('interestModal')"></div>
+    
+    <!-- Modal Content -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md px-4">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100 animate-fade-in-up">
+            <div class="p-8 md:p-10 text-center">
+                <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-primary">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <h3 class="text-2xl font-black text-gray-900 mb-4">Interested in knowing more?</h3>
+                <p class="text-gray-500 leading-relaxed font-medium mb-8">
+                    Direct contact details are hidden to protect candidate privacy. Please contact the church office or our administrator to express your interest and receive more information.
+                </p>
+                <div class="space-y-3">
+                    <a href="contact.php" class="block w-full py-4 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
+                        Contact Office
+                    </a>
+                    <button onclick="toggleModal('interestModal')" class="block w-full py-4 bg-gray-50 text-gray-500 font-bold rounded-2xl hover:bg-gray-100 transition-colors">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal.classList.contains('hidden')) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    } else {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+}
+</script>
 
 <?php include 'includes/footer.php'; ?>

@@ -343,6 +343,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Location City(නගරය)</label>
                                     <input type="text" name="other_church_location" id="other_church_location" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 </div>
+                                <div class="md:col-span-2 flex flex-col items-start gap-3">
+                                    <button type="button" id="save_church_btn" onclick="saveNewChurch()" class="px-6 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition-all shadow-md flex items-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
+                                        Save Church Details
+                                    </button>
+                                    <div id="church_save_message" class="text-sm font-bold hidden"></div>
+                                </div>
                             </div>
                         </div>
                         <div>
@@ -479,6 +486,66 @@ function previewFile(input) {
         preview.src = "";
         container.classList.add('hidden');
         placeholder.classList.remove('hidden');
+    }
+}
+
+async function saveNewChurch() {
+    const name = document.getElementById('other_church_name').value;
+    const pastor = document.getElementById('other_church_pastor').value;
+    const location = document.getElementById('other_church_location').value;
+    const btn = document.getElementById('save_church_btn');
+    const msg = document.getElementById('church_save_message');
+
+    if (!name) {
+        alert('Please enter a church name.');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = 'Saving...';
+    msg.classList.add('hidden');
+
+    try {
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('pastor', pastor);
+        formData.append('location', location);
+
+        const response = await fetch('save_church.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        
+        msg.classList.remove('hidden');
+        if (data.success) {
+            msg.textContent = data.message;
+            msg.classList.remove('text-red-500');
+            msg.classList.add('text-green-600');
+            
+            // Optionally add to dropdown and select it
+            const select = document.getElementById('church_select');
+            const option = new Option(name, name);
+            select.add(option, select.options[select.options.length - 1]);
+            select.value = name;
+            
+            // Hide the manual section after saving
+            setTimeout(() => {
+                toggleOtherChurch(name);
+            }, 2000);
+        } else {
+            msg.textContent = data.message;
+            msg.classList.remove('text-green-600');
+            msg.classList.add('text-red-500');
+        }
+    } catch (error) {
+        msg.classList.remove('hidden');
+        msg.textContent = 'An error occurred. Please try again.';
+        msg.classList.add('text-red-500');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg> Save Church Details`;
     }
 }
 
