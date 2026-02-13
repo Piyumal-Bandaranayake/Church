@@ -15,13 +15,13 @@
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-100">
-            <form class="space-y-6" action="#" method="POST">
+            <form class="space-y-6" onsubmit="event.preventDefault(); window.location.href='candidates.php';" method="POST">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">
-                        Email address
+                        Email address or Username
                     </label>
                     <div class="mt-1">
-                        <input id="email" name="email" type="email" autocomplete="email" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                        <input id="email" name="email" type="text" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
                     </div>
                 </div>
 
