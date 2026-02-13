@@ -1,3 +1,88 @@
+<?php
+session_start();
+include 'includes/db.php';
+// Ensure table exists
+try {
+    $pdo->query('select 1 from candidates LIMIT 1');
+} catch (Exception $e) {
+    include 'setup_db.php';
+}
+
+$error = '';
+$success = '';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Sanitize and Get Input
+    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+    $password_raw = $_POST['password'];
+    $re_password = $_POST['re_password'];
+
+    // Validation
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Please enter a valid email address.";
+    } elseif (strlen($password_raw) < 6) {
+        $error = "Password must be at least 6 characters long.";
+    } elseif ($password_raw !== $re_password) {
+        $error = "Passwords do not match!";
+    }
+
+    $password = password_hash($password_raw, PASSWORD_DEFAULT);
+    $fullname = $_POST['fullname'];
+    $sex = $_POST['sex'];
+    $dob = $_POST['dob'];
+    $age = $_POST['age'];
+    $nationality = $_POST['nationality'];
+    $language = $_POST['language'];
+    $address = $_POST['address'];
+    $hometown = $_POST['hometown'];
+    $district = $_POST['district'];
+    $province = $_POST['province'];
+    $height = $_POST['height'];
+    $occupation = $_POST['occupation'];
+    $edu_qual = $_POST['edu_qual'];
+    $add_qual = $_POST['add_qual'];
+    $marital_status = $_POST['marital_status'];
+    $children = isset($_POST['children']) ? $_POST['children'] : 'No';
+    $illness = $_POST['illness'];
+    $habits = isset($_POST['habit']) ? implode(',', $_POST['habit']) : 'None';
+    $church = $_POST['church'];
+    $pastor_name = $_POST['pastor_name'];
+    $pastor_phone = $_POST['pastor_phone'];
+    $parent_phone = $_POST['parent_phone'];
+    $my_phone = $_POST['my_phone'];
+    
+    // File Upload
+    $photo_path = null;
+    if (isset($_FILES['file-upload']) && $_FILES['file-upload']['error'] == 0) {
+        $target_dir = "uploads/";
+        $file_name = time() . '_' . basename($_FILES["file-upload"]["name"]);
+        $target_file = $target_dir . $file_name;
+        if (move_uploaded_file($_FILES["file-upload"]["tmp_name"], $target_file)) {
+            $photo_path = $target_file;
+        } else {
+            $error = "Error uploading photo.";
+        }
+    }
+
+    if (empty($error)) {
+        try {
+            $sql = "INSERT INTO candidates (email, password, fullname, sex, dob, age, nationality, language, address, hometown, district, province, height, occupation, edu_qual, add_qual, marital_status, children, illness, habits, church, pastor_name, pastor_phone, parent_phone, my_phone, photo_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$email, $password, $fullname, $sex, $dob, $age, $nationality, $language, $address, $hometown, $district, $province, $height, $occupation, $edu_qual, $add_qual, $marital_status, $children, $illness, $habits, $church, $pastor_name, $pastor_phone, $parent_phone, $my_phone, $photo_path]);
+            
+            header("Location: login.php?registered=true");
+            exit();
+            
+        } catch(PDOException $e) {
+            if ($e->getCode() == 23000) {
+                $error = "This email is already registered. Please login or use another email.";
+            } else {
+                $error = "Database Error: " . $e->getMessage();
+            }
+        }
+    }
+}
+?>
 <?php include 'includes/header.php'; ?>
 
 <div class="min-h-screen bg-gray-50 py-12">
@@ -9,9 +94,15 @@
             <p class="mt-2 text-gray-600">Please fill in your details accurately. Your profile will be reviewed by the admin before approval.</p>
         </div>
 
+        <?php if($error): ?>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <span class="block sm:inline"><?php echo $error; ?></span>
+            </div>
+        <?php endif; ?>
+
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
             <!-- Form -->
-            <form class="p-8 space-y-8" onsubmit="event.preventDefault(); window.location.href='login.php'; alert('Registration successful! Please wait for admin approval.');">
+            <form class="p-8 space-y-8" action="" method="POST" enctype="multipart/form-data">
                 
                 <!-- Account Information -->
                 <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
@@ -21,12 +112,30 @@
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                            <input type="text" name="username" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <input type="email" name="email" required placeholder="example@mail.com" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                            <input type="password" name="password" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <div class="relative">
+                                <input id="password" type="password" name="password" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent pr-10">
+                                <button type="button" onclick="togglePassword('password')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                                    <svg id="eye-icon-password" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                            <div class="relative">
+                                <input id="re_password" type="password" name="re_password" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent pr-10">
+                                <button type="button" onclick="togglePassword('re_password')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                                    <svg id="eye-icon-re_password" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -119,16 +228,16 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
                             <select name="marital_status" onchange="toggleChildren(this.value)" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
-                                <option value="unmarried">Unmarried</option>
-                                <option value="divorced">Divorced</option>
-                                <option value="widowed">Widowed</option>
+                                <option value="Unmarried">Unmarried</option>
+                                <option value="Divorced">Divorced</option>
+                                <option value="Widowed">Widowed</option>
                             </select>
                         </div>
                         <div id="children_field" class="hidden">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Do you have children?</label>
                             <select name="children" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
-                                <option value="no">No</option>
-                                <option value="yes">Yes</option>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
                             </select>
                         </div>
                         <div class="md:col-span-2">
@@ -232,10 +341,23 @@
 <script>
 function toggleChildren(status) {
     const childrenField = document.getElementById('children_field');
-    if (status === 'divorced' || status === 'widowed') {
+    if (status === 'Divorced' || status === 'Widowed') {
         childrenField.classList.remove('hidden');
     } else {
         childrenField.classList.add('hidden');
+    }
+}
+
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById('eye-icon-' + inputId);
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.057 10.057 0 012.183-4.403M9.616 9.616L11 11m4 4l1.384 1.384M15.404 15.404l1.384 1.384M15 12a3 3 0 11-6 0 3 3 0 016 0zM3 3l18 18" />';
+    } else {
+        input.type = 'password';
+        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
     }
 }
 </script>
