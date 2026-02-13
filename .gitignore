@@ -1,0 +1,26 @@
+# Database credentials and local config
+# (Add these if you move credentials to a separate .env or config file later)
+
+# User-uploaded files
+uploads/*
+!uploads/.gitkeep
+
+# Temporary/Maintenance scripts
+fix_db.php
+check_table.php
+update_church_table.php
+reset_admin.php
+create_admin.php
+admin_setup.php
+setup_admin_table.php
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
