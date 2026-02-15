@@ -2,42 +2,75 @@
 
 <!-- Hero Section -->
 <div class="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
-    <!-- Background Image with Overlay -->
-    <div class="absolute inset-0 z-0">
-        <img src="assets/images/hero.jpg" alt="Church Background" class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/60 to-primary/80"></div>
+    <!-- Background Slideshow -->
+    <div class="absolute inset-0 z-0" id="hero-slideshow">
+        <img src="assets/images/wedding1.jpg" alt="Grace Church" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-100 slide">
+        <img src="assets/images/wedding2.jpg" alt="Grace Church Gathering" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 slide">
+        <img src="assets/images/wedding3.jpg" alt="St. Mary's Negombo" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 slide">
+        
+        <div class="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/60 to-primary/80 z-10"></div>
     </div>
 
     <!-- Content -->
-    <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
-        <span class="inline-block py-1 px-3 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-sm font-semibold tracking-wide mb-6 animate-fade-in opacity-0" style="animation-delay: 0.1s;">WELCOME TO GRACE COMMUNITY</span>
+    <div class="relative z-20 text-center px-4 max-w-5xl mx-auto">
+        <span class="inline-block py-1 px-3 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-sm font-semibold tracking-wide mb-6 animate-fade-in opacity-0" style="animation-delay: 0.1s;">CATHOLIC MARRIAGE CONNECTION</span>
         
         <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight animate-slide-up opacity-0" style="animation-delay: 0.2s;">
-            A Place to Belong,<br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-white">Believe, & Become.</span>
+            Find Your Soulmate,<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-white">Blessed by Faith.</span>
         </h1>
         
         <p class="text-xl md:text-2xl text-gray-200 mb-10 max-w-2xl mx-auto animate-slide-up opacity-0" style="animation-delay: 0.4s;">
-            Experience a community where faith comes alive, hope is restored, and love knows no bounds.
+            Connecting Catholic hearts to build strong, lifelong marriages centered on Christ and shared values.
         </p>
         
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up opacity-0" style="animation-delay: 0.6s;">
-            <a href="#services" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-primary font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
-                Join Us This Sunday
-            </a>
-            <a href="contact.php" class="w-full sm:w-auto px-8 py-4 rounded-full bg-transparent border-2 border-white text-white font-bold hover:bg-white/10 transition-all duration-300 backdrop-blur-sm">
-                Plan Your Visit
+            <?php if(isset($_SESSION['user_id'])): ?>
+                <a href="candidates.php" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-primary font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                    Browse Candidates
+                </a>
+            <?php else: ?>
+                <a href="register.php" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-primary font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                    Find Your Match
+                </a>
+            <?php endif; ?>
+            <a href="about.php" class="w-full sm:w-auto px-8 py-4 rounded-full bg-transparent border-2 border-white text-white font-bold hover:bg-white/10 transition-all duration-300 backdrop-blur-sm">
+                About Our Community
             </a>
         </div>
     </div>
 
     <!-- Scroll Indicator -->
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce z-20">
         <svg class="w-8 h-8 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
         </svg>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const slides = document.querySelectorAll('#hero-slideshow .slide');
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+
+        function nextSlide() {
+            // Fade out current slide
+            slides[currentSlide].classList.replace('opacity-100', 'opacity-0');
+            
+            // Increment slide index
+            currentSlide = (currentSlide + 1) % totalSlides;
+            
+            // Fade in next slide
+            slides[currentSlide].classList.replace('opacity-0', 'opacity-100');
+        }
+
+        // Change image every 5 seconds
+        if (totalSlides > 1) {
+            setInterval(nextSlide, 5000);
+        }
+    });
+</script>
 
 <!-- Service Times Section -->
 <div id="services" class="py-24 bg-accent relative overflow-hidden">
