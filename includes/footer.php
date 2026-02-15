@@ -22,7 +22,7 @@
                     <ul class="space-y-2 text-sm text-gray-400">
                         <li><a href="index.php" class="hover:text-white transition-colors">Home</a></li>
                         <li><a href="about.php" class="hover:text-white transition-colors">About Us</a></li>
-                        <li><a href="churches.php" class="hover:text-white transition-colors">Our Churches</a></li>
+                        <li><a href="churches.php" class="hover:text-white transition-colors">Churches</a></li>
                         <li><a href="contact.php" class="hover:text-white transition-colors">Contact Us</a></li>
                     </ul>
                 </div>
