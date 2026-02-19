@@ -1,12 +1,12 @@
-<?php include 'includes/header.php'; ?>
+<?php $hide_spacer = true; include 'includes/header.php'; ?>
 
 <!-- Page Header -->
-<div class="bg-gray-900 py-20 text-center relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-br from-primary to-blue-900 z-0"></div>
-    <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] z-10"></div>
-    <div class="relative z-20 container mx-auto px-4">
-        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 animate-fade-in">About Us</h1>
-        <p class="text-xl text-blue-100 max-w-2xl mx-auto">Get to know the heart and soul of Grace Community Church.</p>
+<div class="bg-primary pt-32 pb-24 text-center relative overflow-hidden">
+     <div class="absolute inset-0 bg-gradient-to-br from-[#0a2540] via-[#1a3a5a] to-[#0a2540] z-0"></div>
+     <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/graphy.png')] z-10"></div>
+    <div class="relative z-20 container mx-auto px-4 mt-8">
+        <h1 class="text-5xl md:text-7xl font-black text-white mb-6 animate-fade-in tracking-tight">About Us</h1>
+        <p class="text-xl md:text-2xl text-blue-100 max-w-2xl mx-auto font-medium opacity-90 leading-relaxed">Get to know the heart and soul of Grace Community Church.</p>
     </div>
 </div>
 

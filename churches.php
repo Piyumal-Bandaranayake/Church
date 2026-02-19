@@ -1,7 +1,7 @@
-<?php include 'includes/header.php'; ?>
+<?php $hide_spacer = true; include 'includes/header.php'; ?>
 
 <!-- Page Header -->
-<div class="bg-primary py-24 text-center relative overflow-hidden">
+<div class="bg-primary pt-32 pb-24 text-center relative overflow-hidden">
      <div class="absolute inset-0 bg-gradient-to-br from-[#0a2540] via-[#1a3a5a] to-[#0a2540] z-0"></div>
      <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/graphy.png')] z-10"></div>
     <div class="relative z-20 container mx-auto px-4 mt-8">
