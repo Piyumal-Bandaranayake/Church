@@ -32,7 +32,7 @@ try {
         photo_path VARCHAR(255),
         status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
+    );";
 
     $sql .= "CREATE TABLE IF NOT EXISTS churches (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -41,10 +41,11 @@ try {
         location VARCHAR(255) DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );";
-    
+
     $pdo->exec($sql);
     echo "Table 'candidates' created successfully.";
-} catch(PDOException $e) {
+}
+catch (PDOException $e) {
     echo "Error creating table: " . $e->getMessage();
 }
 ?>

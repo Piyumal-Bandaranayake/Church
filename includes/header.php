@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -91,20 +92,22 @@ if (session_status() === PHP_SESSION_NONE) {
 <body class="font-sans text-gray-800 bg-secondary flex flex-col min-h-screen">
 
     <?php
-    $current_page = basename($_SERVER['PHP_SELF']);
-    function isActive($page_name, $current_page) {
-        return $current_page === $page_name ? 'text-blue-200 font-bold border-b-2 border-blue-200' : 'text-white/80 hover:text-white transition-colors duration-300';
-    }
-    function isActiveMobile($page_name, $current_page) {
-        return $current_page === $page_name ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-primary';
-    }
-    ?>
+$current_page = basename($_SERVER['PHP_SELF']);
+function isActive($page_name, $current_page)
+{
+    return $current_page === $page_name ? 'text-blue-200 font-bold border-b-2 border-blue-200' : 'text-white/80 hover:text-white transition-colors duration-300';
+}
+function isActiveMobile($page_name, $current_page)
+{
+    return $current_page === $page_name ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-primary';
+}
+?>
 
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 transition-all duration-500 <?php echo (isset($hide_spacer) && $hide_spacer) ? 'nav-transparent' : 'bg-[#0a2540] shadow-lg'; ?>" 
+    <nav class="fixed w-full z-50 transition-all duration-500 <?php echo(isset($hide_spacer) && $hide_spacer) ? 'nav-transparent' : 'bg-[#0a2540] shadow-lg'; ?>" 
          id="navbar" 
-         style="<?php echo (!isset($hide_spacer) || !$hide_spacer) ? 'height: 5rem;' : ''; ?>"
-         data-transparent="<?php echo (isset($hide_spacer) && $hide_spacer) ? 'true' : 'false'; ?>">
+         style="<?php echo(!isset($hide_spacer) || !$hide_spacer) ? 'height: 5rem;' : ''; ?>"
+         data-transparent="<?php echo(isset($hide_spacer) && $hide_spacer) ? 'true' : 'false'; ?>">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
             <div class="flex justify-between items-center h-full">
                 <!-- Logo -->
@@ -120,16 +123,17 @@ if (session_status() === PHP_SESSION_NONE) {
                     <a href="about.php" class="nav-link <?php echo isActive('about.php', $current_page); ?>">About Us</a>
                     <a href="churches.php" class="nav-link <?php echo isActive('churches.php', $current_page); ?>">Churches</a>
                     <a href="contact.php" class="nav-link <?php echo isActive('contact.php', $current_page); ?>">Contact</a>
-                    <?php if(isset($_SESSION['user_id'])): ?>
+                    <?php if (isset($_SESSION['user_id'])): ?>
                     <a href="candidates.php" class="<?php echo isActive('candidates.php', $current_page); ?>">Candidates</a>
-                    <?php endif; ?>
+                    <?php
+endif; ?>
                     
                     <div class="h-6 w-px bg-gray-200 mx-2"></div>
 
-                    <?php if(isset($_SESSION['user_id'])): ?>
-                        <?php 
-                            $dashboardLink = ($_SESSION['role'] === 'admin') ? 'admin_dashboard.php' : 'candidates.php';
-                        ?>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <?php
+    $dashboardLink = ($_SESSION['role'] === 'admin') ? 'admin_dashboard.php' : 'candidates.php';
+?>
                         <div class="relative items-center flex" id="profile-dropdown-container">
                             <button onclick="toggleProfileDropdown()" class="flex items-center gap-3 px-3 py-1.5 rounded-full text-white hover:bg-white/10 transition-all border border-white/10 backdrop-blur-sm group">
                                 <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold shadow-lg border-2 border-white/20 group-hover:border-blue-300 transition-all">
@@ -156,14 +160,15 @@ if (session_status() === PHP_SESSION_NONE) {
                                     My Dashboard
                                 </a>
 
-                                <?php if($_SESSION['role'] !== 'admin'): ?>
+                                <?php if ($_SESSION['role'] !== 'admin'): ?>
                                 <a href="profile.php?id=<?php echo $_SESSION['user_id']; ?>" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-600 hover:bg-blue-50 hover:text-primary transition-all">
                                     <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-primary">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
                                     </div>
                                     View Profile
                                 </a>
-                                <?php endif; ?>
+                                <?php
+    endif; ?>
 
                                 <div class="h-px bg-gray-50 my-1"></div>
                                 
@@ -175,14 +180,16 @@ if (session_status() === PHP_SESSION_NONE) {
                                 </a>
                             </div>
                         </div>
-                    <?php else: ?>
+                    <?php
+else: ?>
                         <a href="login.php" class="px-6 py-2.5 rounded-full border border-white/30 text-white font-semibold hover:bg-white hover:text-primary transition-all duration-300 transform hover:-translate-y-0.5">
                             Login
                         </a>
                         <a href="register.php" class="px-6 py-2.5 rounded-full bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all duration-300 shadow-lg shadow-blue-600/30 transform hover:-translate-y-0.5">
                             Register
                         </a>
-                    <?php endif; ?>
+                    <?php
+endif; ?>
                 </div>
 
                 <!-- Mobile Menu Button -->
@@ -203,28 +210,32 @@ if (session_status() === PHP_SESSION_NONE) {
                 <a href="about.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('about.php', $current_page); ?>">About Us</a>
                 <a href="churches.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('churches.php', $current_page); ?>">Churches</a>
                 <a href="contact.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('contact.php', $current_page); ?>">Contact Us</a>
-                <?php if(isset($_SESSION['user_id'])): ?>
+                <?php if (isset($_SESSION['user_id'])): ?>
                 <a href="candidates.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('candidates.php', $current_page); ?>">Candidates</a>
-                <?php endif; ?>
+                <?php
+endif; ?>
                 <div class="border-t border-gray-100 my-2"></div>
-                <?php if(isset($_SESSION['user_id'])): ?>
+                <?php if (isset($_SESSION['user_id'])): ?>
                     <?php $dashboardLink = ($_SESSION['role'] === 'admin') ? 'admin_dashboard.php' : 'candidates.php'; ?>
                     <a href="<?php echo $dashboardLink; ?>" class="block px-3 py-2 rounded-md text-base font-medium text-primary bg-blue-50">
                         <span class="mr-2">👤</span> My Profile (<?php echo htmlspecialchars($_SESSION['username']); ?>)
                     </a>
                     <a href="logout.php" class="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50">Logout</a>
-                <?php else: ?>
+                <?php
+else: ?>
                     <a href="login.php" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-primary">Login</a>
                     <a href="register.php" class="block px-3 py-2 rounded-md text-base font-medium text-primary font-bold hover:bg-gray-50">Register</a>
-                <?php endif; ?>
+                <?php
+endif; ?>
             </div>
         </div>
     </nav>
 
     <!-- Conditional Spacer: Hidden on pages with transparent heroes, shown on standard pages -->
-    <?php if(!isset($hide_spacer) || !$hide_spacer): ?>
+    <?php if (!isset($hide_spacer) || !$hide_spacer): ?>
         <div class="h-20 lg:h-24"></div>
-    <?php endif; ?>
+    <?php
+endif; ?>
 
     <script>
         function toggleProfileDropdown() {
