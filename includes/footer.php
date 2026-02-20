@@ -5,12 +5,9 @@
                 
                 <!-- About Column -->
                 <div class="col-span-1 md:col-span-1">
-                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
-                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                        </svg>
-                        Grace Church
-                    </h3>
+                    <div class="mb-6">
+                        <img src="assets/images/logo.png" alt="Christian Marriage Proposals" class="h-16 w-auto logo-blend">
+                    </div>
                     <p class="text-gray-400 text-sm leading-relaxed mb-4">
                         A community of faith, hope, and love. Join us as we journey together in faith and serve our community.
                     </p>
@@ -50,7 +47,7 @@
                 <div class="col-span-1">
                     <h3 class="text-lg font-semibold mb-4 text-gray-200">Connect With Us</h3>
                     <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-all duration-300 group">
+                        <a href="https://web.facebook.com/profile.php?id=61588245032764" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-all duration-300 group">
                             <span class="sr-only">Facebook</span>
                             <svg class="h-5 w-5 text-gray-400 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
                                 <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd"/>
@@ -68,7 +65,7 @@
             </div>
             
             <div class="border-t border-gray-800 mt-12 pt-8 text-center text-sm text-gray-500">
-                <p>&copy; <?php echo date("Y"); ?> Grace Community Church. All rights reserved.</p>
+                <p>&copy; <?php echo date("Y"); ?> Christian Marriage Proposals. All rights reserved.</p>
             </div>
         </div>
     </footer>

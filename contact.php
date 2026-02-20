@@ -1,12 +1,12 @@
-<?php include 'includes/header.php'; ?>
+<?php $hide_spacer = true; include 'includes/header.php'; ?>
 
 <!-- Page Header -->
-<div class="bg-primary py-12 text-center relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-r from-[#0a2540] via-[#1a3a5a] to-[#0a2540] z-0"></div>
-    <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/graphy.png')] z-10"></div>
-    <div class="relative z-20 container mx-auto px-4">
-        <h1 class="text-4xl md:text-5xl font-black text-white mb-2 animate-fade-in tracking-tight">Get in Touch</h1>
-        <p class="text-blue-100 max-w-xl mx-auto font-medium opacity-90">We're here to answer your questions and support you.</p>
+<div class="bg-primary pt-32 pb-24 text-center relative overflow-hidden">
+     <div class="absolute inset-0 bg-gradient-to-br from-[#0a2540] via-[#1a3a5a] to-[#0a2540] z-0"></div>
+     <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/graphy.png')] z-10"></div>
+    <div class="relative z-20 container mx-auto px-4 mt-8">
+        <h1 class="text-5xl md:text-7xl font-black text-white mb-6 animate-fade-in tracking-tight">Get in Touch</h1>
+        <p class="text-xl md:text-2xl text-blue-100 max-w-2xl mx-auto font-medium opacity-90 leading-relaxed">We're here to answer your questions and support you.</p>
     </div>
 </div>
 

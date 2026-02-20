@@ -8,10 +8,10 @@ if (session_status() === PHP_SESSION_NONE) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grace Community Church</title>
+    <title>Christian Marriage Proposals</title>
     
     <!-- Primary Meta Tags -->
-    <meta name="description" content="Welcome to Grace Community Church. Join us for worship, community, and spiritual growth.">
+    <meta name="description" content="Welcome to Christian Marriage Proposals. Connecting Catholic hearts to build strong, lifelong marriages centered on Christ and shared values.">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -69,6 +69,23 @@ if (session_status() === PHP_SESSION_NONE) {
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8; 
         }
+
+        /* Navbar states */
+        .nav-scrolled {
+            background-color: #0a2540 !important;
+            backdrop-filter: blur(8px);
+            height: 5rem !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        .nav-transparent {
+            background-color: transparent !important;
+            height: 5.5rem;
+        }
+        
+        /* Logo blend mode to remove black background */
+        .logo-blend {
+            mix-blend-mode: screen;
+        }
     </style>
 </head>
 <body class="font-sans text-gray-800 bg-secondary flex flex-col min-h-screen">
@@ -76,7 +93,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <?php
     $current_page = basename($_SERVER['PHP_SELF']);
     function isActive($page_name, $current_page) {
-        return $current_page === $page_name ? 'text-blue-500 font-semibold' : 'text-gray-600 hover:text-primary transition-colors duration-300';
+        return $current_page === $page_name ? 'text-blue-200 font-bold border-b-2 border-blue-200' : 'text-white/80 hover:text-white transition-colors duration-300';
     }
     function isActiveMobile($page_name, $current_page) {
         return $current_page === $page_name ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-primary';
@@ -84,25 +101,25 @@ if (session_status() === PHP_SESSION_NONE) {
     ?>
 
     <!-- Navigation -->
-    <nav class="bg-white/90 backdrop-blur-md shadow-sm fixed w-full z-50 transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20">
+    <nav class="fixed w-full z-50 transition-all duration-500 <?php echo (isset($hide_spacer) && $hide_spacer) ? 'nav-transparent' : 'bg-[#0a2540] shadow-lg'; ?>" 
+         id="navbar" 
+         style="<?php echo (!isset($hide_spacer) || !$hide_spacer) ? 'height: 5rem;' : ''; ?>"
+         data-transparent="<?php echo (isset($hide_spacer) && $hide_spacer) ? 'true' : 'false'; ?>">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+            <div class="flex justify-between items-center h-full">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="index.php" class="flex-shrink-0 flex items-center gap-2 group">
-                        <svg class="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                        </svg>
-                        <span class="font-bold text-xl tracking-tight text-primary">Grace Church</span>
+                    <a href="index.php" class="flex-shrink-0 flex items-center group">
+                        <img src="assets/images/logo.png" alt="Christian Marriage Proposals" class="h-16 md:h-20 w-auto transform group-hover:scale-105 transition-transform duration-300 logo-blend">
                     </a>
                 </div>
 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-6">
-                    <a href="index.php" class="<?php echo isActive('index.php', $current_page); ?>">Home</a>
-                    <a href="about.php" class="<?php echo isActive('about.php', $current_page); ?>">About Us</a>
-                    <a href="churches.php" class="<?php echo isActive('churches.php', $current_page); ?>">Churches</a>
-                    <a href="contact.php" class="<?php echo isActive('contact.php', $current_page); ?>">Contact</a>
+                    <a href="index.php" class="nav-link <?php echo isActive('index.php', $current_page); ?>">Home</a>
+                    <a href="about.php" class="nav-link <?php echo isActive('about.php', $current_page); ?>">About Us</a>
+                    <a href="churches.php" class="nav-link <?php echo isActive('churches.php', $current_page); ?>">Churches</a>
+                    <a href="contact.php" class="nav-link <?php echo isActive('contact.php', $current_page); ?>">Contact</a>
                     <?php if(isset($_SESSION['user_id'])): ?>
                     <a href="candidates.php" class="<?php echo isActive('candidates.php', $current_page); ?>">Candidates</a>
                     <?php endif; ?>
@@ -113,17 +130,56 @@ if (session_status() === PHP_SESSION_NONE) {
                         <?php 
                             $dashboardLink = ($_SESSION['role'] === 'admin') ? 'admin_dashboard.php' : 'candidates.php';
                         ?>
-                        <div class="relative group">
-                            <a href="<?php echo $dashboardLink; ?>" class="flex items-center gap-2 px-3 py-2 rounded-full text-gray-700 hover:bg-gray-100 transition-all">
-                                <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold">
+                        <div class="relative items-center flex" id="profile-dropdown-container">
+                            <button onclick="toggleProfileDropdown()" class="flex items-center gap-3 px-3 py-1.5 rounded-full text-white hover:bg-white/10 transition-all border border-white/10 backdrop-blur-sm group">
+                                <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold shadow-lg border-2 border-white/20 group-hover:border-blue-300 transition-all">
                                     <?php echo strtoupper(substr($_SESSION['username'], 0, 1)); ?>
                                 </div>
-                                <span class="font-medium"><?php echo htmlspecialchars($_SESSION['username']); ?></span>
-                            </a>
+                                <div class="hidden lg:block text-left">
+                                    <p class="text-[10px] text-blue-200 font-bold uppercase tracking-widest leading-none mb-0.5">Welcome back</p>
+                                    <p class="text-sm font-bold text-white leading-none"><?php echo htmlspecialchars($_SESSION['username']); ?></p>
+                                </div>
+                                <svg class="w-4 h-4 text-white/50 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <div id="profile-dropdown" class="absolute right-0 top-full mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 hidden animate-slide-up origin-top-right overflow-hidden">
+                                <div class="px-4 py-3 border-b border-gray-50 mb-1">
+                                    <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Account Settings</p>
+                                    <p class="text-sm font-bold text-gray-800 truncate"><?php echo htmlspecialchars($_SESSION['username']); ?></p>
+                                </div>
+                                
+                                <a href="<?php echo $dashboardLink; ?>" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-600 hover:bg-blue-50 hover:text-primary transition-all">
+                                    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-primary">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                    </div>
+                                    My Dashboard
+                                </a>
+
+                                <?php if($_SESSION['role'] !== 'admin'): ?>
+                                <a href="profile.php?id=<?php echo $_SESSION['user_id']; ?>" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-600 hover:bg-blue-50 hover:text-primary transition-all">
+                                    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-primary">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
+                                    </div>
+                                    View Profile
+                                </a>
+                                <?php endif; ?>
+
+                                <div class="h-px bg-gray-50 my-1"></div>
+                                
+                                <a href="logout.php" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-all">
+                                    <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                    </div>
+                                    Sign Out
+                                </a>
+                            </div>
                         </div>
                     <?php else: ?>
-                        <a href="login.php" class="px-4 py-2 rounded-full text-gray-600 hover:text-primary hover:bg-gray-50 font-medium transition-all">Login</a>
-                        <a href="register.php" class="px-5 py-2.5 rounded-full bg-primary text-white font-medium hover:bg-primary-hover transition-all duration-300 shadow-lg shadow-primary/20 transform hover:-translate-y-0.5">
+                        <a href="login.php" class="px-6 py-2.5 rounded-full border border-white/30 text-white font-semibold hover:bg-white hover:text-primary transition-all duration-300 transform hover:-translate-y-0.5">
+                            Login
+                        </a>
+                        <a href="register.php" class="px-6 py-2.5 rounded-full bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all duration-300 shadow-lg shadow-blue-600/30 transform hover:-translate-y-0.5">
                             Register
                         </a>
                     <?php endif; ?>
@@ -131,7 +187,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
                 <!-- Mobile Menu Button -->
                 <div class="flex items-center md:hidden">
-                    <button type="button" onclick="toggleMobileMenu()" class="text-gray-600 hover:text-primary focus:outline-none p-2 rounded-md hover:bg-gray-100 transition-colors">
+                    <button type="button" onclick="toggleMobileMenu()" class="text-white hover:text-blue-200 focus:outline-none p-2 rounded-md hover:bg-white/10 transition-colors">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
@@ -165,12 +221,45 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
     </nav>
 
-    <!-- Spacer for fixed navbar -->
-    <div class="h-20"></div>
+    <!-- Conditional Spacer: Hidden on pages with transparent heroes, shown on standard pages -->
+    <?php if(!isset($hide_spacer) || !$hide_spacer): ?>
+        <div class="h-20 lg:h-24"></div>
+    <?php endif; ?>
 
     <script>
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profile-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.closest('#profile-dropdown-container')) {
+                const dropdown = document.getElementById('profile-dropdown');
+                if (dropdown && !dropdown.classList.contains('hidden')) {
+                    dropdown.classList.add('hidden');
+                }
+            }
+        }
+
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('hidden');
         }
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            const isTransparentPage = navbar.getAttribute('data-transparent') === 'true';
+            
+            if (isTransparentPage) {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('nav-scrolled');
+                    navbar.classList.remove('nav-transparent');
+                } else {
+                    navbar.classList.remove('nav-scrolled');
+                    navbar.classList.add('nav-transparent');
+                }
+            }
+        });
     </script>

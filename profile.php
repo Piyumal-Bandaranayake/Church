@@ -36,10 +36,21 @@ if (!$candidate) {
         <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
             <!-- Top Section: Photo & Identity -->
             <div class="p-8 md:p-12 flex flex-col md:flex-row items-center md:items-start gap-10 bg-gradient-to-br from-white to-blue-50/30">
-                <div class="w-48 h-64 shrink-0 rounded-3xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
-                    <?php $img = !empty($candidate['photo_path']) ? $candidate['photo_path'] : 'https://via.placeholder.com/400x600?text=Profile'; ?>
-                    <img src="<?php echo htmlspecialchars($img); ?>" class="w-full h-full object-cover">
+                <?php $img = !empty($candidate['photo_path']) ? $candidate['photo_path'] : 'https://via.placeholder.com/400x600?text=Profile'; ?>
+                <div onclick="openImageModal('<?php echo htmlspecialchars($img); ?>')" class="w-48 h-64 shrink-0 rounded-3xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500 cursor-pointer group/img relative">
+                    <img src="<?php echo htmlspecialchars($img); ?>" class="w-full h-full object-cover" alt="Profile Photo">
+                    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/></svg>
+                    </div>
                 </div>
+
+                <style>
+                    @keyframes zoom-in {
+                        from { opacity: 0; transform: scale(0.95); }
+                        to { opacity: 1; transform: scale(1); }
+                    }
+                    .animate-zoom-in { animation: zoom-in 0.3s ease-out forwards; }
+                </style>
                 
                 <div class="flex-grow text-center md:text-left pt-4">
                     <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/5 text-primary rounded-full text-xs font-bold uppercase tracking-widest mb-4">
@@ -84,12 +95,16 @@ if (!$candidate) {
                                 <span class="text-gray-900 font-semibold"><?php echo $candidate['nationality']; ?></span>
                             </div>
                             <div class="flex justify-between items-center py-3 border-b border-gray-50">
-                                <span class="text-gray-400 font-bold uppercase text-[10px]">Language</span>
-                                <span class="text-gray-900 font-semibold"><?php echo $candidate['language']; ?></span>
+                                <span class="text-gray-400 font-bold uppercase text-[10px]">Mother Tongue</span>
+                                <span class="text-gray-900 font-semibold"><?php echo htmlspecialchars($candidate['language']); ?></span>
                             </div>
                             <div class="flex justify-between items-center py-3 border-b border-gray-50">
                                 <span class="text-gray-400 font-bold uppercase text-[10px]">Height</span>
                                 <span class="text-gray-900 font-semibold"><?php echo $candidate['height']; ?></span>
+                            </div>
+                            <div class="flex justify-between items-center py-3 border-b border-gray-50">
+                                <span class="text-gray-400 font-bold uppercase text-[10px]">Email Address</span>
+                                <span class="text-gray-900 font-semibold lowercase italic text-xs"><?php echo htmlspecialchars($candidate['email']); ?></span>
                             </div>
                             <div class="flex justify-between items-center py-3 border-b border-gray-50">
                                 <span class="text-gray-400 font-bold uppercase text-[10px]">Marital Status</span>
@@ -212,7 +227,23 @@ if (!$candidate) {
     </div>
 </div>
 
+<!-- Image Preview Modal -->
+<div id="imageModal" class="fixed inset-0 z-[150] hidden">
+    <div class="absolute inset-0 bg-gray-900/95 backdrop-blur-md" onclick="toggleModal('imageModal')"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl p-4 flex flex-col items-center">
+        <button onclick="toggleModal('imageModal')" class="absolute -top-12 right-4 text-white hover:text-gray-300 transition-colors">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <img id="modalFullImage" src="" class="max-w-full max-h-[85vh] rounded-2xl shadow-2xl animate-zoom-in">
+    </div>
+</div>
+
 <script>
+function openImageModal(imgSrc) {
+    document.getElementById('modalFullImage').src = imgSrc;
+    toggleModal('imageModal');
+}
+
 function toggleModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal.classList.contains('hidden')) {
