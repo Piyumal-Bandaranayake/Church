@@ -1,4 +1,5 @@
-<?php $hide_spacer = true; include 'includes/header.php'; ?>
+<?php $hide_spacer = true;
+include 'includes/header.php'; ?>
 
 <!-- Page Header -->
 <div class="bg-primary pt-32 pb-24 text-center relative overflow-hidden">
@@ -11,14 +12,14 @@
 </div>
 
 <!-- Our Story Section -->
-<div class="py-24 bg-white">
+<div class="py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
-            <div class="mb-12 lg:mb-0 relative">
+            <div class="mb-12 lg:mb-0 relative reveal reveal-left">
                  <div class="absolute -top-4 -left-4 w-24 h-24 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
                 <img src="assets/images/god.jpg" alt="Church History" class="rounded-lg shadow-2xl relative z-10 w-full h-auto object-cover transform hover:scale-[1.02] transition-transform duration-500">
             </div>
-            <div>
+            <div class="reveal reveal-right delay-200">
                 <h2 class="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
                 <div class="prose prose-lg text-gray-600">
                     <p class="mb-4">
@@ -37,12 +38,12 @@
 </div>
 
 <!-- Mission & Vision -->
-<div class="py-20 bg-accent relative">
+<div class="py-20 relative">
     <div class="absolute inset-0 bg-gradient-to-b from-transparent to-white/50 pointer-events-none"></div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="grid md:grid-cols-2 gap-8 text-center md:text-left">
             <!-- Mission -->
-            <div class="bg-white p-10 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-b-4 border-blue-500">
+            <div class="bg-white p-10 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-b-4 border-blue-500 reveal reveal-up">
                 <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
                     <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -55,7 +56,7 @@
             </div>
 
             <!-- Vision -->
-            <div class="bg-white p-10 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-b-4 border-indigo-500">
+            <div class="bg-white p-10 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-b-4 border-indigo-500 reveal reveal-up delay-200">
                 <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
                     <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

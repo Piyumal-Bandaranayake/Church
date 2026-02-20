@@ -37,8 +37,11 @@ if (session_status() === PHP_SESSION_NONE) {
                         sans: ['Inter', 'sans-serif'],
                     },
                     animation: {
-                        'fade-in': 'fadeIn 0.5s ease-out forwards',
-                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                        'slide-down': 'slideDown 0.8s ease-out forwards',
+                        'scale-in': 'scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'float': 'float 6s ease-in-out infinite',
                     },
                     keyframes: {
                         fadeIn: {
@@ -46,8 +49,20 @@ if (session_status() === PHP_SESSION_NONE) {
                             '100%': { opacity: '1' },
                         },
                         slideUp: {
-                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '0%': { transform: 'translateY(40px)', opacity: '0' },
                             '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        slideDown: {
+                            '0%': { transform: 'translateY(-40px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.9)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
                         }
                     }
                 }
@@ -86,13 +101,55 @@ if (session_status() === PHP_SESSION_NONE) {
         /* Logo blend mode to remove black background */
         .logo-blend {
             mix-blend-mode: screen;
+            filter: brightness(1.1) contrast(1.1);
+            background-color: transparent !important;
+        }
+        
+        .logo-container {
+            background: transparent !important;
+        }
+
+        /* Scroll Reveal Utility Classes */
+        .reveal {
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .reveal-up { transform: translateY(40px); }
+        .reveal-down { transform: translateY(-40px); }
+        .reveal-left { transform: translateX(40px); }
+        .reveal-right { transform: translateX(-40px); }
+        .reveal-scale { transform: scale(0.95); }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translate(0) scale(1);
+        }
+
+        /* Staggered Delays */
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+        .delay-400 { transition-delay: 400ms; }
+        .delay-500 { transition-delay: 500ms; }
+
+        /* Global Themed Background */
+        .themed-background {
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(10, 37, 64, 0.05) 0, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(10, 37, 64, 0.05) 0, transparent 50%),
+                url("https://www.transparenttextures.com/patterns/silk.png");
+            background-attachment: fixed;
         }
     </style>
 </head>
-<body class="font-sans text-gray-800 bg-secondary flex flex-col min-h-screen">
-
     <?php
 $current_page = basename($_SERVER['PHP_SELF']);
+?>
+<body class="font-sans text-gray-800 flex flex-col min-h-screen <?php echo($current_page !== 'index.php') ? 'themed-background' : 'bg-secondary'; ?>">
+
+    <?php
 function isActive($page_name, $current_page)
 {
     return $current_page === $page_name ? 'text-blue-200 font-bold border-b-2 border-blue-200' : 'text-white/80 hover:text-white transition-colors duration-300';
@@ -112,7 +169,7 @@ function isActiveMobile($page_name, $current_page)
             <div class="flex justify-between items-center h-full">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="index.php" class="flex-shrink-0 flex items-center group">
+                    <a href="index.php" class="flex-shrink-0 flex items-center group logo-container">
                         <img src="assets/images/logo.png" alt="Christian Marriage Proposals" class="h-16 md:h-20 w-auto transform group-hover:scale-105 transition-transform duration-300 logo-blend">
                     </a>
                 </div>
@@ -231,7 +288,7 @@ endif; ?>
         </div>
     </nav>
 
-    <!-- Conditional Spacer: Hidden on pages with transparent heroes, shown on standard pages -->
+    <!-- Conditional Spacer -->
     <?php if (!isset($hide_spacer) || !$hide_spacer): ?>
         <div class="h-20 lg:h-24"></div>
     <?php
@@ -243,7 +300,6 @@ endif; ?>
             dropdown.classList.toggle('hidden');
         }
 
-        // Close dropdown when clicking outside
         window.onclick = function(event) {
             if (!event.target.closest('#profile-dropdown-container')) {
                 const dropdown = document.getElementById('profile-dropdown');
@@ -258,7 +314,6 @@ endif; ?>
             menu.classList.toggle('hidden');
         }
 
-        // Navbar scroll effect
         window.addEventListener('scroll', function() {
             const navbar = document.getElementById('navbar');
             const isTransparentPage = navbar.getAttribute('data-transparent') === 'true';
@@ -273,4 +328,25 @@ endif; ?>
                 }
             }
         });
+
+        // Initialize Scroll Reveal
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        // Uncomment if you want it to re-animate when scrolling back up
+                        // observer.unobserve(entry.target); 
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        });
     </script>
+
