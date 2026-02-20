@@ -25,10 +25,10 @@ if (!$candidate) {
 ?>
 <?php include 'includes/header.php'; ?>
 
-<main class="min-h-screen bg-[#fafbff] py-12 px-4 sm:px-6 lg:px-8">
+<main class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
         <!-- Navigation -->
-        <a href="candidates.php" class="inline-flex items-center gap-2 text-primary hover:gap-3 transition-all font-bold mb-8 group">
+        <a href="candidates.php" class="inline-flex items-center gap-2 text-primary hover:gap-3 transition-all font-bold mb-8 group reveal reveal-left">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             Back to Directory
         </a>
@@ -37,7 +37,7 @@ if (!$candidate) {
             <!-- Top Section: Photo & Identity -->
             <div class="p-8 md:p-12 flex flex-col md:flex-row items-center md:items-start gap-10 bg-gradient-to-br from-white to-blue-50/30">
                 <?php $img = !empty($candidate['photo_path']) ? $candidate['photo_path'] : 'https://via.placeholder.com/400x600?text=Profile'; ?>
-                <div onclick="openImageModal('<?php echo htmlspecialchars($img); ?>')" class="w-48 h-64 shrink-0 rounded-3xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500 cursor-pointer group/img relative">
+                <div onclick="openImageModal('<?php echo htmlspecialchars($img); ?>')" class="w-48 h-64 shrink-0 rounded-3xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500 cursor-pointer group/img relative reveal reveal-scale">
                     <img src="<?php echo htmlspecialchars($img); ?>" class="w-full h-full object-cover" alt="Profile Photo">
                     <div class="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/></svg>
@@ -52,7 +52,7 @@ if (!$candidate) {
                     .animate-zoom-in { animation: zoom-in 0.3s ease-out forwards; }
                 </style>
                 
-                <div class="flex-grow text-center md:text-left pt-4">
+                <div class="flex-grow text-center md:text-left pt-4 reveal reveal-right delay-200">
                     <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/5 text-primary rounded-full text-xs font-bold uppercase tracking-widest mb-4">
                         <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                         Verified Profile
@@ -61,17 +61,17 @@ if (!$candidate) {
                     <p class="text-xl text-gray-500 font-medium"><?php echo htmlspecialchars($candidate['occupation']); ?></p>
                     
                     <div class="flex flex-wrap justify-center md:justify-start gap-6 mt-8">
-                        <div class="flex flex-col">
+                        <div class="flex flex-col reveal reveal-up delay-300">
                             <span class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Age</span>
                             <span class="text-lg font-bold text-gray-800"><?php echo $candidate['age']; ?> Years</span>
                         </div>
                         <div class="w-px h-8 bg-gray-200 hidden md:block mt-2"></div>
-                        <div class="flex flex-col">
+                        <div class="flex flex-col reveal reveal-up delay-400">
                             <span class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Location</span>
                             <span class="text-lg font-bold text-gray-800"><?php echo $candidate['hometown']; ?></span>
                         </div>
                         <div class="w-px h-8 bg-gray-200 hidden md:block mt-2"></div>
-                        <div class="flex flex-col">
+                        <div class="flex flex-col reveal reveal-up delay-500">
                             <span class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Gender</span>
                             <span class="text-lg font-bold text-gray-800"><?php echo $candidate['sex']; ?></span>
                         </div>
@@ -83,7 +83,7 @@ if (!$candidate) {
             <div class="px-8 pb-12 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-12">
                 
                 <!-- About & Bio -->
-                <div class="space-y-10">
+                <div class="space-y-10 reveal reveal-left delay-300">
                     <section>
                         <h3 class="flex items-center gap-3 text-lg font-black text-gray-900 mb-6">
                             <span class="w-2 h-6 bg-primary rounded-full"></span>
@@ -137,7 +137,7 @@ if (!$candidate) {
                 </div>
 
                 <!-- Career & Education -->
-                <div class="space-y-10">
+                <div class="space-y-10 reveal reveal-right delay-400">
                     <section>
                         <h3 class="flex items-center gap-3 text-lg font-black text-gray-900 mb-6">
                             <span class="w-2 h-6 bg-primary rounded-full"></span>
@@ -156,13 +156,14 @@ if (!$candidate) {
                                 <p class="text-gray-800 font-bold"><?php echo htmlspecialchars($candidate['occupation']); ?></p>
                             </div>
 
-                            <?php if(!empty($candidate['add_qual'])): ?>
+                            <?php if (!empty($candidate['add_qual'])): ?>
                             <div class="relative pl-6 border-l-2 border-gray-100">
                                 <span class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-4 border-gray-200"></span>
                                 <span class="text-[10px] text-gray-400 font-black uppercase tracking-widest block mb-1">Other Qualifications</span>
                                 <p class="text-gray-800 text-sm font-medium"><?php echo nl2br(htmlspecialchars($candidate['add_qual'])); ?></p>
                             </div>
-                            <?php endif; ?>
+                            <?php
+endif; ?>
                         </div>
                     </section>
 
@@ -172,15 +173,17 @@ if (!$candidate) {
                             Personal Habits
                         </h3>
                         <div class="flex flex-wrap gap-3">
-                            <?php 
-                            $habits = explode(',', $candidate['habits']);
-                            foreach($habits as $habit):
-                                if(empty(trim($habit))) continue;
-                            ?>
+                            <?php
+$habits = explode(',', $candidate['habits']);
+foreach ($habits as $habit):
+    if (empty(trim($habit)))
+        continue;
+?>
                             <span class="px-4 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold border border-red-100">
                                 <?php echo trim($habit); ?>
                             </span>
-                            <?php endforeach; ?>
+                            <?php
+endforeach; ?>
                         </div>
                     </section>
 

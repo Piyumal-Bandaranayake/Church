@@ -4,17 +4,17 @@ include 'includes/db.php';
 ?>
 <?php include 'includes/header.php'; ?>
 
-<main class="min-h-screen bg-[#fafbff] py-16 px-4 sm:px-6 lg:px-8">
+<main class="min-h-screen py-16 px-4 sm:px-6 lg:px-8">
     <div class="max-w-5xl mx-auto">
         <!-- Header -->
-        <div class="text-center mb-16">
+        <div class="text-center mb-16 reveal reveal-up">
             <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-4 uppercase tracking-tight">Our Values & Policies</h1>
             <p class="text-lg text-gray-500 max-w-2xl mx-auto font-medium">Please review our guidelines to understand how we operate and our commitment to building Christ-centered families.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- 01 Terms and Conditions -->
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full reveal reveal-scale">
              
                 <div class="space-y-4 flex-grow">
                     <div class="bg-blue-50 p-4 rounded-2xl text-sm italic text-primary border border-blue-100">
@@ -29,7 +29,7 @@ include 'includes/db.php';
             </div>
 
             <!-- 02 Privacy Policy -->
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full reveal reveal-scale">
               
                 <div class="space-y-4 flex-grow">
                     <div class="bg-blue-50 p-4 rounded-2xl text-sm italic text-primary border border-blue-100">
@@ -44,7 +44,7 @@ include 'includes/db.php';
             </div>
 
             <!-- 03 Our Vision -->
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full reveal reveal-scale">
                
                 <div class="space-y-4 flex-grow">
                     <div class="bg-blue-50 p-4 rounded-2xl text-sm italic text-primary border border-blue-100">
@@ -59,7 +59,7 @@ include 'includes/db.php';
             </div>
 
             <!-- 04 Our Mission -->
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full reveal reveal-scale">
              
                 <div class="space-y-4 flex-grow">
                     <div class="bg-blue-50 p-4 rounded-2xl text-sm italic text-primary border border-blue-100">
@@ -74,7 +74,7 @@ include 'includes/db.php';
             </div>
 
             <!-- 05 Disclaimer -->
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full reveal reveal-scale">
               
                 <div class="space-y-4 flex-grow">
                     <div class="bg-blue-50 p-4 rounded-2xl text-sm italic text-primary border border-blue-100">
@@ -89,7 +89,7 @@ include 'includes/db.php';
             </div>
 
             <!-- 06 Advice to Parents -->
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full reveal reveal-scale">
               
                 <div class="space-y-4 flex-grow">
                     <div class="bg-blue-50 p-4 rounded-2xl text-sm italic text-primary border border-blue-100">
@@ -104,7 +104,7 @@ include 'includes/db.php';
             </div>
 
             <!-- 07 Advice to Candidates -->
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full reveal reveal-scale">
                 
                 <div class="space-y-4 flex-grow">
                     <div class="bg-blue-50 p-4 rounded-2xl text-sm italic text-primary border border-blue-100">
@@ -119,7 +119,7 @@ include 'includes/db.php';
             </div>
 
             <!-- 08 Taglines & Themes -->
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full reveal reveal-scale">
                 
                 <div class="space-y-4 flex-grow">
                     <div class="bg-blue-50 p-4 rounded-2xl text-sm italic text-primary border border-blue-100">
@@ -135,7 +135,7 @@ include 'includes/db.php';
             </div>
 
             <!-- 09 Image Guidelines -->
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full reveal reveal-scale">
                
                 <div class="space-y-4 flex-grow">
                     <div class="bg-blue-50 p-4 rounded-2xl text-sm italic text-primary border border-blue-100">
@@ -146,7 +146,7 @@ include 'includes/db.php';
             </div>
 
             <!-- 10 Necessary Info -->
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full reveal reveal-scale">
                
                 <div class="space-y-4 flex-grow">
                     <div class="bg-blue-50 p-4 rounded-2xl text-sm italic text-primary border border-blue-100">
@@ -157,7 +157,7 @@ include 'includes/db.php';
             </div>
 
             <!-- 11 Code of Conduct -->
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col h-full reveal reveal-scale">
                
                 <div class="space-y-4 flex-grow">
                     <div class="bg-blue-50 p-4 rounded-2xl text-sm italic text-primary border border-blue-100">

@@ -32,9 +32,11 @@ if (isset($_POST['action'])) {
 }
 ?>
 
-<?php include 'includes/header.php'; ?>
+<?php include 'includes/admin_head.php'; ?>
+<?php include 'includes/admin_sidebar.php'; ?>
 
-<main class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+<div class="sm:ml-64">
+    <main class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
         <!-- Breadcrumb & Actions -->
         <div class="flex items-center justify-between mb-8">
@@ -44,21 +46,23 @@ if (isset($_POST['action'])) {
             </a>
             <div class="flex gap-2">
                 <form method="POST" class="inline">
-                    <?php if($candidate['status'] == 'pending'): ?>
+                    <?php if ($candidate['status'] == 'pending'): ?>
                         <button name="action" value="approved" class="px-4 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition shadow-sm">Approve Application</button>
                         <button name="action" value="rejected" class="px-4 py-2 bg-orange-500 text-white rounded-lg font-bold hover:bg-orange-600 transition shadow-sm">Reject Application</button>
-                    <?php endif; ?>
+                    <?php
+endif; ?>
                 </form>
                 <a href="admin_dashboard.php?delete=<?php echo $candidate['id']; ?>" onclick="return confirm('Permanently delete this application?')" class="px-4 py-2 bg-red-100 text-red-600 rounded-lg font-bold hover:bg-red-600 hover:text-white transition">Delete Profile</a>
             </div>
         </div>
 
-        <?php if(isset($_GET['updated'])): ?>
+        <?php if (isset($_GET['updated'])): ?>
             <div class="mb-6 p-4 bg-green-100 border border-green-200 text-green-700 rounded-xl flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 Status updated successfully!
             </div>
-        <?php endif; ?>
+        <?php
+endif; ?>
 
         <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
             <!-- Header Section -->
@@ -220,7 +224,11 @@ if (isset($_POST['action'])) {
             </div>
         </div>
     </div>
-</main>
+    </main>
+</div>
+</body>
+</html>
+
 
 </body>
 </html>

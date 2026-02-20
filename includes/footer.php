@@ -33,8 +33,8 @@
                             <span class="text-white">9:00 AM</span>
                         </li>
                         <li class="flex justify-between">
-                            <span>Sunday Evening</span>
-                            <span class="text-white">6:00 PM</span>
+                            <span>Prayer Group</span>
+                            <span class="text-white">8:30 AM | 11:30 PM</span>
                         </li>
                         <li class="flex justify-between">
                             <span>Wednesday Study</span>

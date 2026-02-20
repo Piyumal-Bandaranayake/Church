@@ -4,7 +4,8 @@ include 'includes/db.php';
 // Ensure table exists
 try {
     $pdo->query('select 1 from candidates LIMIT 1');
-} catch (Exception $e) {
+}
+catch (Exception $e) {
     include 'setup_db.php';
 }
 
@@ -47,17 +48,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validation logic
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Please enter a valid email address.";
-    } elseif (strlen($password_raw) < 6) {
+    }
+    elseif (strlen($password_raw) < 6) {
         $error = "Password must be at least 6 characters long.";
-    } elseif ($password_raw !== $re_password) {
+    }
+    elseif ($password_raw !== $re_password) {
         $error = "Passwords do not match!";
-    } elseif (empty($fullname) || strlen($fullname) < 3) {
+    }
+    elseif (empty($fullname) || strlen($fullname) < 3) {
         $error = "Please enter a valid full name.";
-    } elseif ($age < 18 || $age > 80) {
+    }
+    elseif ($age < 18 || $age > 80) {
         $error = "Age must be between 18 and 80.";
-    } elseif (strlen($my_phone) < 9 || strlen($my_phone) > 15) {
+    }
+    elseif (strlen($my_phone) < 9 || strlen($my_phone) > 15) {
         $error = "Please enter a valid WhatsApp number.";
-    } elseif (!isset($_POST['terms_agreement'])) {
+    }
+    elseif (!isset($_POST['terms_agreement'])) {
         $error = "You must agree to the Terms and Conditions to register.";
     }
 
@@ -66,17 +73,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $custom_church_name = trim($_POST['other_church_name']);
         $custom_pastor = trim($_POST['other_church_pastor']);
         $custom_location = trim($_POST['other_church_location']);
-        
+
         if (empty($custom_church_name)) {
             $error = "Please provide the name of your church.";
-        } else {
+        }
+        else {
             // Save to master churches table for future use
             $church_ins = $pdo->prepare("INSERT IGNORE INTO churches (name, pastor_name, location) VALUES (?, ?, ?)");
             $church_ins->execute([$custom_church_name, $custom_pastor, $custom_location]);
             $church = $custom_church_name;
         }
     }
-    
+
     // Photo Upload Validation
     $photo_path = null;
     if (empty($error) && isset($_FILES['file-upload']) && $_FILES['file-upload']['error'] == 0) {
@@ -86,20 +94,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if (!in_array($ext, $allowed)) {
             $error = "Only JPG, PNG and GIF images are allowed.";
-        } elseif ($size > 5 * 1024 * 1024) { // 5MB limit
+        }
+        elseif ($size > 5 * 1024 * 1024) { // 5MB limit
             $error = "Photo size must be less than 5MB.";
-        } else {
+        }
+        else {
             $target_dir = "uploads/";
-            if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
+            if (!is_dir($target_dir))
+                mkdir($target_dir, 0777, true);
             $file_name = time() . '_' . basename($_FILES["file-upload"]["name"]);
             $target_file = $target_dir . $file_name;
             if (move_uploaded_file($_FILES["file-upload"]["tmp_name"], $target_file)) {
                 $photo_path = $target_file;
-            } else {
+            }
+            else {
                 $error = "Error uploading photo.";
             }
         }
-    } elseif (empty($error) && !isset($_FILES['file-upload'])) {
+    }
+    elseif (empty($error) && !isset($_FILES['file-upload'])) {
         $error = "Please upload a photograph.";
     }
 
@@ -109,14 +122,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $sql = "INSERT INTO candidates (email, password, fullname, sex, dob, age, nationality, language, address, hometown, district, province, height, occupation, edu_qual, add_qual, marital_status, children, illness, habits, church, pastor_name, pastor_phone, parent_phone, my_phone, photo_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$email, $password, $fullname, $sex, $dob, $age, $nationality, $language, $address, $hometown, $district, $province, $height, $occupation, $edu_qual, $add_qual, $marital_status, $children, $illness, $habits, $church, $pastor_name, $pastor_phone, $parent_phone, $my_phone, $photo_path]);
-            
+
             header("Location: login.php?registered=true");
             exit();
-            
-        } catch(PDOException $e) {
+
+        }
+        catch (PDOException $e) {
             if ($e->getCode() == 23000) {
                 $error = "This email is already registered. Please login or use another email.";
-            } else {
+            }
+            else {
                 $error = "Database Error: " . $e->getMessage();
             }
         }
@@ -125,22 +140,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 <?php include 'includes/header.php'; ?>
 
-<div class="min-h-screen bg-gray-50 py-12">
+<div class="min-h-screen py-12">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Header -->
-        <div class="text-center mb-10">
+        <div class="text-center mb-10 reveal reveal-up">
             <h1 class="text-3xl font-bold text-gray-900">Marriage Candidate Registration</h1>
-            <p class="mt-2 text-gray-600">Please fill in your details accurately. Your profile will be reviewed by the admin before approval.</p>
+            <p class="mt-2 text-gray-600">Please fill in your details accurately. Your profile will be reviewed by our team before approval.</p>
         </div>
 
-        <?php if($error): ?>
+        <?php if ($error): ?>
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
                 <span class="block sm:inline"><?php echo $error; ?></span>
             </div>
-        <?php endif; ?>
+        <?php
+endif; ?>
 
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden reveal reveal-scale delay-200">
             <!-- Form -->
             <form class="p-8 space-y-8" action="" method="POST" enctype="multipart/form-data">
                 
@@ -181,7 +197,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
 
                 <!-- Personal Details -->
-                <div>
+                <div class="reveal reveal-up">
                     <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Personal Details</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
@@ -220,7 +236,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
 
                 <!-- Location -->
-                 <div>
+                <div class="reveal reveal-up">
                     <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Location</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
@@ -320,9 +336,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <label class="block text-sm font-medium text-gray-700 mb-1">Denomination / Church Name(නිකාය හෝ දේවස්ථානය)</label>
                             <select name="church" id="church_select" onchange="toggleOtherChurch(this.value)" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 <option value="" disabled selected>Select your church</option>
-                                <?php foreach($churches_list as $c_name): ?>
+                                <?php foreach ($churches_list as $c_name): ?>
                                     <option value="<?php echo htmlspecialchars($c_name); ?>"><?php echo htmlspecialchars($c_name); ?></option>
-                                <?php endforeach; ?>
+                                <?php
+endforeach; ?>
                                 <option value="Other">Other (Not in list)</option>
                             </select>
                         </div>
@@ -472,15 +489,26 @@ function previewFile(input) {
     const container = document.getElementById('preview-container');
     const placeholder = document.getElementById('upload-placeholder');
     const file = input.files[0];
-    const reader = new FileReader();
-
-    reader.onloadend = function () {
-        preview.src = reader.result;
-        container.classList.remove('hidden');
-        placeholder.classList.add('hidden');
-    }
-
+    
     if (file) {
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (!['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
+            alert('Only JPG, PNG and GIF images are allowed.');
+            input.value = '';
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Photo size must be less than 5MB.');
+            input.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onloadend = function () {
+            preview.src = reader.result;
+            container.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        }
         reader.readAsDataURL(file);
     } else {
         preview.src = "";
@@ -524,13 +552,11 @@ async function saveNewChurch() {
             msg.classList.remove('text-red-500');
             msg.classList.add('text-green-600');
             
-            // Optionally add to dropdown and select it
             const select = document.getElementById('church_select');
             const option = new Option(name, name);
             select.add(option, select.options[select.options.length - 1]);
             select.value = name;
             
-            // Hide the manual section after saving
             setTimeout(() => {
                 toggleOtherChurch(name);
             }, 2000);
@@ -562,15 +588,139 @@ function removeImage(event) {
     placeholder.classList.remove('hidden');
 }
 
+// --- FORM VALIDATION ---
+const validateRules = {
+    email: { 
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        message: "Please enter a valid email address."
+    },
+    password: { 
+        min: 6,
+        message: "Password must be at least 6 characters."
+    },
+    re_password: { 
+        match: 'password',
+        message: "Passwords do not match."
+    },
+    fullname: { 
+        min: 3,
+        message: "Name must be at least 3 characters."
+    },
+    age: { 
+        min: 18,
+        max: 80,
+        message: "Age must be between 18 and 80."
+    },
+    pastor_phone: { 
+        pattern: /^[0-9+]{9,15}$/,
+        message: "Enter a valid 9-15 digit phone number."
+    },
+    parent_phone: { 
+        pattern: /^[0-9+]{9,15}$/,
+        message: "Enter a valid 9-15 digit phone number."
+    },
+    my_phone: { 
+        pattern: /^[0-9+]{9,15}$/,
+        message: "Enter a valid 9-15 digit phone number."
+    }
+};
+
+function showError(field, message) {
+    clearError(field);
+    field.classList.add('!border-red-500', '!bg-red-50');
+    const msg = document.createElement('p');
+    msg.className = 'text-red-500 text-[10px] font-bold uppercase mt-1 validation-error animate-fade-in';
+    msg.textContent = message;
+    field.parentElement.appendChild(msg);
+}
+
+function clearError(field) {
+    if (!field) return;
+    field.classList.remove('!border-red-500', '!bg-red-50');
+    const existing = field.parentElement.querySelector('.validation-error');
+    if (existing) existing.remove();
+}
+
 document.querySelector('form').addEventListener('submit', function(e) {
-    const pass = document.getElementById('password').value;
-    const rePass = document.getElementById('re_password').value;
+    let isValid = true;
     
-    if (pass !== rePass) {
+    // Clear all previous errors
+    document.querySelectorAll('.validation-error').forEach(el => el.remove());
+    document.querySelectorAll('.!border-red-500').forEach(el => el.classList.remove('!border-red-500', '!bg-red-50'));
+
+    for (const [name, rule] of Object.entries(validateRules)) {
+        const field = (name === 'password' || name === 're_password') ? document.getElementById(name) : document.getElementsByName(name)[0];
+        if (!field) continue;
+        
+        const val = field.value.trim();
+        let error = false;
+
+        if (rule.pattern && !rule.pattern.test(val)) error = true;
+        if (rule.min && val.length < rule.min) error = true;
+        if (rule.match && val !== document.getElementById(rule.match).value) error = true;
+        if (rule.max && (parseInt(val) > rule.max || parseInt(val) < rule.min)) error = true;
+
+        if (error) {
+            showError(field, rule.message);
+            isValid = false;
+        }
+    }
+
+    // Photo check
+    const photo = document.getElementById('file-upload');
+    if (photo && photo.files.length === 0) {
+        alert("Please upload a photograph (ඡායාරූපයක් එක් කරන්න).");
+        isValid = false;
+    }
+
+    // Terms check
+    const terms = document.getElementsByName('terms_agreement')[0];
+    if (terms && !terms.checked) {
+        alert("You must agree to the Terms and Conditions to proceed.");
+        isValid = false;
+    }
+
+    if (!isValid) {
         e.preventDefault();
-        alert('Passwords do not match!');
+        const firstError = document.querySelector('.validation-error');
+        if (firstError) {
+            firstError.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     }
 });
+
+// Real-time and DOB Auto-calc
+document.getElementsByName('dob')[0].addEventListener('change', function() {
+    const dob = new Date(this.value);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+    document.getElementsByName('age')[0].value = age;
+    clearError(document.getElementsByName('age')[0]);
+});
+
+document.querySelectorAll('input, select, textarea').forEach(field => {
+    field.addEventListener('blur', function() {
+        const name = this.getAttribute('name') || this.id;
+        if (validateRules[name]) {
+            const rule = validateRules[name];
+            const val = this.value.trim();
+            let error = false;
+            
+            if (rule.pattern && !rule.pattern.test(val)) error = true;
+            if (rule.min && val.length < rule.min) error = true;
+            if (rule.match && val !== document.getElementById(rule.match).value) error = true;
+            if (rule.max && (parseInt(val) > rule.max || parseInt(val) < rule.min)) error = true;
+
+            if (error) showError(this, rule.message);
+        }
+    });
+    field.addEventListener('input', function() {
+        clearError(this);
+    });
+});
 </script>
+
 
 <?php include 'includes/footer.php'; ?>
