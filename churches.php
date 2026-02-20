@@ -1,4 +1,5 @@
-<?php $hide_spacer = true; include 'includes/header.php'; ?>
+<?php $hide_spacer = true;
+include 'includes/header.php'; ?>
 
 <!-- Page Header -->
 <div class="bg-primary pt-32 pb-24 text-center relative overflow-hidden">
@@ -11,12 +12,12 @@
 </div>
 
 <!-- Locations Grid -->
-<div class="py-24 bg-[#f8fafc]">
+<div class="py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             
             <!-- Church 1: National Basilica of Our Lady of Lanka -->
-            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 overflow-hidden group hover:-translate-y-2 transition-all duration-500">
+            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 overflow-hidden group hover:-translate-y-2 transition-all duration-500 reveal reveal-up">
                 <div class="relative h-72 overflow-hidden">
                     <img src="assets/images/ragam.jpg" alt="National Basilica of Our Lady of Lanka" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -37,7 +38,7 @@
             </div>
 
             <!-- Church 2: St. Mary's Church -->
-            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 overflow-hidden group hover:-translate-y-2 transition-all duration-500">
+            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 overflow-hidden group hover:-translate-y-2 transition-all duration-500 reveal reveal-up">
                 <div class="relative h-72 overflow-hidden">
                     <img src="assets/images/stmarynegombo.jpg" alt="St. Mary's Church" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -58,7 +59,7 @@
             </div>
 
             <!-- Church 3: St. Lucia’s Cathedral -->
-            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 overflow-hidden group hover:-translate-y-2 transition-all duration-500">
+            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 overflow-hidden group hover:-translate-y-2 transition-all duration-500 reveal reveal-up">
                 <div class="relative h-72 overflow-hidden">
                     <img src="assets/images/stlucia.jpg" alt="St. Lucia’s Cathedral" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -79,7 +80,7 @@
             </div>
 
             <!-- Church 4: National Shrine of Our Lady of Madhu -->
-            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 overflow-hidden group hover:-translate-y-2 transition-all duration-500">
+            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 overflow-hidden group hover:-translate-y-2 transition-all duration-500 reveal reveal-up">
                 <div class="relative h-72 overflow-hidden">
                     <img src="assets/images/madhu.jpg" alt="National Shrine of Our Lady of Madhu" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -100,7 +101,7 @@
             </div>
 
             <!-- Church 5: St. Anthony’s Shrine -->
-            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 overflow-hidden group hover:-translate-y-2 transition-all duration-500">
+            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 overflow-hidden group hover:-translate-y-2 transition-all duration-500 reveal reveal-up">
                 <div class="relative h-72 overflow-hidden">
                     <img src="assets/images/kochikade.jpg" alt="St. Anthony’s Shrine" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -121,7 +122,7 @@
             </div>
 
             <!-- Church 6: All Saints’ Church -->
-            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 overflow-hidden group hover:-translate-y-2 transition-all duration-500">
+            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 overflow-hidden group hover:-translate-y-2 transition-all duration-500 reveal reveal-up">
                 <div class="relative h-72 overflow-hidden">
                     <img src="assets/images/boralla.jpg" alt="All Saints’ Church" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>

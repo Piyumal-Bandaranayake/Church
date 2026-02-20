@@ -15,7 +15,7 @@ $candidates = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Handle Self-Deletion (If candidate found a partner)
 if (isset($_POST['delete_my_profile'])) {
     $target_id = $_POST['profile_id'];
-    
+
     // Security check: Only allow deleting own profile
     if ($_SESSION['user_id'] == $target_id || (isset($_SESSION['role']) && $_SESSION['role'] === 'admin')) {
         try {
@@ -30,16 +30,18 @@ if (isset($_POST['delete_my_profile'])) {
             // Delete record
             $stmt = $pdo->prepare("DELETE FROM candidates WHERE id = ?");
             $stmt->execute([$target_id]);
-            
+
             // If deleting own profile, log out
             if ($_SESSION['user_id'] == $target_id) {
                 session_destroy();
                 header("Location: index.php?status=profile_deleted");
-            } else {
+            }
+            else {
                 header("Location: candidates.php?status=deleted");
             }
             exit();
-        } catch (PDOException $e) {
+        }
+        catch (PDOException $e) {
             $error = "Deletion failed: " . $e->getMessage();
         }
     }
@@ -48,9 +50,10 @@ if (isset($_POST['delete_my_profile'])) {
 $review_success = isset($_GET['success']) && $_GET['success'] == 'review_submitted';
 $review_error = isset($_GET['error']);
 ?>
-<?php $hide_spacer = true; include 'includes/header.php'; ?>
+<?php $hide_spacer = true;
+include 'includes/header.php'; ?>
 
-<main class="bg-[#fafbff] min-h-screen">
+<main class="min-h-screen">
     <!-- Hero Section -->
     <div class="bg-primary pt-32 pb-24 text-center relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-[#0a2540] via-[#1a3a5a] to-[#0a2540] z-0"></div>
@@ -64,7 +67,7 @@ $review_error = isset($_GET['error']);
             </p>
             
             <!-- Quick Filter Stats -->
-            <div class="flex flex-wrap justify-center gap-4 text-sm font-bold">
+            <div class="flex flex-wrap justify-center gap-4 text-sm font-bold reveal reveal-up delay-300">
                 <span class="px-6 py-2.5 bg-white/10 rounded-full border border-white/20 backdrop-blur-md shadow-xl flex items-center gap-2">
                     <span class="text-xl">✨</span> <?php echo count($candidates); ?> Available Profiles
                 </span>
@@ -79,7 +82,7 @@ $review_error = isset($_GET['error']);
     <div class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         
         <!-- Search & Filter Bar (UI Only) -->
-        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-10 flex flex-wrap items-center justify-between gap-6">
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-10 flex flex-wrap items-center justify-between gap-6 reveal reveal-up">
             <div class="flex items-center gap-4 flex-grow max-w-xl">
                 <div class="relative flex-grow">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
@@ -111,19 +114,20 @@ $review_error = isset($_GET['error']);
                 <p class="text-gray-500 max-w-sm mx-auto">We couldn't find any approved candidates at the moment. Please check back later or modify your search.</p>
                 <a href="register.php" class="mt-8 inline-block px-8 py-3 bg-primary text-white font-bold rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-transform">Create Your Profile</a>
              </div>
-        <?php else: ?>
+        <?php
+else: ?>
 
         <!-- Profiles Display -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             
             <?php foreach ($candidates as $candidate): ?>
-            <div class="group bg-white rounded-[2rem] shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 overflow-hidden flex flex-col h-full transform hover:-translate-y-2">
+            <div class="group bg-white rounded-[2rem] shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 overflow-hidden flex flex-col h-full transform hover:-translate-y-2 reveal reveal-scale">
                 
                 <!-- Card Header / Image -->
                 <div class="relative h-64 overflow-hidden">
-                    <?php 
-                        $img = !empty($candidate['photo_path']) ? $candidate['photo_path'] : 'https://via.placeholder.com/400x400?text=Profile';
-                    ?>
+                    <?php
+        $img = !empty($candidate['photo_path']) ? $candidate['photo_path'] : 'https://via.placeholder.com/400x400?text=Profile';
+?>
                     <img src="<?php echo htmlspecialchars($img); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Profile">
                     
                     <!-- Gradient Overlay -->
@@ -177,7 +181,7 @@ $review_error = isset($_GET['error']);
                             <svg class="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                         </a>
 
-                        <?php if($_SESSION['user_id'] == $candidate['id']): ?>
+                        <?php if ($_SESSION['user_id'] == $candidate['id']): ?>
                         <form method="POST" onsubmit="return confirm('Congratulations on finding your partner! Are you sure you want to delete your profile permanently?');">
                             <input type="hidden" name="profile_id" value="<?php echo $candidate['id']; ?>">
                             <button type="submit" name="delete_my_profile" class="w-full flex items-center justify-center gap-2 py-3 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white font-bold rounded-2xl transition-all duration-300 text-xs uppercase tracking-wider">
@@ -185,14 +189,17 @@ $review_error = isset($_GET['error']);
                                 Found my partner (Delete)
                             </button>
                         </form>
-                        <?php endif; ?>
+                        <?php
+        endif; ?>
                     </div>
                 </div>
             </div>
-            <?php endforeach; ?>
+            <?php
+    endforeach; ?>
 
         </div>
-        <?php endif; ?>
+        <?php
+endif; ?>
     </div>
 </main>
 
@@ -231,7 +238,7 @@ $review_error = isset($_GET['error']);
             </div>
 
             <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 text-center">
-                <?php for($i=1; $i<=5; $i++): ?>
+                <?php for ($i = 1; $i <= 5; $i++): ?>
                 <div class="relative group">
                     <input type="file" name="review_image<?php echo $i; ?>" id="img<?php echo $i; ?>" class="hidden" accept="image/*" onchange="previewImage(this, 'preview<?php echo $i; ?>')">
                     <label for="img<?php echo $i; ?>" class="cursor-pointer border-2 border-dashed border-slate-200 rounded-2xl p-2 block hover:border-blue-500 hover:bg-blue-50/30 transition-all overflow-hidden h-16 flex flex-col items-center justify-center gap-0.5">
@@ -242,7 +249,8 @@ $review_error = isset($_GET['error']);
                         <span class="text-[8px] font-black text-slate-500 uppercase">P<?php echo $i; ?></span>
                     </label>
                 </div>
-                <?php endfor; ?>
+                <?php
+endfor; ?>
             </div>
 
             <button type="submit" class="w-full py-3 bg-primary text-white font-black rounded-xl shadow-lg shadow-blue-900/10 hover:bg-blue-950 transition-all transform hover:-translate-y-0.5 active:scale-95 text-sm uppercase tracking-wider">
@@ -253,13 +261,14 @@ $review_error = isset($_GET['error']);
 </div>
 
 <!-- Alert Modals -->
-<?php if($review_success): ?>
+<?php if ($review_success): ?>
 <div class="fixed top-24 left-1/2 -translate-x-1/2 z-[200] bg-green-500 text-white px-8 py-4 rounded-full shadow-2xl font-bold animate-fade-in flex items-center gap-3">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
     Thank you! Your story has been submitted for review.
 </div>
 <script>setTimeout(() => { window.location.href = 'candidates.php'; }, 4000);</script>
-<?php endif; ?>
+<?php
+endif; ?>
 
 <script>
     function openReviewModal() {
