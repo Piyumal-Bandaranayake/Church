@@ -192,12 +192,28 @@ endforeach; ?>
                     </section>
 
                     <!-- Express Interest Action -->
+                    <?php if ($_SESSION['user_id'] != $id): ?>
                     <div class="mt-8">
                         <button onclick="toggleModal('interestModal')" class="w-full py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary-hover hover:scale-[1.02] transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                             Express Interest
                         </button>
                     </div>
+                    <?php else: ?>
+                    <!-- Found Partner Action for self -->
+                    <div class="mt-8">
+                        <?php if ($candidate['partner_found']): ?>
+                            <div class="p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 text-sm font-bold text-center">
+                                Your partner found request has been sent to admin!
+                            </div>
+                        <?php else: ?>
+                            <button onclick="toggleModal('partnerModal')" class="w-full py-4 bg-green-600 text-white font-bold rounded-2xl hover:bg-green-700 hover:scale-[1.02] transition-all shadow-xl shadow-green-200 flex items-center justify-center gap-3">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                I Found My Partner
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                    <?php endif; ?>
                 </div>
 
             </div>
@@ -229,6 +245,43 @@ endforeach; ?>
                         Close
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Partner Found Modal -->
+<div id="partnerModal" class="fixed inset-0 z-[100] hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onclick="toggleModal('partnerModal')"></div>
+    
+    <!-- Modal Content -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md px-4">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100 animate-fade-in-up">
+            <div class="p-8 md:p-10">
+                <div class="text-center mb-8">
+                    <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    </div>
+                    <h3 class="text-2xl font-black text-gray-900 mb-2">Praise the Lord!</h3>
+                    <p class="text-gray-500 font-medium">Found your partner through our platform?</p>
+                </div>
+                
+                <form action="report_partner.php" method="POST" class="space-y-6">
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">Thank You Message to Admin</label>
+                        <textarea name="message" required placeholder="Write a small thank you message..." class="w-full bg-gray-50 border-none rounded-2xl text-sm font-medium p-4 outline-none focus:ring-2 focus:ring-green-500/20 min-h-[120px] resize-none"></textarea>
+                    </div>
+                    
+                    <div class="space-y-3 pt-2">
+                        <button type="submit" class="w-full py-4 bg-green-600 text-white font-bold rounded-2xl shadow-lg shadow-green-200 hover:scale-[1.02] transition-transform">
+                            Send Notification
+                        </button>
+                        <button type="button" onclick="toggleModal('partnerModal')" class="w-full py-4 bg-gray-50 text-gray-500 font-bold rounded-2xl hover:bg-gray-100 transition-colors">
+                            Wait, not yet
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

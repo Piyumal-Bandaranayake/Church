@@ -121,40 +121,7 @@ $stmt = $pdo->prepare($query);
 $stmt->execute($params);
 $candidates = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Handle Self-Deletion (If candidate found a partner)
-if (isset($_POST['delete_my_profile'])) {
-    $target_id = $_POST['profile_id'];
 
-    // Security check: Only allow deleting own profile
-    if ($_SESSION['user_id'] == $target_id || (isset($_SESSION['role']) && $_SESSION['role'] === 'admin')) {
-        try {
-            // Delete photo if exists
-            $stmt = $pdo->prepare("SELECT photo_path FROM candidates WHERE id = ?");
-            $stmt->execute([$target_id]);
-            $photo = $stmt->fetchColumn();
-            if ($photo && file_exists($photo)) {
-                unlink($photo);
-            }
-
-            // Delete record
-            $stmt = $pdo->prepare("DELETE FROM candidates WHERE id = ?");
-            $stmt->execute([$target_id]);
-
-            // If deleting own profile, log out
-            if ($_SESSION['user_id'] == $target_id) {
-                session_destroy();
-                header("Location: index.php?status=profile_deleted");
-            }
-            else {
-                header("Location: candidates.php?status=deleted");
-            }
-            exit();
-        }
-        catch (PDOException $e) {
-            $error = "Deletion failed: " . $e->getMessage();
-        }
-    }
-}
 // Success/Error Message System
 $review_success = isset($_GET['success']) && $_GET['success'] == 'review_submitted';
 $review_error = isset($_GET['error']);
@@ -398,16 +365,7 @@ else: ?>
                             <svg class="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                         </a>
 
-                        <?php if ($_SESSION['user_id'] == $candidate['id']): ?>
-                        <form method="POST" onsubmit="return confirm('Congratulations on finding your partner! Are you sure you want to delete your profile permanently?');">
-                            <input type="hidden" name="profile_id" value="<?php echo $candidate['id']; ?>">
-                            <button type="submit" name="delete_my_profile" class="w-full flex items-center justify-center gap-2 py-3 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white font-bold rounded-2xl transition-all duration-300 text-xs uppercase tracking-wider">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                Found my partner (Delete)
-                            </button>
-                        </form>
-                        <?php
-        endif; ?>
+
                     </div>
                 </div>
             </div>
