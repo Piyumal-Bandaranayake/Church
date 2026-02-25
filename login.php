@@ -26,6 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['fullname'];
                     $_SESSION['role'] = 'candidate';
+                    $_SESSION['denomination'] = $user['denomination'];
                     header("Location: profile.php");
                     exit();
                 }
@@ -113,7 +114,7 @@ endif; ?>
             <div class="mt-8 pt-8 border-t border-gray-100 text-center reveal reveal-up delay-700">
                 <p class="text-sm text-gray-600">
                     Don't have an account? 
-                    <a href="register.php" class="font-bold text-primary hover:underline">Register here</a>
+                    <a href="registration_type.php" class="font-bold text-primary hover:underline">Register here</a>
                 </p>
             </div>
         </div>

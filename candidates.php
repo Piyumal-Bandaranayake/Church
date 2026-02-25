@@ -7,45 +7,121 @@ if (!isset($_SESSION['user_id'])) {
 
 include 'includes/db.php';
 
-// Prepare SQL (Order by latest approved)
-$sql = "SELECT * FROM candidates WHERE status = 'approved' ORDER BY id DESC";
-$stmt = $pdo->query($sql);
+// Get current user's denomination if role is candidate
+$user_denomination = $_SESSION['denomination'] ?? '';
+if (empty($user_denomination) && $_SESSION['role'] === 'candidate') {
+    $user_stmt = $pdo->prepare("SELECT denomination FROM candidates WHERE id = ?");
+    $user_stmt->execute([$_SESSION['user_id']]);
+    $user_denomination = $user_stmt->fetchColumn();
+    $_SESSION['denomination'] = $user_denomination;
+}
+
+$search = $_GET['search'] ?? '';
+$age_min = $_GET['age_min'] ?? '';
+$age_max = $_GET['age_max'] ?? '';
+$district = $_GET['district'] ?? '';
+$height_min = $_GET['height_min'] ?? '';
+$height_max = $_GET['height_max'] ?? '';
+$job = $_GET['job'] ?? '';
+$church = $_GET['church'] ?? '';
+$civil_status = $_GET['civil_status'] ?? '';
+$education = $_GET['education'] ?? '';
+
+// Sort Parameter
+$sort = $_GET['sort'] ?? 'latest';
+
+// Build dynamic query
+$query = "SELECT * FROM candidates WHERE status = 'approved'";
+$params = [];
+
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+    $display_denomination = 'All';
+} else {
+    $query .= " AND denomination = ?";
+    $params[] = $user_denomination;
+    $display_denomination = $user_denomination;
+}
+
+// Search Filter
+if ($search) {
+    $query .= " AND (fullname LIKE ? OR hometown LIKE ? OR occupation LIKE ? OR church LIKE ? OR district LIKE ?)";
+    $params[] = "%$search%";
+    $params[] = "%$search%";
+    $params[] = "%$search%";
+    $params[] = "%$search%";
+    $params[] = "%$search%";
+}
+
+// Age Filter
+if ($age_min !== '' && $age_max !== '') {
+    $query .= " AND age BETWEEN ? AND ?";
+    $params[] = $age_min;
+    $params[] = $age_max;
+} elseif ($age_min !== '') {
+    $query .= " AND age >= ?";
+    $params[] = $age_min;
+} elseif ($age_max !== '') {
+    $query .= " AND age <= ?";
+    $params[] = $age_max;
+}
+
+// District Filter
+if ($district) {
+    $query .= " AND district = ?";
+    $params[] = $district;
+}
+
+// Height Filter
+if ($height_min !== '' && $height_max !== '') {
+    $query .= " AND CAST(height AS DECIMAL(10,2)) BETWEEN ? AND ?";
+    $params[] = $height_min;
+    $params[] = $height_max;
+} elseif ($height_min !== '') {
+    $query .= " AND CAST(height AS DECIMAL(10,2)) >= ?";
+    $params[] = $height_min;
+} elseif ($height_max !== '') {
+    $query .= " AND CAST(height AS DECIMAL(10,2)) <= ?";
+    $params[] = $height_max;
+}
+
+// Job Filter
+if ($job) {
+    $query .= " AND occupation LIKE ?";
+    $params[] = "%$job%";
+}
+
+// Church Filter
+if ($church) {
+    $query .= " AND church LIKE ?";
+    $params[] = "%$church%";
+}
+
+// Civil Status Filter
+if ($civil_status) {
+    $query .= " AND marital_status = ?";
+    $params[] = $civil_status;
+}
+
+// Education Filter
+if ($education) {
+    $query .= " AND edu_qual LIKE ?";
+    $params[] = "%$education%";
+}
+
+// Ordering
+if ($sort === 'age_asc') {
+    $query .= " ORDER BY age ASC";
+} elseif ($sort === 'age_desc') {
+    $query .= " ORDER BY age DESC";
+} else {
+    $query .= " ORDER BY id DESC";
+}
+
+$stmt = $pdo->prepare($query);
+$stmt->execute($params);
 $candidates = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Handle Self-Deletion (If candidate found a partner)
-if (isset($_POST['delete_my_profile'])) {
-    $target_id = $_POST['profile_id'];
 
-    // Security check: Only allow deleting own profile
-    if ($_SESSION['user_id'] == $target_id || (isset($_SESSION['role']) && $_SESSION['role'] === 'admin')) {
-        try {
-            // Delete photo if exists
-            $stmt = $pdo->prepare("SELECT photo_path FROM candidates WHERE id = ?");
-            $stmt->execute([$target_id]);
-            $photo = $stmt->fetchColumn();
-            if ($photo && file_exists($photo)) {
-                unlink($photo);
-            }
-
-            // Delete record
-            $stmt = $pdo->prepare("DELETE FROM candidates WHERE id = ?");
-            $stmt->execute([$target_id]);
-
-            // If deleting own profile, log out
-            if ($_SESSION['user_id'] == $target_id) {
-                session_destroy();
-                header("Location: index.php?status=profile_deleted");
-            }
-            else {
-                header("Location: candidates.php?status=deleted");
-            }
-            exit();
-        }
-        catch (PDOException $e) {
-            $error = "Deletion failed: " . $e->getMessage();
-        }
-    }
-}
 // Success/Error Message System
 $review_success = isset($_GET['success']) && $_GET['success'] == 'review_submitted';
 $review_error = isset($_GET['error']);
@@ -69,7 +145,7 @@ include 'includes/header.php'; ?>
             <!-- Quick Filter Stats -->
             <div class="flex flex-wrap justify-center gap-4 text-sm font-bold reveal reveal-up delay-300">
                 <span class="px-6 py-2.5 bg-white/10 rounded-full border border-white/20 backdrop-blur-md shadow-xl flex items-center gap-2">
-                    <span class="text-xl">✨</span> <?php echo count($candidates); ?> Available Profiles
+                    <span class="text-xl">✨</span> <?php echo count($candidates); ?> <?php echo $user_denomination; ?> Profiles Available
                 </span>
                 <span class="px-6 py-2.5 bg-white/10 rounded-full border border-white/20 backdrop-blur-md shadow-xl flex items-center gap-2">
                     <span class="text-xl">🛡️</span> Verified Community
@@ -81,28 +157,136 @@ include 'includes/header.php'; ?>
     <!-- Main Content Area -->
     <div class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         
-        <!-- Search & Filter Bar (UI Only) -->
-        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-10 flex flex-wrap items-center justify-between gap-6 reveal reveal-up">
-            <div class="flex items-center gap-4 flex-grow max-w-xl">
-                <div class="relative flex-grow">
-                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                    </span>
-                    <input type="text" placeholder="Search by name, location or church..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-primary/20 rounded-xl transition-all outline-none text-sm">
+        <!-- Advanced Filtering -->
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100 mb-12 reveal reveal-up">
+            <form action="candidates.php" method="GET" id="filterForm" class="space-y-8">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-gray-50 pb-6">
+                    <div class="flex-grow max-w-md">
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            </span>
+                            <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search by name, hometown or job..." class="w-full pl-11 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <div class="flex items-center gap-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sort By:</label>
+                            <select name="sort" onchange="this.form.submit()" class="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
+                                <option value="latest" <?php echo $sort === 'latest' ? 'selected' : ''; ?>>Latest Registered</option>
+                                <option value="age_asc" <?php echo $sort === 'age_asc' ? 'selected' : ''; ?>>Age: Low to High</option>
+                                <option value="age_desc" <?php echo $sort === 'age_desc' ? 'selected' : ''; ?>>Age: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <button class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors">
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
-                </button>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Sort By:</label>
-                <select class="bg-transparent text-sm font-semibold text-gray-700 outline-none cursor-pointer">
-                    <option>Latest Registered</option>
-                    <option>Age: Low to High</option>
-                    <option>Age: High to Low</option>
-                </select>
-            </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    
+                    <!-- Age Filter -->
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z"/></svg>
+                            Age Range
+                        </label>
+                        <div class="flex gap-2">
+                            <input type="number" name="age_min" value="<?php echo htmlspecialchars($age_min); ?>" placeholder="Min Age" class="w-1/2 bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
+                            <input type="number" name="age_max" value="<?php echo htmlspecialchars($age_max); ?>" placeholder="Max Age" class="w-1/2 bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
+                        </div>
+                    </div>
+
+                    <!-- District Filter -->
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            District
+                        </label>
+                        <select name="district" class="w-full bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
+                            <option value="">All Districts</option>
+                            <?php 
+                            $districts = ['Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle', 'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle', 'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale', 'Matara', 'Moneragala', 'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 'Puttalam', 'Ratnapura', 'Trincomalee', 'Vavuniya'];
+                            foreach($districts as $d): ?>
+                                <option value="<?php echo $d; ?>" <?php echo $district === $d ? 'selected' : ''; ?>><?php echo $d; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+                            Height (Feet)
+                        </label>
+                        <div class="flex gap-2">
+                            <input type="number" name="height_min" step="0.1" value="<?php echo htmlspecialchars($height_min); ?>" placeholder="Min ft" class="w-1/2 bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
+                            <input type="number" name="height_max" step="0.1" value="<?php echo htmlspecialchars($height_max); ?>" placeholder="Max ft" class="w-1/2 bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
+                        </div>
+                    </div>
+
+                    <!-- Job Filter -->
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 00-2 2z"/></svg>
+                            Job Category
+                        </label>
+                        <select name="job" class="w-full bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
+                            <option value="">Any Job</option>
+                            <option value="Govt" <?php echo $job === 'Govt' ? 'selected' : ''; ?>>Government Agent</option>
+                            <option value="Business" <?php echo $job === 'Business' ? 'selected' : ''; ?>>Business</option>
+                            <option value="Student" <?php echo $job === 'Student' ? 'selected' : ''; ?>>Student</option>
+                            <option value="Unemployed" <?php echo $job === 'Unemployed' ? 'selected' : ''; ?>>Unemployed</option>
+                            <option value="Ministry" <?php echo $job === 'Ministry' ? 'selected' : ''; ?>>Full-time Ministry</option>
+                        </select>
+                    </div>
+
+                    <!-- Church Filter -->
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                            Church / Fellowship
+                        </label>
+                        <input type="text" name="church" value="<?php echo htmlspecialchars($church); ?>" placeholder="Search church name..." class="w-full bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
+                    </div>
+
+                    <!-- Civil Status -->
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                            Civil Status
+                        </label>
+                        <select name="civil_status" class="w-full bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
+                            <option value="">Any</option>
+                            <option value="Unmarried" <?php echo $civil_status === 'Unmarried' ? 'selected' : ''; ?>>Unmarried</option>
+                            <option value="Divorced" <?php echo $civil_status === 'Divorced' ? 'selected' : ''; ?>>Divorced</option>
+                            <option value="Widowed" <?php echo $civil_status === 'Widowed' ? 'selected' : ''; ?>>Widowed</option>
+                        </select>
+                    </div>
+
+                    <!-- Education -->
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                            Education
+                        </label>
+                        <select name="education" class="w-full bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
+                            <option value="">Any Level</option>
+                            <option value="O/L" <?php echo $education === 'O/L' ? 'selected' : ''; ?>>O/L Qualified</option>
+                            <option value="A/L" <?php echo $education === 'A/L' ? 'selected' : ''; ?>>A/L Qualified</option>
+                            <option value="Degree" <?php echo $education === 'Degree' ? 'selected' : ''; ?>>Graduate / Degree</option>
+                        </select>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex items-end gap-3 lg:col-span-1">
+                        <button type="submit" class="flex-grow bg-primary text-white font-bold text-sm py-3.5 rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                            Apply Filters
+                        </button>
+                        <a href="candidates.php" class="p-3.5 bg-gray-50 text-gray-400 rounded-2xl hover:bg-gray-100 transition-colors group" title="Clear Filters">
+                            <svg class="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        </a>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <?php if (empty($candidates)): ?>
@@ -181,16 +365,7 @@ else: ?>
                             <svg class="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                         </a>
 
-                        <?php if ($_SESSION['user_id'] == $candidate['id']): ?>
-                        <form method="POST" onsubmit="return confirm('Congratulations on finding your partner! Are you sure you want to delete your profile permanently?');">
-                            <input type="hidden" name="profile_id" value="<?php echo $candidate['id']; ?>">
-                            <button type="submit" name="delete_my_profile" class="w-full flex items-center justify-center gap-2 py-3 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white font-bold rounded-2xl transition-all duration-300 text-xs uppercase tracking-wider">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                Found my partner (Delete)
-                            </button>
-                        </form>
-                        <?php
-        endif; ?>
+
                     </div>
                 </div>
             </div>

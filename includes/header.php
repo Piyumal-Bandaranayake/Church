@@ -242,7 +242,7 @@ else: ?>
                         <a href="login.php" class="px-6 py-2.5 rounded-full border border-white/30 text-white font-semibold hover:bg-white hover:text-primary transition-all duration-300 transform hover:-translate-y-0.5">
                             Login
                         </a>
-                        <a href="register.php" class="px-6 py-2.5 rounded-full bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all duration-300 shadow-lg shadow-blue-600/30 transform hover:-translate-y-0.5">
+                        <a href="registration_type.php" class="px-6 py-2.5 rounded-full bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all duration-300 shadow-lg shadow-blue-600/30 transform hover:-translate-y-0.5">
                             Register
                         </a>
                     <?php
@@ -281,7 +281,7 @@ endif; ?>
                 <?php
 else: ?>
                     <a href="login.php" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-primary">Login</a>
-                    <a href="register.php" class="block px-3 py-2 rounded-md text-base font-medium text-primary font-bold hover:bg-gray-50">Register</a>
+                    <a href="registration_type.php" class="block px-3 py-2 rounded-md text-base font-medium text-primary font-bold hover:bg-gray-50">Register</a>
                 <?php
 endif; ?>
             </div>

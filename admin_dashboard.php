@@ -7,6 +7,25 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
     exit();
 }
 
+// Handle Direct Deletions from Dashboard
+if (isset($_GET['delete_found'])) {
+    $id = $_GET['delete_found'];
+    
+    // Get photo path to delete file
+    $stmt = $pdo->prepare("SELECT photo_path FROM candidates WHERE id = ?");
+    $stmt->execute([$id]);
+    $photo = $stmt->fetchColumn();
+    if ($photo && file_exists($photo)) {
+        unlink($photo);
+    }
+
+    $stmt = $pdo->prepare("DELETE FROM candidates WHERE id = ?");
+    $stmt->execute([$id]);
+    
+    header("Location: admin_dashboard.php?success=profile_removed_after_partner_found");
+    exit();
+}
+
 // Fetch Stats
 try {
     $total_stmt = $pdo->query("SELECT COUNT(*) FROM candidates");
@@ -32,6 +51,20 @@ try {
     // Fetch Recent Pending Reviews (Top 5)
     $stmt = $pdo->query("SELECT * FROM reviews WHERE status = 'pending' ORDER BY created_at DESC LIMIT 5");
     $pending_reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch Partner Found Notifications
+    $partner_stmt = $pdo->query("SELECT * FROM candidates WHERE partner_found = 1 ORDER BY created_at DESC");
+    $partner_found_candidates = $partner_stmt->fetchAll(PDO::FETCH_ASSOC);
+    $partner_found_count = count($partner_found_candidates);
+
+    // Fetch Total Success Stories
+    $success_stmt = $pdo->query("SELECT COUNT(*) FROM candidates WHERE partner_found = 1");
+    $success_count = $success_stmt->fetchColumn();
+
+    // Fetch All Administrators
+    $admin_list_stmt = $pdo->query("SELECT id, username, email, created_at FROM admins ORDER BY id ASC");
+    $all_admins = $admin_list_stmt->fetchAll(PDO::FETCH_ASSOC);
+    $admin_total_count = count($all_admins);
 }
 catch (PDOException $e) {
     die("Database error: " . $e->getMessage());
@@ -58,84 +91,123 @@ catch (PDOException $e) {
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20 pb-20">
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-                <!-- Total Users -->
-                <div class="bg-white p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 flex items-center justify-between group hover:-translate-y-2 transition-all duration-500">
-                    <div class="flex items-center gap-6">
-                        <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-sm shadow-blue-100">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Total Users</p>
-                            <h3 class="text-4xl font-black text-gray-900 leading-none"><?php echo (int)$total_count; ?></h3>
-                        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 pb-20">
+            <!-- Stats Cards Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-12">
+                <!-- Success Stories Card -->
+                <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-green-600 group-hover:text-white transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
                     </div>
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Success</p>
+                    <h3 class="text-2xl font-black text-gray-900"><?php echo (int)$success_count; ?></h3>
+                </div>
+
+                <!-- Total Users -->
+                <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    </div>
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Users</p>
+                    <h3 class="text-2xl font-black text-gray-900"><?php echo (int)$total_count; ?></h3>
                 </div>
 
                 <!-- Approved -->
-                <div class="bg-white p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 flex items-center justify-between group hover:-translate-y-2 transition-all duration-500">
-                    <div class="flex items-center gap-6">
-                        <div class="w-20 h-20 bg-green-50 text-green-600 rounded-3xl flex items-center justify-center group-hover:bg-green-600 group-hover:text-white transition-all duration-500 shadow-sm shadow-green-100">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Approved</p>
-                            <h3 class="text-4xl font-black text-gray-900 leading-none"><?php echo (int)$approved_count; ?></h3>
-                        </div>
+                <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </div>
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Approved</p>
+                    <h3 class="text-2xl font-black text-gray-900"><?php echo (int)$approved_count; ?></h3>
                 </div>
 
                 <!-- Pending -->
-                <div class="bg-white p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 flex items-center justify-between group hover:-translate-y-2 transition-all duration-500">
-                    <div class="flex items-center gap-6">
-                        <div class="w-20 h-20 bg-orange-50 text-orange-600 rounded-3xl flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all duration-500 shadow-sm shadow-orange-100">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Pending</p>
-                            <h3 class="text-4xl font-black text-gray-900 leading-none"><?php echo (int)$pending_count; ?></h3>
-                        </div>
+                <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300 relative">
+                    <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-orange-600 group-hover:text-white transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </div>
                     <?php if ($pending_count > 0): ?>
-                        <div class="flex h-4 w-4 relative">
+                        <span class="absolute top-4 right-4 flex h-2 w-2">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-4 w-4 bg-orange-500"></span>
-                        </div>
-                    <?php
-endif; ?>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                        </span>
+                    <?php endif; ?>
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Pending</p>
+                    <h3 class="text-2xl font-black text-gray-900"><?php echo (int)$pending_count; ?></h3>
                 </div>
 
                 <!-- Testimonies -->
-                <div class="bg-white p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 flex items-center justify-between group hover:-translate-y-2 transition-all duration-500">
-                    <div class="flex items-center gap-6">
-                        <div class="w-20 h-20 bg-purple-50 text-purple-600 rounded-3xl flex items-center justify-center group-hover:bg-purple-600 group-hover:text-white transition-all duration-500 shadow-sm shadow-purple-100">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Testimonies</p>
-                            <h3 class="text-4xl font-black text-gray-900 leading-none"><?php echo (int)$review_total_count; ?></h3>
-                        </div>
+                <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                     </div>
-                    <?php if ($review_pending_count > 0): ?>
-                        <span class="px-3 py-1.5 bg-orange-100 text-orange-600 text-[11px] font-black rounded-xl ring-2 ring-white shadow-sm">+<?php echo (int)$review_pending_count; ?> New</span>
-                    <?php
-endif; ?>
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Stories</p>
+                    <h3 class="text-2xl font-black text-gray-900"><?php echo (int)$review_total_count; ?></h3>
                 </div>
             </div>
 
             <!-- Feedback Messages -->
             <?php if (isset($_GET['success'])): ?>
-                <div class="mb-8 p-4 rounded-xl flex items-center gap-3 animate-fade-in text-sm <?php echo(strpos($_GET['success'], 'approved') !== false ? 'bg-green-50 text-green-700 border border-green-200' : (strpos($_GET['success'], 'deleted') !== false ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-orange-50 text-orange-700 border border-orange-200')); ?>">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                    <span>Action successful: <strong><?php echo htmlspecialchars(str_replace('_', ' ', $_GET['success'])); ?></strong>.</span>
+                <div class="mb-8 p-4 rounded-2xl flex items-center gap-3 animate-fade-in text-xs font-bold uppercase tracking-tight <?php echo(strpos($_GET['success'], 'approved') !== false ? 'bg-green-50 text-green-700 border border-green-200' : (strpos($_GET['success'], 'deleted') !== false ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-orange-50 text-orange-700 border border-orange-200')); ?>">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                    <span>Action successful</span>
                 </div>
-            <?php
-endif; ?>
+            <?php endif; ?>
+
+            <!-- Partner Found Notifications Section -->
+            <div class="mt-12">
+                <div class="flex items-center gap-3 mb-8 px-2">
+                    <span class="w-1.5 h-6 bg-green-500 rounded-full"></span>
+                    <h2 class="text-xl font-black text-gray-900 uppercase tracking-tighter">Partner Found Notifications</h2>
+                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full"><?php echo $partner_found_count; ?> NEW</span>
+                </div>
+
+                <?php if (empty($partner_found_candidates)): ?>
+                    <div class="bg-white rounded-[2rem] p-12 border border-dashed border-gray-200 text-center">
+                        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <p class="text-gray-400 font-bold uppercase tracking-widest text-[10px]">No new partner success reports</p>
+                    </div>
+                <?php else: ?>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <?php foreach ($partner_found_candidates as $p_candidate): ?>
+                        <div class="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-gray-200/30 border border-gray-100 flex flex-col group animate-fade-in hover:-translate-y-1 transition-all">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="relative shrink-0">
+                                    <?php $p_img = !empty($p_candidate['photo_path']) ? $p_candidate['photo_path'] : 'https://via.placeholder.com/100?text=None'; ?>
+                                    <img src="<?php echo htmlspecialchars($p_img); ?>" class="w-16 h-16 rounded-2xl object-cover ring-4 ring-gray-50 group-hover:ring-green-100 transition-all">
+                                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white rounded-full flex items-center justify-center">
+                                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-black text-gray-900 leading-tight mb-1"><?php echo htmlspecialchars($p_candidate['fullname']); ?></h4>
+                                    <span class="text-[9px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase"><?php echo $p_candidate['denomination']; ?></span>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-[#fcfdfd] rounded-[1.5rem] p-5 mb-8 flex-grow relative overflow-hidden ring-1 ring-gray-50">
+                                <span class="absolute top-2 left-3 text-4xl text-gray-100 font-serif">"</span>
+                                <p class="text-[13px] text-gray-600 font-medium italic leading-relaxed relative z-10">
+                                    <?php echo nl2br(htmlspecialchars($p_candidate['partner_message'])); ?>
+                                </p>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <a href="view_candidate.php?id=<?php echo $p_candidate['id']; ?>" class="flex-grow py-3.5 bg-gray-50 text-gray-400 text-[10px] font-black uppercase text-center rounded-2xl hover:bg-primary/5 hover:text-primary transition-all tracking-widest border border-transparent hover:border-primary/10">View Profile</a>
+                                <a href="?delete_found=<?php echo $p_candidate['id']; ?>" onclick="return confirm('Found partner confirmed. Remove this profile permanently?')" class="w-12 py-3.5 bg-red-50 text-red-600 rounded-2xl hover:bg-red-600 hover:text-white transition-all flex items-center justify-center shadow-sm shadow-red-100/50">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </a>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
 
             <!-- Recent Activity Sections -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
                 <!-- Recent Pending Applications Section -->
                 <div class="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden flex flex-col min-h-[400px]">
                     <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
@@ -241,6 +313,45 @@ endif; ?>
                     </div>
                     <?php
 endif; ?>
+                </div>
+            </div>
+
+            <!-- System Administrators Section -->
+            <div class="mt-12">
+                <div class="flex items-center gap-3 mb-8 px-2">
+                    <span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>
+                    <h2 class="text-xl font-black text-gray-900 uppercase tracking-tighter">System Administrators</h2>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-700 text-[10px] font-black rounded-full"><?php echo $admin_total_count; ?> TOTAL</span>
+                    <a href="create_admin.php" class="ml-auto flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                        Add New Admin
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <?php foreach ($all_admins as $admin): ?>
+                    <div class="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-gray-200/30 border border-gray-100 group hover:-translate-y-1 transition-all">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-xl border border-blue-100 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                <?php echo strtoupper(substr($admin['username'], 0, 1)); ?>
+                            </div>
+                            <div>
+                                <h4 class="font-black text-gray-900 leading-tight"><?php echo htmlspecialchars($admin['username']); ?></h4>
+                                <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Administrator</span>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2 text-gray-500">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 01-2 2v10a2 2 0 012 2z"/></svg>
+                                <span class="text-xs font-medium truncate"><?php echo htmlspecialchars($admin['email']); ?></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-gray-400">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z"/></svg>
+                                <span class="text-[10px] uppercase font-bold tracking-tight">Joined <?php echo date('M Y', strtotime($admin['created_at'])); ?></span>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>

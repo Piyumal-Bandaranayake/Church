@@ -30,15 +30,41 @@ $current_page = basename($_SERVER['PHP_SELF']);
          </li>
          
          <div class="py-2 font-semibold">
-            <p class="px-3 text-[10px] font-bold text-white/30 uppercase tracking-widest">Management</p>
+            <p class="px-3 text-[10px] font-bold text-white/30 uppercase tracking-widest">Pending Registrations</p>
             <li class="mt-1">
-               <a href="manage_applications.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-base <?php echo $current_page == 'manage_applications.php' ? 'bg-white/10 text-white font-bold' : ''; ?>">
-                  <svg class="w-5 h-5 text-white/40 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  <span class="ms-3">Applications</span>
+               <a href="pending_catholic.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm <?php echo ($current_page == 'pending_catholic.php' || (isset($active_page) && $active_page == 'pending_catholic')) ? 'bg-white/10 text-white font-bold' : ''; ?>">
+                  <svg class="w-4 h-4 text-blue-400 group-hover:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <span class="ms-3">Catholic Pending</span>
                </a>
             </li>
             <li>
-               <a href="manage_testimonies.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-base <?php echo $current_page == 'manage_testimonies.php' ? 'bg-white/10 text-white font-bold' : ''; ?>">
+               <a href="pending_christian.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm <?php echo ($current_page == 'pending_christian.php' || (isset($active_page) && $active_page == 'pending_christian')) ? 'bg-white/10 text-white font-bold' : ''; ?>">
+                  <svg class="w-4 h-4 text-purple-400 group-hover:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <span class="ms-3">Christian Pending</span>
+               </a>
+            </li>
+         </div>
+
+         <div class="py-2 border-t border-white/5 font-semibold">
+            <p class="px-3 text-[10px] font-bold text-white/30 uppercase tracking-widest">Approved Directory</p>
+            <li class="mt-1">
+               <a href="approved_catholic.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm <?php echo ($current_page == 'approved_catholic.php' || (isset($active_page) && $active_page == 'approved_catholic')) ? 'bg-white/10 text-white font-bold' : ''; ?>">
+                  <svg class="w-4 h-4 text-green-400 group-hover:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <span class="ms-3">Catholic Members</span>
+               </a>
+            </li>
+            <li>
+               <a href="approved_christian.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm <?php echo ($current_page == 'approved_christian.php' || (isset($active_page) && $active_page == 'approved_christian')) ? 'bg-white/10 text-white font-bold' : ''; ?>">
+                  <svg class="w-4 h-4 text-green-400 group-hover:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <span class="ms-3">Christian Members</span>
+               </a>
+            </li>
+         </div>
+
+         <div class="py-2 border-t border-white/5 font-semibold">
+            <p class="px-3 text-[10px] font-bold text-white/30 uppercase tracking-widest">Community</p>
+            <li>
+               <a href="manage_testimonies.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm <?php echo $current_page == 'manage_testimonies.php' ? 'bg-white/10 text-white font-bold' : ''; ?>">
                   <svg class="w-5 h-5 text-white/40 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                   <span class="ms-3">Testimonies</span>
                </a>

@@ -12,15 +12,29 @@ catch (Exception $e) {
 $error = '';
 $success = '';
 
+// Get type from URL or POST
+$denomination = isset($_GET['type']) ? ucfirst($_GET['type']) : (isset($_POST['denomination']) ? $_POST['denomination'] : 'Christian');
+if (!in_array($denomination, ['Catholic', 'Christian'])) {
+    $denomination = 'Christian';
+}
+
 // Fetch Churches for dropdown
 $church_stmt = $pdo->query("SELECT name FROM churches ORDER BY name ASC");
 $churches_list = $church_stmt->fetchAll(PDO::FETCH_COLUMN);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Sanitize all inputs
-    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+    $email = trim($_POST['email']);
     $password_raw = $_POST['password'];
     $re_password = $_POST['re_password'];
+    $nic_number = strtoupper(trim($_POST['nic_number']));
+    $denomination = $_POST['denomination']; // Get from hidden field
+    
+    // Catholic Specifics
+    $catholic_by_birth = $_POST['catholic_by_birth'] ?? null;
+    $christianization_year = !empty($_POST['christianization_year']) ? intval($_POST['christianization_year']) : null;
+    $sacraments = trim($_POST['sacraments_received'] ?? '');
+
     $fullname = trim($_POST['fullname']);
     $sex = $_POST['sex'];
     $dob = $_POST['dob'];
@@ -37,6 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $add_qual = trim($_POST['add_qual']);
     $marital_status = $_POST['marital_status'];
     $children = isset($_POST['children']) ? $_POST['children'] : 'No';
+    $children_details = trim($_POST['children_details'] ?? '');
     $illness = trim($_POST['illness']);
     $habits = isset($_POST['habit']) ? implode(',', $_POST['habit']) : 'None';
     $pastor_name = trim($_POST['pastor_name']);
@@ -56,13 +71,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = "Passwords do not match!";
     }
     elseif (empty($fullname) || strlen($fullname) < 3) {
-        $error = "Please enter a valid full name.";
+        $error = "Please enter your full name (at least 3 characters).";
+    }
+    elseif (!preg_match('/^([0-9]{9}[vVxX]|[0-9]{12})$/', $nic_number)) {
+        $error = "Please enter a valid NIC Number (9 digits + V/X or 12 digits).";
     }
     elseif ($age < 18 || $age > 80) {
         $error = "Age must be between 18 and 80.";
     }
-    elseif (strlen($my_phone) < 9 || strlen($my_phone) > 15) {
+    elseif (empty($address)) {
+        $error = "Permanent address is required.";
+    }
+    elseif (empty($hometown) || empty($district)) {
+        $error = "Hometown and District are required.";
+    }
+    elseif (strlen($my_phone) < 9 || strlen($my_phone) > 15 || !preg_match('/^[0-9+]+$/', $my_phone)) {
         $error = "Please enter a valid WhatsApp number.";
+    }
+    elseif (empty($church)) {
+        $error = "Please select or enter your church/ministry.";
+    }
+    elseif (empty($pastor_name)) {
+        $error = "Pastor/Father's name is required.";
     }
     elseif (!isset($_POST['terms_agreement'])) {
         $error = "You must agree to the Terms and Conditions to register.";
@@ -78,7 +108,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $error = "Please provide the name of your church.";
         }
         else {
-            // Save to master churches table for future use
             $church_ins = $pdo->prepare("INSERT IGNORE INTO churches (name, pastor_name, location) VALUES (?, ?, ?)");
             $church_ins->execute([$custom_church_name, $custom_pastor, $custom_location]);
             $church = $custom_church_name;
@@ -87,52 +116,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Photo Upload Validation
     $photo_path = null;
-    if (empty($error) && isset($_FILES['file-upload']) && $_FILES['file-upload']['error'] == 0) {
-        $allowed = ['jpg', 'jpeg', 'png', 'gif'];
-        $ext = strtolower(pathinfo($_FILES['file-upload']['name'], PATHINFO_EXTENSION));
-        $size = $_FILES['file-upload']['size'];
+    if (empty($error)) {
+        if (isset($_FILES['file-upload']) && $_FILES['file-upload']['error'] == 0) {
+            $allowed = ['jpg', 'jpeg', 'png', 'gif'];
+            $ext = strtolower(pathinfo($_FILES['file-upload']['name'], PATHINFO_EXTENSION));
+            $size = $_FILES['file-upload']['size'];
 
-        if (!in_array($ext, $allowed)) {
-            $error = "Only JPG, PNG and GIF images are allowed.";
-        }
-        elseif ($size > 5 * 1024 * 1024) { // 5MB limit
-            $error = "Photo size must be less than 5MB.";
-        }
-        else {
-            $target_dir = "uploads/";
-            if (!is_dir($target_dir))
-                mkdir($target_dir, 0777, true);
-            $file_name = time() . '_' . basename($_FILES["file-upload"]["name"]);
-            $target_file = $target_dir . $file_name;
-            if (move_uploaded_file($_FILES["file-upload"]["tmp_name"], $target_file)) {
-                $photo_path = $target_file;
+            if (!in_array($ext, $allowed)) {
+                $error = "Only JPG, PNG and GIF images are allowed.";
+            }
+            elseif ($size > 5 * 1024 * 1024) {
+                $error = "Photo size must be less than 5MB.";
             }
             else {
-                $error = "Error uploading photo.";
+                $target_dir = "uploads/";
+                if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
+                $file_name = time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+                $target_file = $target_dir . $file_name;
+                if (move_uploaded_file($_FILES["file-upload"]["tmp_name"], $target_file)) {
+                    $photo_path = $target_file;
+                } else {
+                    $error = "Failed to save uploaded photo.";
+                }
             }
+        } else {
+            $error = "Please upload a clear photograph of yourself.";
         }
-    }
-    elseif (empty($error) && !isset($_FILES['file-upload'])) {
-        $error = "Please upload a photograph.";
     }
 
     if (empty($error)) {
         $password = password_hash($password_raw, PASSWORD_DEFAULT);
         try {
-            $sql = "INSERT INTO candidates (email, password, fullname, sex, dob, age, nationality, language, address, hometown, district, province, height, occupation, edu_qual, add_qual, marital_status, children, illness, habits, church, pastor_name, pastor_phone, parent_phone, my_phone, photo_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO candidates (email, password, denomination, catholic_by_birth, nic_number, christianization_year, sacraments_received, fullname, sex, dob, age, nationality, language, address, hometown, district, province, height, occupation, edu_qual, add_qual, marital_status, children, children_details, illness, habits, church, pastor_name, pastor_phone, parent_phone, my_phone, photo_path, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$email, $password, $fullname, $sex, $dob, $age, $nationality, $language, $address, $hometown, $district, $province, $height, $occupation, $edu_qual, $add_qual, $marital_status, $children, $illness, $habits, $church, $pastor_name, $pastor_phone, $parent_phone, $my_phone, $photo_path]);
+            $stmt->execute([$email, $password, $denomination, $catholic_by_birth, $nic_number, $christianization_year, $sacraments, $fullname, $sex, $dob, $age, $nationality, $language, $address, $hometown, $district, $province, $height, $occupation, $edu_qual, $add_qual, $marital_status, $children, $children_details, $illness, $habits, $church, $pastor_name, $pastor_phone, $parent_phone, $my_phone, $photo_path]);
 
             header("Location: login.php?registered=true");
             exit();
-
         }
         catch (PDOException $e) {
             if ($e->getCode() == 23000) {
-                $error = "This email is already registered. Please login or use another email.";
-            }
-            else {
-                $error = "Database Error: " . $e->getMessage();
+                $error = "This email or NIC Number is already registered.";
+            } else {
+                $error = "Registration failed. Please try again later.";
             }
         }
     }
@@ -145,7 +171,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         <!-- Header -->
         <div class="text-center mb-10 reveal reveal-up">
-            <h1 class="text-3xl font-bold text-gray-900">Marriage Candidate Registration</h1>
+            <h1 class="text-3xl font-bold text-gray-900"><?php echo $denomination; ?> Registration</h1>
             <p class="mt-2 text-gray-600">Please fill in your details accurately. Your profile will be reviewed by our team before approval.</p>
         </div>
 
@@ -159,6 +185,7 @@ endif; ?>
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden reveal reveal-scale delay-200">
             <!-- Form -->
             <form class="p-8 space-y-8" action="" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="denomination" value="<?php echo $denomination; ?>">
                 
                 <!-- Account Information -->
                 <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
@@ -174,12 +201,19 @@ endif; ?>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                             <div class="relative">
-                                <input id="password" type="password" name="password" required minlength="6" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent pr-10">
+                                <input id="password" type="password" name="password" required minlength="6" oninput="checkStrength(this.value)" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent pr-10">
                                 <button type="button" onclick="togglePassword('password')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
                                     <svg id="eye-icon-password" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
                                 </button>
+                            </div>
+                            <!-- Strength Indicator -->
+                            <div class="mt-2 flex items-center gap-2">
+                                <div class="flex-grow h-1 bg-gray-200 rounded-full overflow-hidden flex">
+                                    <div id="strength-bar" class="h-full w-0 transition-all duration-500"></div>
+                                </div>
+                                <span id="strength-text" class="text-[9px] font-black uppercase tracking-widest text-gray-400">Weak</span>
                             </div>
                         </div>
                         <div>
@@ -196,6 +230,33 @@ endif; ?>
                     </div>
                 </div>
 
+                <!-- Catholic Specific Section -->
+                <?php if ($denomination === 'Catholic'): ?>
+                <div class="reveal reveal-up bg-blue-50/30 p-6 rounded-2xl border border-blue-100">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2L12 22M7 7L17 7" /></svg>
+                        Catholic Faith Life (කතෝලික ජීවිතය)
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Catholic by birth?(උපතින් කතෝලිකද?)</label>
+                            <select name="catholic_by_birth" onchange="toggleChristianization(this.value)" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        <div id="christianization_field" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Year of Christianization (කිතුනු වූ වර්ෂය)</label>
+                            <input type="number" name="christianization_year" placeholder="YYYY" min="1950" max="<?php echo date('Y'); ?>" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div id="sacraments_field" class="md:col-span-2 hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">The bonuses you have currently received (ලබාගෙන ඇති ආශිර්වාද / සක්‍රමේන්තු)</label>
+                            <input type="text" name="sacraments_received" placeholder="Baptism, Holy Communion, Confirmation, etc." class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <!-- Personal Details -->
                 <div class="reveal reveal-up">
                     <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Personal Details</h2>
@@ -205,6 +266,10 @@ endif; ?>
                             <input type="text" name="fullname" required minlength="3" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">NIC Number (හැඳුනුම්පත් අංකය)</label>
+                            <input type="text" name="nic_number" required placeholder="Ex: 199012345678 or 901234567V" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent uppercase">
+                        </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Sex( ස්ත්‍රී පුරුෂ භාවය)</label>
                             <select name="sex" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
@@ -229,8 +294,8 @@ endif; ?>
                             <input type="text" name="language" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Height (ft/cm)</label>
-                            <input type="text" name="height" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Height in Feet (උස - අඩි)</label>
+                            <input type="number" name="height" step="0.1" min="3" max="8" required placeholder="Ex: 5.6" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                     </div>
                 </div>
@@ -291,10 +356,14 @@ endif; ?>
                         </div>
                         <div id="children_field" class="hidden">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Do you have children?(ඔබට දරුවන් සිටීද?)</label>
-                            <select name="children" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <select name="children" onchange="toggleChildrenDetails(this.value)" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 <option value="No">No</option>
                                 <option value="Yes">Yes</option>
                             </select>
+                        </div>
+                        <div id="children_details_field" class="md:col-span-2 hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Children Details (Number of children, ages, etc.) (දරුවන් පිළිබඳ විස්තර)</label>
+                            <textarea name="children_details" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="e.g., 2 children (Ages 5 and 8)"></textarea>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Long-term Illness (requiring continuous treatment)(දීර්ඝ කාලීනව ප්‍රතිකාර ගන්නා වූ රෝගයකින් පෙළෙන්නේද)</label>
@@ -333,18 +402,24 @@ endif; ?>
                     <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Religious & Family Details</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Denomination / Church Name(නිකාය හෝ දේවස්ථානය)</label>
-                            <select name="church" id="church_select" onchange="toggleOtherChurch(this.value)" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
-                                <option value="" disabled selected>Select your church</option>
-                                <?php foreach ($churches_list as $c_name): ?>
-                                    <option value="<?php echo htmlspecialchars($c_name); ?>"><?php echo htmlspecialchars($c_name); ?></option>
-                                <?php
-endforeach; ?>
-                                <option value="Other">Other (Not in list)</option>
-                            </select>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                <?php echo $denomination === 'Christian' ? 'Mustache (නිකාය)' : 'Denomination / Church Name (නිකාය හෝ දේවස්ථානය)'; ?>
+                            </label>
+                            <?php if ($denomination === 'Christian'): ?>
+                                <input type="text" name="church" required placeholder="Enter your Ministry / Mustache Name" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <?php else: ?>
+                                <select name="church" id="church_select" onchange="toggleOtherChurch(this.value)" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option value="" disabled selected>Select your church</option>
+                                    <?php foreach ($churches_list as $c_name): ?>
+                                        <option value="<?php echo htmlspecialchars($c_name); ?>"><?php echo htmlspecialchars($c_name); ?></option>
+                                    <?php endforeach; ?>
+                                    <option value="Other">Other (Not in list)</option>
+                                </select>
+                            <?php endif; ?>
                         </div>
 
                         <!-- Manual Church Details (Hidden by default) -->
+                        <?php if ($denomination !== 'Christian'): ?>
                         <div id="other_church_section" class="md:col-span-2 hidden bg-gray-50 p-6 rounded-xl border border-gray-200 mt-2 space-y-4">
                             <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider border-b pb-2 mb-4">Manual Church Details</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -369,12 +444,17 @@ endforeach; ?>
                                 </div>
                             </div>
                         </div>
+                        <?php endif; ?>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Name of Pastor(ප්‍රධාන දේවගැතිතුමාගේ නම)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                <?php echo $denomination === 'Christian' ? 'Father Name (පියතුමාගේ නම)' : 'Name of Pastor (ප්‍රධාන දේවගැතිතුමාගේ නම)'; ?>
+                            </label>
                             <input type="text" name="pastor_name" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Pastor's WhatsApp(දේවගැතිතුමාගේ වට්ස්ඇප් අංකය)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                <?php echo $denomination === 'Christian' ? "Father's WhatsApp (පියතුමාගේ වට්ස්ඇප් අංකය)" : "Pastor's WhatsApp (දේවගැතිතුමාගේ වට්ස්ඇප් අංකය)"; ?>
+                            </label>
                             <input type="tel" name="pastor_phone" required pattern="[0-9+]{9,15}" title="Please enter a valid phone number (9-15 digits)" placeholder="07XXXXXXXX" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         <div>
@@ -451,10 +531,37 @@ endforeach; ?>
 <script>
 function toggleChildren(status) {
     const childrenField = document.getElementById('children_field');
+    const detailsField = document.getElementById('children_details_field');
+    const childrenSelect = document.getElementsByName('children')[0];
+    
     if (status === 'Divorced' || status === 'Widowed') {
         childrenField.classList.remove('hidden');
     } else {
         childrenField.classList.add('hidden');
+        detailsField.classList.add('hidden');
+        childrenSelect.value = 'No';
+    }
+}
+
+function toggleChristianization(val) {
+    const yearField = document.getElementById('christianization_field');
+    const sacramentsField = document.getElementById('sacraments_field');
+    
+    if (val === 'No') {
+        yearField.classList.remove('hidden');
+        sacramentsField.classList.remove('hidden');
+    } else {
+        yearField.classList.add('hidden');
+        sacramentsField.classList.add('hidden');
+    }
+}
+
+function toggleChildrenDetails(hasChildren) {
+    const detailsField = document.getElementById('children_details_field');
+    if (hasChildren === 'Yes') {
+        detailsField.classList.remove('hidden');
+    } else {
+        detailsField.classList.add('hidden');
     }
 }
 
@@ -588,14 +695,14 @@ function removeImage(event) {
     placeholder.classList.remove('hidden');
 }
 
-// --- FORM VALIDATION ---
+// --- ENHANCED FORM VALIDATION ---
 const validateRules = {
     email: { 
         pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
         message: "Please enter a valid email address."
     },
     password: { 
-        min: 6,
+        minLength: 6,
         message: "Password must be at least 6 characters."
     },
     re_password: { 
@@ -603,66 +710,104 @@ const validateRules = {
         message: "Passwords do not match."
     },
     fullname: { 
-        min: 3,
+        minLength: 3,
         message: "Name must be at least 3 characters."
+    },
+    nic_number: {
+        pattern: /^([0-9]{9}[vVxX]|[0-9]{12})$/,
+        message: "Enter a valid NIC (9 digits + V/X or 12 digits)."
+    },
+    dob: {
+        required: true,
+        message: "Date of birth is required."
     },
     age: { 
         min: 18,
         max: 80,
         message: "Age must be between 18 and 80."
     },
-    pastor_phone: { 
-        pattern: /^[0-9+]{9,15}$/,
-        message: "Enter a valid 9-15 digit phone number."
-    },
-    parent_phone: { 
-        pattern: /^[0-9+]{9,15}$/,
-        message: "Enter a valid 9-15 digit phone number."
-    },
-    my_phone: { 
-        pattern: /^[0-9+]{9,15}$/,
-        message: "Enter a valid 9-15 digit phone number."
-    }
+    nationality: { minLength: 2, message: "Nationality is required." },
+    language: { minLength: 2, message: "Mother tongue is required." },
+    address: { minLength: 10, message: "Full address is required." },
+    hometown: { minLength: 2, message: "Hometown is required." },
+    district: { minLength: 2, message: "District is required." },
+    occupation: { minLength: 2, message: "Occupation is required." },
+    church: { required: true, message: "Please select or enter your church." },
+    pastor_name: { minLength: 3, message: "Pastor/Father's name is required." },
+    pastor_phone: { pattern: /^[0-9+]{9,15}$/, message: "Valid phone required." },
+    my_phone: { pattern: /^[0-9+]{9,15}$/, message: "Valid WhatsApp required." }
 };
 
 function showError(field, message) {
     clearError(field);
-    field.classList.add('!border-red-500', '!bg-red-50');
-    const msg = document.createElement('p');
-    msg.className = 'text-red-500 text-[10px] font-bold uppercase mt-1 validation-error animate-fade-in';
-    msg.textContent = message;
-    field.parentElement.appendChild(msg);
+    field.classList.add('!border-red-400', '!bg-red-50/50', 'ring-2', 'ring-red-100');
+    
+    const wrapper = field.closest('div');
+    const msg = document.createElement('div');
+    msg.className = 'validation-error flex items-center gap-1.5 text-red-500 mt-1.5 animate-bounce-in';
+    msg.innerHTML = `
+        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+        <span class="text-[10px] font-black uppercase tracking-tight">${message}</span>
+    `;
+    wrapper.appendChild(msg);
 }
 
 function clearError(field) {
     if (!field) return;
-    field.classList.remove('!border-red-500', '!bg-red-50');
-    const existing = field.parentElement.querySelector('.validation-error');
+    field.classList.remove('!border-red-400', '!bg-red-50/50', 'ring-2', 'ring-red-100');
+    const wrapper = field.closest('div');
+    const existing = wrapper.querySelector('.validation-error');
     if (existing) existing.remove();
 }
 
-document.querySelector('form').addEventListener('submit', function(e) {
-    let isValid = true;
-    
-    // Clear all previous errors
-    document.querySelectorAll('.validation-error').forEach(el => el.remove());
-    document.querySelectorAll('.!border-red-500').forEach(el => el.classList.remove('!border-red-500', '!bg-red-50'));
+// Real-time validation
+document.querySelectorAll('input, select, textarea').forEach(field => {
+    ['blur', 'change'].forEach(event => {
+        field.addEventListener(event, function() {
+            const name = this.getAttribute('name') || this.id;
+            const rule = validateRules[name];
+            if (!rule) return;
 
+            const val = this.value.trim();
+            let hasError = false;
+
+            if (rule.required && !val) hasError = true;
+            if (rule.pattern && !rule.pattern.test(val)) hasError = true;
+            if (rule.minLength && val.length < rule.minLength) hasError = true;
+            if (rule.min !== undefined && parseInt(val) < rule.min) hasError = true;
+            if (rule.max !== undefined && parseInt(val) > rule.max) hasError = true;
+            if (rule.match && val !== document.getElementById(rule.match).value) hasError = true;
+
+            if (hasError) showError(this, rule.message);
+            else clearError(this);
+        });
+    });
+
+    field.addEventListener('input', function() {
+        clearError(this);
+    });
+});
+
+document.querySelector('form').addEventListener('submit', function(e) {
+    let firstInvalid = null;
+    
     for (const [name, rule] of Object.entries(validateRules)) {
         const field = (name === 'password' || name === 're_password') ? document.getElementById(name) : document.getElementsByName(name)[0];
         if (!field) continue;
         
         const val = field.value.trim();
-        let error = false;
+        let hasError = false;
 
-        if (rule.pattern && !rule.pattern.test(val)) error = true;
-        if (rule.min && val.length < rule.min) error = true;
-        if (rule.match && val !== document.getElementById(rule.match).value) error = true;
-        if (rule.max && (parseInt(val) > rule.max || parseInt(val) < rule.min)) error = true;
+        if (rule.required && !val) hasError = true;
+        if (rule.pattern && !rule.pattern.test(val)) hasError = true;
+        if (rule.minLength && val.length < rule.minLength) hasError = true;
+        if (rule.min !== undefined && parseInt(val) < rule.min) hasError = true;
+        if (rule.max !== undefined && parseInt(val) > rule.max) hasError = true;
+        if (rule.match && val !== document.getElementById(rule.match).value) hasError = true;
 
-        if (error) {
+        if (hasError) {
             showError(field, rule.message);
-            isValid = false;
+            if (!firstInvalid) firstInvalid = field;
         }
     }
 
@@ -670,26 +815,23 @@ document.querySelector('form').addEventListener('submit', function(e) {
     const photo = document.getElementById('file-upload');
     if (photo && photo.files.length === 0) {
         alert("Please upload a photograph (ඡායාරූපයක් එක් කරන්න).");
-        isValid = false;
+        if (!firstInvalid) firstInvalid = photo.closest('div');
     }
 
     // Terms check
     const terms = document.getElementsByName('terms_agreement')[0];
     if (terms && !terms.checked) {
         alert("You must agree to the Terms and Conditions to proceed.");
-        isValid = false;
+        if (!firstInvalid) firstInvalid = terms;
     }
 
-    if (!isValid) {
+    if (firstInvalid) {
         e.preventDefault();
-        const firstError = document.querySelector('.validation-error');
-        if (firstError) {
-            firstError.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 });
 
-// Real-time and DOB Auto-calc
+// DOB Auto-calc
 document.getElementsByName('dob')[0].addEventListener('change', function() {
     const dob = new Date(this.value);
     const today = new Date();
@@ -700,26 +842,33 @@ document.getElementsByName('dob')[0].addEventListener('change', function() {
     clearError(document.getElementsByName('age')[0]);
 });
 
-document.querySelectorAll('input, select, textarea').forEach(field => {
-    field.addEventListener('blur', function() {
-        const name = this.getAttribute('name') || this.id;
-        if (validateRules[name]) {
-            const rule = validateRules[name];
-            const val = this.value.trim();
-            let error = false;
-            
-            if (rule.pattern && !rule.pattern.test(val)) error = true;
-            if (rule.min && val.length < rule.min) error = true;
-            if (rule.match && val !== document.getElementById(rule.match).value) error = true;
-            if (rule.max && (parseInt(val) > rule.max || parseInt(val) < rule.min)) error = true;
+function checkStrength(password) {
+    const bar = document.getElementById('strength-bar');
+    const text = document.getElementById('strength-text');
+    if (!bar || !text) return;
+    
+    let strength = 0;
+    if (password.length >= 6) strength++;
+    if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+    if (password.match(/\d/)) strength++;
+    if (password.match(/[^a-zA-Z\d]/)) strength++;
 
-            if (error) showError(this, rule.message);
-        }
-    });
-    field.addEventListener('input', function() {
-        clearError(this);
-    });
-});
+    const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500'];
+    const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+    const widths = ['25%', '50%', '75%', '100%'];
+    const idx = Math.max(0, Math.min(strength, labels.length) - 1);
+    
+    if (password.length === 0) {
+        bar.style.width = '0';
+        text.textContent = 'None';
+        text.className = 'text-[9px] font-black uppercase tracking-widest text-gray-400';
+    } else {
+        bar.style.width = widths[idx];
+        bar.className = `h-full transition-all duration-500 ${colors[idx]}`;
+        text.textContent = labels[idx];
+        text.className = `text-[9px] font-black uppercase tracking-widest ${colors[idx].replace('bg-', 'text-')}`;
+    }
+}
 </script>
 
 
