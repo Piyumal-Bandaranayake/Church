@@ -95,6 +95,10 @@ endif; ?>
                         </h3>
                         <div class="space-y-3">
                             <div class="flex justify-between border-b border-gray-50 pb-2">
+                                <span class="text-gray-500 text-sm">NIC Number</span>
+                                <span class="font-semibold text-gray-900 uppercase"><?php echo $candidate['nic_number']; ?></span>
+                            </div>
+                            <div class="flex justify-between border-b border-gray-50 pb-2">
                                 <span class="text-gray-500 text-sm">Gender</span>
                                 <span class="font-semibold text-gray-900"><?php echo $candidate['sex']; ?></span>
                             </div>
@@ -143,6 +147,12 @@ endif; ?>
                                 <span class="text-gray-500 text-sm">Children</span>
                                 <span class="font-semibold text-gray-900"><?php echo $candidate['children']; ?></span>
                             </div>
+                            <?php if ($candidate['children'] === 'Yes' && !empty($candidate['children_details'])): ?>
+                            <div class="pt-2">
+                                <span class="text-gray-500 text-sm block mb-1">Children Details</span>
+                                <p class="text-gray-700 bg-blue-50 p-3 rounded-lg text-sm"><?php echo nl2br(htmlspecialchars($candidate['children_details'])); ?></p>
+                            </div>
+                            <?php endif; ?>
                             <div class="flex justify-between border-b border-gray-50 pb-2">
                                 <span class="text-gray-500 text-sm">Habits</span>
                                 <span class="font-semibold text-red-600"><?php echo $candidate['habits']; ?></span>
@@ -183,16 +193,41 @@ endif; ?>
                         </h3>
                         <div class="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 space-y-4">
                             <div>
-                                <span class="text-gray-500 text-xs block uppercase">Church / Denomination</span>
+                                <span class="text-gray-500 text-xs block uppercase">Denomination</span>
+                                <p class="font-bold text-blue-600"><?php echo htmlspecialchars($candidate['denomination'] ?? 'Not set'); ?></p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 text-xs block uppercase"><?php echo $candidate['denomination'] === 'Christian' ? 'Mustache' : 'Church Name'; ?></span>
                                 <p class="font-bold text-primary"><?php echo htmlspecialchars($candidate['church']); ?></p>
                             </div>
-                            <div class="grid grid-cols-2 gap-4">
+                            <?php if ($candidate['denomination'] === 'Catholic'): ?>
+                            <div class="pt-4 mt-4 border-t border-blue-100">
+                                <h4 class="text-xs font-bold text-blue-400 uppercase tracking-tighter mb-3">Catholic Faith Details</h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <span class="text-gray-500 text-xs block uppercase">By Birth</span>
+                                        <p class="font-semibold text-gray-900 text-sm"><?php echo $candidate['catholic_by_birth'] ?? 'N/A'; ?></p>
+                                    </div>
+                                    <?php if ($candidate['catholic_by_birth'] === 'No'): ?>
+                                    <div>
+                                        <span class="text-gray-500 text-xs block uppercase">Y.O.C</span>
+                                        <p class="font-semibold text-gray-900 text-sm"><?php echo $candidate['christianization_year'] ?? 'N/A'; ?></p>
+                                    </div>
+                                    <?php endif; ?>
+                                    <div class="col-span-2">
+                                        <span class="text-gray-500 text-xs block uppercase">Sacraments / Bonuses</span>
+                                        <p class="font-semibold text-gray-900 text-sm mt-1"><?php echo !empty($candidate['sacraments_received']) ? htmlspecialchars($candidate['sacraments_received']) : 'None reported'; ?></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                            <div class="grid grid-cols-2 gap-4 mt-4">
                                 <div>
-                                    <span class="text-gray-500 text-xs block uppercase">Pastor Name</span>
+                                    <span class="text-gray-500 text-xs block uppercase"><?php echo $candidate['denomination'] === 'Christian' ? 'Father Name' : 'Pastor Name'; ?></span>
                                     <p class="font-semibold text-gray-900 text-sm"><?php echo htmlspecialchars($candidate['pastor_name']); ?></p>
                                 </div>
                                 <div>
-                                    <span class="text-gray-500 text-xs block uppercase">Pastor WhatsApp</span>
+                                    <span class="text-gray-500 text-xs block uppercase"><?php echo $candidate['denomination'] === 'Christian' ? "Father's WhatsApp" : "Pastor's WhatsApp"; ?></span>
                                     <p class="font-semibold text-gray-900 text-sm"><?php echo htmlspecialchars($candidate['pastor_phone']); ?></p>
                                 </div>
                             </div>

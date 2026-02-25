@@ -113,7 +113,7 @@ endif; ?>
             <div class="mt-8 pt-8 border-t border-gray-100 text-center reveal reveal-up delay-700">
                 <p class="text-sm text-gray-600">
                     Don't have an account? 
-                    <a href="register.php" class="font-bold text-primary hover:underline">Register here</a>
+                    <a href="registration_type.php" class="font-bold text-primary hover:underline">Register here</a>
                 </p>
             </div>
         </div>

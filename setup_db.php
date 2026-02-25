@@ -6,6 +6,11 @@ try {
         id INT AUTO_INCREMENT PRIMARY KEY,
         email VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
+        denomination ENUM('Catholic', 'Christian') DEFAULT 'Christian',
+        catholic_by_birth ENUM('Yes', 'No') DEFAULT NULL,
+        nic_number VARCHAR(20) NOT NULL UNIQUE,
+        christianization_year INT DEFAULT NULL,
+        sacraments_received TEXT, /* Catholic specifically */
         fullname VARCHAR(100) NOT NULL,
         sex ENUM('Male', 'Female') NOT NULL,
         dob DATE NOT NULL,
@@ -22,6 +27,7 @@ try {
         add_qual TEXT,
         marital_status ENUM('Unmarried', 'Divorced', 'Widowed') NOT NULL,
         children ENUM('Yes', 'No') DEFAULT 'No',
+        children_details TEXT,
         illness TEXT,
         habits TEXT, /* Stored as comma separated string */
         church VARCHAR(100) NOT NULL,
@@ -43,9 +49,29 @@ try {
     );";
 
     $pdo->exec($sql);
-    echo "Table 'candidates' created successfully.";
+    echo "Table 'candidates' checked/created successfully.<br>";
+
+    // Migration logic for existing tables
+    $columns_to_add = [
+        'denomination' => "ENUM('Catholic', 'Christian') DEFAULT 'Christian' AFTER password",
+        'catholic_by_birth' => "ENUM('Yes', 'No') DEFAULT NULL AFTER denomination",
+        'nic_number' => "VARCHAR(20) NOT NULL UNIQUE AFTER catholic_by_birth",
+        'christianization_year' => "INT DEFAULT NULL AFTER nic_number",
+        'sacraments_received' => "TEXT AFTER christianization_year",
+        'children_details' => "TEXT AFTER children"
+    ];
+
+    foreach ($columns_to_add as $column => $definition) {
+        $check = $pdo->query("SHOW COLUMNS FROM candidates LIKE '$column'");
+        if ($check->rowCount() == 0) {
+            $pdo->exec("ALTER TABLE candidates ADD COLUMN $column $definition");
+            echo "Column '$column' added successfully.<br>";
+        }
+    }
+
+    echo "<br><b>Database Update Complete!</b> You can now use the new fields.";
 }
 catch (PDOException $e) {
-    echo "Error creating table: " . $e->getMessage();
+    echo "Error processing database: " . $e->getMessage();
 }
 ?>

@@ -12,15 +12,28 @@ catch (Exception $e) {
 $error = '';
 $success = '';
 
+// Get type from URL or POST
+$denomination = isset($_GET['type']) ? ucfirst($_GET['type']) : (isset($_POST['denomination']) ? $_POST['denomination'] : 'Christian');
+if (!in_array($denomination, ['Catholic', 'Christian'])) {
+    $denomination = 'Christian';
+}
+
 // Fetch Churches for dropdown
 $church_stmt = $pdo->query("SELECT name FROM churches ORDER BY name ASC");
 $churches_list = $church_stmt->fetchAll(PDO::FETCH_COLUMN);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Sanitize all inputs
-    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
     $password_raw = $_POST['password'];
     $re_password = $_POST['re_password'];
+    $nic_number = strtoupper(trim($_POST['nic_number']));
+    $denomination = $_POST['denomination']; // Get from hidden field
+    
+    // Catholic Specifics
+    $catholic_by_birth = $_POST['catholic_by_birth'] ?? null;
+    $christianization_year = !empty($_POST['christianization_year']) ? intval($_POST['christianization_year']) : null;
+    $sacraments = trim($_POST['sacraments_received'] ?? '');
+
     $fullname = trim($_POST['fullname']);
     $sex = $_POST['sex'];
     $dob = $_POST['dob'];
@@ -37,6 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $add_qual = trim($_POST['add_qual']);
     $marital_status = $_POST['marital_status'];
     $children = isset($_POST['children']) ? $_POST['children'] : 'No';
+    $children_details = trim($_POST['children_details'] ?? '');
     $illness = trim($_POST['illness']);
     $habits = isset($_POST['habit']) ? implode(',', $_POST['habit']) : 'None';
     $pastor_name = trim($_POST['pastor_name']);
@@ -57,6 +71,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     elseif (empty($fullname) || strlen($fullname) < 3) {
         $error = "Please enter a valid full name.";
+    }
+    elseif (empty($nic_number) || strlen($nic_number) < 10) {
+        $error = "Please enter a valid NIC Number (Min 10 characters).";
     }
     elseif ($age < 18 || $age > 80) {
         $error = "Age must be between 18 and 80.";
@@ -119,9 +136,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($error)) {
         $password = password_hash($password_raw, PASSWORD_DEFAULT);
         try {
-            $sql = "INSERT INTO candidates (email, password, fullname, sex, dob, age, nationality, language, address, hometown, district, province, height, occupation, edu_qual, add_qual, marital_status, children, illness, habits, church, pastor_name, pastor_phone, parent_phone, my_phone, photo_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO candidates (email, password, denomination, catholic_by_birth, nic_number, christianization_year, sacraments_received, fullname, sex, dob, age, nationality, language, address, hometown, district, province, height, occupation, edu_qual, add_qual, marital_status, children, children_details, illness, habits, church, pastor_name, pastor_phone, parent_phone, my_phone, photo_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$email, $password, $fullname, $sex, $dob, $age, $nationality, $language, $address, $hometown, $district, $province, $height, $occupation, $edu_qual, $add_qual, $marital_status, $children, $illness, $habits, $church, $pastor_name, $pastor_phone, $parent_phone, $my_phone, $photo_path]);
+            $stmt->execute([$email, $password, $denomination, $catholic_by_birth, $nic_number, $christianization_year, $sacraments, $fullname, $sex, $dob, $age, $nationality, $language, $address, $hometown, $district, $province, $height, $occupation, $edu_qual, $add_qual, $marital_status, $children, $children_details, $illness, $habits, $church, $pastor_name, $pastor_phone, $parent_phone, $my_phone, $photo_path]);
 
             header("Location: login.php?registered=true");
             exit();
@@ -145,7 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         <!-- Header -->
         <div class="text-center mb-10 reveal reveal-up">
-            <h1 class="text-3xl font-bold text-gray-900">Marriage Candidate Registration</h1>
+            <h1 class="text-3xl font-bold text-gray-900"><?php echo $denomination; ?> Registration</h1>
             <p class="mt-2 text-gray-600">Please fill in your details accurately. Your profile will be reviewed by our team before approval.</p>
         </div>
 
@@ -159,6 +176,7 @@ endif; ?>
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden reveal reveal-scale delay-200">
             <!-- Form -->
             <form class="p-8 space-y-8" action="" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="denomination" value="<?php echo $denomination; ?>">
                 
                 <!-- Account Information -->
                 <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
@@ -196,6 +214,33 @@ endif; ?>
                     </div>
                 </div>
 
+                <!-- Catholic Specific Section -->
+                <?php if ($denomination === 'Catholic'): ?>
+                <div class="reveal reveal-up bg-blue-50/30 p-6 rounded-2xl border border-blue-100">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2L12 22M7 7L17 7" /></svg>
+                        Catholic Faith Life (කතෝලික ජීවිතය)
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Catholic by birth?(උපතින් කතෝලිකද?)</label>
+                            <select name="catholic_by_birth" onchange="toggleChristianization(this.value)" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        <div id="christianization_field" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Year of Christianization (කිතුනු වූ වර්ෂය)</label>
+                            <input type="number" name="christianization_year" placeholder="YYYY" min="1950" max="<?php echo date('Y'); ?>" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">The bonuses you have currently received (ලබාගෙන ඇති ආශිර්වාද / සක්‍රමේන්තු)</label>
+                            <input type="text" name="sacraments_received" placeholder="Baptism, Holy Communion, Confirmation, etc." class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <!-- Personal Details -->
                 <div class="reveal reveal-up">
                     <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Personal Details</h2>
@@ -205,6 +250,10 @@ endif; ?>
                             <input type="text" name="fullname" required minlength="3" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">NIC Number (හැඳුනුම්පත් අංකය)</label>
+                            <input type="text" name="nic_number" required placeholder="Ex: 199012345678 or 901234567V" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent uppercase">
+                        </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Sex( ස්ත්‍රී පුරුෂ භාවය)</label>
                             <select name="sex" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
@@ -291,10 +340,14 @@ endif; ?>
                         </div>
                         <div id="children_field" class="hidden">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Do you have children?(ඔබට දරුවන් සිටීද?)</label>
-                            <select name="children" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <select name="children" onchange="toggleChildrenDetails(this.value)" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 <option value="No">No</option>
                                 <option value="Yes">Yes</option>
                             </select>
+                        </div>
+                        <div id="children_details_field" class="md:col-span-2 hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Children Details (Number of children, ages, etc.) (දරුවන් පිළිබඳ විස්තර)</label>
+                            <textarea name="children_details" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="e.g., 2 children (Ages 5 and 8)"></textarea>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Long-term Illness (requiring continuous treatment)(දීර්ඝ කාලීනව ප්‍රතිකාර ගන්නා වූ රෝගයකින් පෙළෙන්නේද)</label>
@@ -333,18 +386,24 @@ endif; ?>
                     <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Religious & Family Details</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Denomination / Church Name(නිකාය හෝ දේවස්ථානය)</label>
-                            <select name="church" id="church_select" onchange="toggleOtherChurch(this.value)" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
-                                <option value="" disabled selected>Select your church</option>
-                                <?php foreach ($churches_list as $c_name): ?>
-                                    <option value="<?php echo htmlspecialchars($c_name); ?>"><?php echo htmlspecialchars($c_name); ?></option>
-                                <?php
-endforeach; ?>
-                                <option value="Other">Other (Not in list)</option>
-                            </select>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                <?php echo $denomination === 'Christian' ? 'Mustache (නිකාය)' : 'Denomination / Church Name (නිකාය හෝ දේවස්ථානය)'; ?>
+                            </label>
+                            <?php if ($denomination === 'Christian'): ?>
+                                <input type="text" name="church" required placeholder="Enter your Ministry / Mustache Name" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <?php else: ?>
+                                <select name="church" id="church_select" onchange="toggleOtherChurch(this.value)" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option value="" disabled selected>Select your church</option>
+                                    <?php foreach ($churches_list as $c_name): ?>
+                                        <option value="<?php echo htmlspecialchars($c_name); ?>"><?php echo htmlspecialchars($c_name); ?></option>
+                                    <?php endforeach; ?>
+                                    <option value="Other">Other (Not in list)</option>
+                                </select>
+                            <?php endif; ?>
                         </div>
 
                         <!-- Manual Church Details (Hidden by default) -->
+                        <?php if ($denomination !== 'Christian'): ?>
                         <div id="other_church_section" class="md:col-span-2 hidden bg-gray-50 p-6 rounded-xl border border-gray-200 mt-2 space-y-4">
                             <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider border-b pb-2 mb-4">Manual Church Details</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -369,12 +428,17 @@ endforeach; ?>
                                 </div>
                             </div>
                         </div>
+                        <?php endif; ?>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Name of Pastor(ප්‍රධාන දේවගැතිතුමාගේ නම)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                <?php echo $denomination === 'Christian' ? 'Father Name (පියතුමාගේ නම)' : 'Name of Pastor (ප්‍රධාන දේවගැතිතුමාගේ නම)'; ?>
+                            </label>
                             <input type="text" name="pastor_name" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Pastor's WhatsApp(දේවගැතිතුමාගේ වට්ස්ඇප් අංකය)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                <?php echo $denomination === 'Christian' ? "Father's WhatsApp (පියතුමාගේ වට්ස්ඇප් අංකය)" : "Pastor's WhatsApp (දේවගැතිතුමාගේ වට්ස්ඇප් අංකය)"; ?>
+                            </label>
                             <input type="tel" name="pastor_phone" required pattern="[0-9+]{9,15}" title="Please enter a valid phone number (9-15 digits)" placeholder="07XXXXXXXX" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         <div>
@@ -451,10 +515,33 @@ endforeach; ?>
 <script>
 function toggleChildren(status) {
     const childrenField = document.getElementById('children_field');
+    const detailsField = document.getElementById('children_details_field');
+    const childrenSelect = document.getElementsByName('children')[0];
+    
     if (status === 'Divorced' || status === 'Widowed') {
         childrenField.classList.remove('hidden');
     } else {
         childrenField.classList.add('hidden');
+        detailsField.classList.add('hidden');
+        childrenSelect.value = 'No';
+    }
+}
+
+function toggleChristianization(val) {
+    const field = document.getElementById('christianization_field');
+    if (val === 'No') {
+        field.classList.remove('hidden');
+    } else {
+        field.classList.add('hidden');
+    }
+}
+
+function toggleChildrenDetails(hasChildren) {
+    const detailsField = document.getElementById('children_details_field');
+    if (hasChildren === 'Yes') {
+        detailsField.classList.remove('hidden');
+    } else {
+        detailsField.classList.add('hidden');
     }
 }
 
@@ -610,6 +697,10 @@ const validateRules = {
         min: 18,
         max: 80,
         message: "Age must be between 18 and 80."
+    },
+    nic_number: {
+        pattern: /^([0-9]{9}[vVxX]|[0-9]{12})$/,
+        message: "Enter a valid NIC (9 digits + V/X or 12 digits)."
     },
     pastor_phone: { 
         pattern: /^[0-9+]{9,15}$/,

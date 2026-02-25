@@ -50,7 +50,7 @@ endif; ?>
                 </a>
             <?php
 else: ?>
-                <a href="register.php" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-primary font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                <a href="registration_type.php" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-primary font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
                     Find Your Match
                 </a>
             <?php
