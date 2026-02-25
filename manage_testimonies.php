@@ -139,10 +139,20 @@ else: ?>
                                 <?php foreach ($pending_reviews as $review): ?>
                                 <tr class="hover:bg-gray-50/50 transition-colors">
                                     <td class="px-6 py-5">
-                                        <div class="flex items-center gap-4">
-                                            <?php $img = !empty($review['image1']) ? $review['image1'] : 'https://via.placeholder.com/100?text=None'; ?>
-                                            <img src="<?php echo htmlspecialchars($img); ?>" class="w-10 h-10 rounded-lg object-cover">
+                                        <div class="flex flex-col gap-2">
                                             <span class="text-sm font-bold text-gray-900"><?php echo htmlspecialchars($review['name']); ?></span>
+                                            <div class="flex flex-wrap gap-2">
+                                                <?php for ($i = 1; $i <= 5; $i++): 
+                                                    $img_path = $review['image' . $i];
+                                                    if (!empty($img_path)): ?>
+                                                    <div class="relative group/img cursor-pointer" onclick="openImageModal('<?php echo htmlspecialchars($img_path); ?>')">
+                                                        <img src="<?php echo htmlspecialchars($img_path); ?>" class="w-12 h-12 rounded-lg object-cover ring-2 ring-gray-100 group-hover/img:ring-primary transition-all">
+                                                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                                        </div>
+                                                    </div>
+                                                <?php endif; endfor; ?>
+                                            </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-5 text-sm text-gray-600">
@@ -197,10 +207,20 @@ else: ?>
                                 <?php foreach ($approved_reviews as $review): ?>
                                 <tr class="hover:bg-gray-50/50 transition-colors">
                                     <td class="px-6 py-5">
-                                        <div class="flex items-center gap-4">
-                                            <?php $img = !empty($review['image1']) ? $review['image1'] : 'https://via.placeholder.com/100?text=None'; ?>
-                                            <img src="<?php echo htmlspecialchars($img); ?>" class="w-10 h-10 rounded-lg object-cover">
+                                        <div class="flex flex-col gap-2">
                                             <span class="text-sm font-bold text-gray-900"><?php echo htmlspecialchars($review['name']); ?></span>
+                                            <div class="flex flex-wrap gap-2">
+                                                <?php for ($i = 1; $i <= 5; $i++): 
+                                                    $img_path = $review['image' . $i];
+                                                    if (!empty($img_path)): ?>
+                                                    <div class="relative group/img cursor-pointer" onclick="openImageModal('<?php echo htmlspecialchars($img_path); ?>')">
+                                                        <img src="<?php echo htmlspecialchars($img_path); ?>" class="w-12 h-12 rounded-lg object-cover ring-2 ring-gray-100 group-hover/img:ring-primary transition-all">
+                                                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                                        </div>
+                                                    </div>
+                                                <?php endif; endfor; ?>
+                                            </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-5">
@@ -224,5 +244,7 @@ endif; ?>
         </div>
     </main>
 </div>
+
+<?php include 'includes/admin_image_modal.php'; ?>
 </body>
 </html>

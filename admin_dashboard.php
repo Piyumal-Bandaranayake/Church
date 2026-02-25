@@ -60,6 +60,11 @@ try {
     // Fetch Total Success Stories
     $success_stmt = $pdo->query("SELECT COUNT(*) FROM candidates WHERE partner_found = 1");
     $success_count = $success_stmt->fetchColumn();
+
+    // Fetch All Administrators
+    $admin_list_stmt = $pdo->query("SELECT id, username, email, created_at FROM admins ORDER BY id ASC");
+    $all_admins = $admin_list_stmt->fetchAll(PDO::FETCH_ASSOC);
+    $admin_total_count = count($all_admins);
 }
 catch (PDOException $e) {
     die("Database error: " . $e->getMessage());
@@ -308,6 +313,45 @@ endif; ?>
                     </div>
                     <?php
 endif; ?>
+                </div>
+            </div>
+
+            <!-- System Administrators Section -->
+            <div class="mt-12">
+                <div class="flex items-center gap-3 mb-8 px-2">
+                    <span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>
+                    <h2 class="text-xl font-black text-gray-900 uppercase tracking-tighter">System Administrators</h2>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-700 text-[10px] font-black rounded-full"><?php echo $admin_total_count; ?> TOTAL</span>
+                    <a href="create_admin.php" class="ml-auto flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                        Add New Admin
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <?php foreach ($all_admins as $admin): ?>
+                    <div class="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-gray-200/30 border border-gray-100 group hover:-translate-y-1 transition-all">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-xl border border-blue-100 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                <?php echo strtoupper(substr($admin['username'], 0, 1)); ?>
+                            </div>
+                            <div>
+                                <h4 class="font-black text-gray-900 leading-tight"><?php echo htmlspecialchars($admin['username']); ?></h4>
+                                <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Administrator</span>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2 text-gray-500">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 01-2 2v10a2 2 0 012 2z"/></svg>
+                                <span class="text-xs font-medium truncate"><?php echo htmlspecialchars($admin['email']); ?></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-gray-400">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z"/></svg>
+                                <span class="text-[10px] uppercase font-bold tracking-tight">Joined <?php echo date('M Y', strtotime($admin['created_at'])); ?></span>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>

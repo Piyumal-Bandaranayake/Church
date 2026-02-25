@@ -284,8 +284,8 @@ endif; ?>
 <div id="testimony-modal" class="fixed inset-0 z-[150] hidden flex items-center justify-center p-4 bg-primary/40 backdrop-blur-xl animate-fade-in">
     <div class="bg-white w-full max-w-4xl rounded-[3rem] shadow-2xl overflow-hidden relative flex flex-col md:flex-row max-h-[90vh] animate-slide-up">
         <!-- Close Button -->
-        <button onclick="closeTestimonyModal()" class="absolute top-6 right-6 z-30 p-2 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-full text-white transition-all">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        <button onclick="closeTestimonyModal()" class="absolute top-6 right-6 z-30 p-2.5 bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full transition-all duration-300 shadow-sm border border-gray-100 group">
+            <svg class="w-5 h-5 transform group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
 
         <!-- Left: Image Gallery -->

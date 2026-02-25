@@ -191,28 +191,29 @@ endforeach; ?>
                         </div>
                     </section>
 
-                    <!-- Express Interest Action -->
-                    <?php if ($_SESSION['user_id'] != $id): ?>
-                    <div class="mt-8">
-                        <button onclick="toggleModal('interestModal')" class="w-full py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary-hover hover:scale-[1.02] transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                            Express Interest
-                        </button>
-                    </div>
-                    <?php else: ?>
-                    <!-- Found Partner Action for self -->
-                    <div class="mt-8">
-                        <?php if ($candidate['partner_found']): ?>
-                            <div class="p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 text-sm font-bold text-center">
-                                Your partner found request has been sent to admin!
-                            </div>
-                        <?php else: ?>
-                            <button onclick="toggleModal('partnerModal')" class="w-full py-4 bg-green-600 text-white font-bold rounded-2xl hover:bg-green-700 hover:scale-[1.02] transition-all shadow-xl shadow-green-200 flex items-center justify-center gap-3">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                                I Found My Partner
-                            </button>
-                        <?php endif; ?>
-                    </div>
+                    <!-- Actions Section -->
+                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'candidate'): ?>
+                        <div class="mt-8">
+                            <?php if ($_SESSION['user_id'] != $id): ?>
+                                <!-- Express Interest for others -->
+                                <button onclick="toggleModal('interestModal')" class="w-full py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary-hover hover:scale-[1.02] transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                    Express Interest
+                                </button>
+                            <?php else: ?>
+                                <!-- Found Partner Action for self -->
+                                <?php if ($candidate['partner_found']): ?>
+                                    <div class="p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 text-sm font-bold text-center">
+                                        Your partner found request has been sent to admin!
+                                    </div>
+                                <?php else: ?>
+                                    <button onclick="toggleModal('partnerModal')" class="w-full py-4 bg-green-600 text-white font-bold rounded-2xl hover:bg-green-700 hover:scale-[1.02] transition-all shadow-xl shadow-green-200 flex items-center justify-center gap-3">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                        I Found My Partner
+                                    </button>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
                     <?php endif; ?>
                 </div>
 
