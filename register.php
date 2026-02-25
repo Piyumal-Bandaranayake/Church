@@ -24,6 +24,7 @@ $churches_list = $church_stmt->fetchAll(PDO::FETCH_COLUMN);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Sanitize all inputs
+    $email = trim($_POST['email']);
     $password_raw = $_POST['password'];
     $re_password = $_POST['re_password'];
     $nic_number = strtoupper(trim($_POST['nic_number']));
@@ -278,8 +279,8 @@ endif; ?>
                             <input type="text" name="language" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Height (ft/cm)</label>
-                            <input type="text" name="height" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Height in Feet (උස - අඩි)</label>
+                            <input type="number" name="height" step="0.1" min="3" max="8" required placeholder="Ex: 5.6" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                     </div>
                 </div>

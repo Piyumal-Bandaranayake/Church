@@ -12,9 +12,23 @@ if (!isset($_GET['id'])) {
     exit();
 }
 
+// Get current user's denomination if role is candidate
+$user_denomination = $_SESSION['denomination'] ?? '';
+if (empty($user_denomination) && isset($_SESSION['role']) && $_SESSION['role'] === 'candidate') {
+    $user_stmt = $pdo->prepare("SELECT denomination FROM candidates WHERE id = ?");
+    $user_stmt->execute([$_SESSION['user_id']]);
+    $user_denomination = $user_stmt->fetchColumn();
+    $_SESSION['denomination'] = $user_denomination;
+}
+
 $id = $_GET['id'];
-$stmt = $pdo->prepare("SELECT * FROM candidates WHERE id = ? AND status = 'approved'");
-$stmt->execute([$id]);
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+    $stmt = $pdo->prepare("SELECT * FROM candidates WHERE id = ? AND status = 'approved'");
+    $stmt->execute([$id]);
+} else {
+    $stmt = $pdo->prepare("SELECT * FROM candidates WHERE id = ? AND status = 'approved' AND denomination = ?");
+    $stmt->execute([$id, $user_denomination]);
+}
 $candidate = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$candidate) {
@@ -70,6 +84,7 @@ if (!$candidate) {
                             <span class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Location</span>
                             <span class="text-lg font-bold text-gray-800"><?php echo $candidate['hometown']; ?></span>
                         </div>
+
                         <div class="w-px h-8 bg-gray-200 hidden md:block mt-2"></div>
                         <div class="flex flex-col reveal reveal-up delay-500">
                             <span class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Gender</span>
@@ -100,12 +115,9 @@ if (!$candidate) {
                             </div>
                             <div class="flex justify-between items-center py-3 border-b border-gray-50">
                                 <span class="text-gray-400 font-bold uppercase text-[10px]">Height</span>
-                                <span class="text-gray-900 font-semibold"><?php echo $candidate['height']; ?></span>
+                                <span class="text-gray-900 font-semibold"><?php echo $candidate['height']; ?> ft</span>
                             </div>
-                            <div class="flex justify-between items-center py-3 border-b border-gray-50">
-                                <span class="text-gray-400 font-bold uppercase text-[10px]">Email Address</span>
-                                <span class="text-gray-900 font-semibold lowercase italic text-xs"><?php echo htmlspecialchars($candidate['email']); ?></span>
-                            </div>
+
                             <div class="flex justify-between items-center py-3 border-b border-gray-50">
                                 <span class="text-gray-400 font-bold uppercase text-[10px]">Marital Status</span>
                                 <span class="text-gray-900 font-semibold"><?php echo $candidate['marital_status']; ?></span>
@@ -123,15 +135,7 @@ if (!$candidate) {
                                 <span class="text-[10px] text-primary/60 font-black uppercase tracking-widest block mb-1">Church / Fellowship</span>
                                 <p class="text-lg font-bold text-primary"><?php echo htmlspecialchars($candidate['church']); ?></p>
                             </div>
-                            <div class="flex items-center gap-4 text-sm">
-                                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                </div>
-                                <div>
-                                    <span class="text-gray-400 text-xs font-bold uppercase">Pastor Support</span>
-                                    <p class="font-bold text-gray-800"><?php echo htmlspecialchars($candidate['pastor_name']); ?></p>
-                                </div>
-                            </div>
+
                         </div>
                     </section>
                 </div>
@@ -232,12 +236,19 @@ endforeach; ?>
 
 <!-- Image Preview Modal -->
 <div id="imageModal" class="fixed inset-0 z-[150] hidden">
+    <!-- Backdrop -->
     <div class="absolute inset-0 bg-gray-900/95 backdrop-blur-md" onclick="toggleModal('imageModal')"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl p-4 flex flex-col items-center">
-        <button onclick="toggleModal('imageModal')" class="absolute -top-12 right-4 text-white hover:text-gray-300 transition-colors">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-        <img id="modalFullImage" src="" class="max-w-full max-h-[85vh] rounded-2xl shadow-2xl animate-zoom-in">
+    
+    <!-- Close Button - Fixed to Top Right -->
+    <button onclick="toggleModal('imageModal')" class="fixed top-8 right-8 text-white/70 hover:text-white transition-all z-[160] p-3 hover:bg-white/10 rounded-full group">
+        <svg class="w-8 h-8 transform group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+    </button>
+
+    <!-- Image Container -->
+    <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+        <img id="modalFullImage" src="" class="max-w-full max-h-[90vh] rounded-3xl shadow-2xl animate-zoom-in pointer-events-auto ring-1 ring-white/10">
     </div>
 </div>
 

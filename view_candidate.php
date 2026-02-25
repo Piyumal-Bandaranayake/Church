@@ -67,9 +67,12 @@ endif; ?>
         <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
             <!-- Header Section -->
             <div class="bg-primary p-8 text-white flex flex-col md:flex-row items-center gap-8">
-                <div class="w-40 h-40 shrink-0">
+                <div class="w-40 h-40 shrink-0 cursor-pointer group relative" onclick="openImageModal('<?php echo htmlspecialchars($img); ?>')">
                     <?php $img = !empty($candidate['photo_path']) ? $candidate['photo_path'] : 'https://via.placeholder.com/300?text=No+Photo'; ?>
-                    <img src="<?php echo htmlspecialchars($img); ?>" class="w-full h-full object-cover rounded-2xl shadow-2xl ring-4 ring-white/20">
+                    <img src="<?php echo htmlspecialchars($img); ?>" class="w-full h-full object-cover rounded-2xl shadow-2xl ring-4 ring-white/20 group-hover:ring-white/40 transition-all">
+                    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-2xl">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/></svg>
+                    </div>
                 </div>
                 <div class="text-center md:text-left">
                     <div class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3 <?php echo $candidate['status'] == 'approved' ? 'bg-green-500' : 'bg-orange-500'; ?>">
@@ -116,7 +119,7 @@ endif; ?>
                             </div>
                             <div class="flex justify-between border-b border-gray-50 pb-2">
                                 <span class="text-gray-500 text-sm">Height</span>
-                                <span class="font-semibold text-gray-900"><?php echo $candidate['height']; ?></span>
+                                <span class="font-semibold text-gray-900"><?php echo $candidate['height']; ?> ft</span>
                             </div>
                         </div>
                     </section>
