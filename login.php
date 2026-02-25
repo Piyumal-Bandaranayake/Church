@@ -26,6 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['fullname'];
                     $_SESSION['role'] = 'candidate';
+                    $_SESSION['denomination'] = $user['denomination'];
                     header("Location: profile.php");
                     exit();
                 }

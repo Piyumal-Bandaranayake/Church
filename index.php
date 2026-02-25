@@ -9,6 +9,15 @@ include 'includes/db.php';
 // Fetch approved reviews
 $reviews_stmt = $pdo->query("SELECT * FROM reviews WHERE status = 'approved' ORDER BY id DESC LIMIT 6");
 $reviews = $reviews_stmt->fetchAll(PDO::FETCH_ASSOC);
+// Get current user's denomination if role is candidate
+$user_denomination = $_SESSION['denomination'] ?? '';
+if (empty($user_denomination) && isset($_SESSION['role']) && $_SESSION['role'] === 'candidate') {
+    $user_stmt = $pdo->prepare("SELECT denomination FROM candidates WHERE id = ?");
+    $user_stmt->execute([$_SESSION['user_id']]);
+    $user_denomination = $user_stmt->fetchColumn();
+    $_SESSION['denomination'] = $user_denomination;
+}
+$display_denomination = !empty($user_denomination) ? strtoupper($user_denomination) : 'CATHOLIC';
 ?>
 
 
@@ -32,7 +41,7 @@ endif; ?>
 
     <!-- Content -->
     <div class="relative z-20 text-center px-4 max-w-5xl mx-auto">
-        <span class="inline-block py-1 px-3 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-sm font-semibold tracking-wide mb-6 animate-fade-in opacity-0" style="animation-delay: 0.1s;">CATHOLIC MARRIAGE CONNECTION</span>
+        <span class="inline-block py-1 px-3 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-sm font-semibold tracking-wide mb-6 animate-fade-in opacity-0" style="animation-delay: 0.1s;"><?php echo $display_denomination; ?> MARRIAGE CONNECTION</span>
         
         <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight animate-slide-up opacity-0" style="animation-delay: 0.2s;">
             Find Your Soulmate,<br>
@@ -40,7 +49,7 @@ endif; ?>
         </h1>
         
         <p class="text-xl md:text-2xl text-gray-200 mb-10 max-w-2xl mx-auto animate-slide-up opacity-0" style="animation-delay: 0.4s;">
-            Connecting Catholic hearts to build strong, lifelong marriages centered on Christ and shared values.
+            Connecting <?php echo ucfirst(strtolower($display_denomination)); ?> hearts to build strong, lifelong marriages centered on Christ and shared values.
         </p>
         
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up opacity-0" style="animation-delay: 0.6s;">
