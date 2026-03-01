@@ -44,12 +44,12 @@ endif; ?>
         <span class="inline-block py-1 px-3 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-sm font-semibold tracking-wide mb-6 animate-fade-in opacity-0" style="animation-delay: 0.1s;"><?php echo $display_denomination; ?> MARRIAGE CONNECTION</span>
         
         <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight animate-slide-up opacity-0" style="animation-delay: 0.2s;">
-            Find Your Soulmate,<br>
+            Find Your  Christian Soulmate,<br>
             <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-white">Blessed by Faith.</span>
         </h1>
         
         <p class="text-xl md:text-2xl text-gray-200 mb-10 max-w-2xl mx-auto animate-slide-up opacity-0" style="animation-delay: 0.4s;">
-            Connecting <?php echo ucfirst(strtolower($display_denomination)); ?> hearts to build strong, lifelong marriages centered on Christ and shared values.
+            Connecting Christian hearts to build strong, lifelong marriages centered on Christ and shared values.
         </p>
         
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up opacity-0" style="animation-delay: 0.6s;">

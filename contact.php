@@ -33,7 +33,7 @@ include 'includes/header.php'; ?>
         <div class="relative rounded-[3rem] overflow-hidden shadow-2xl bg-white border border-slate-100 reveal reveal-up">
             <div class="md:flex">
                 <div class="md:w-1/2 p-12 flex flex-col justify-center reveal reveal-left delay-200">
-                    <h2 class="text-3xl font-black text-primary mb-4 leading-tight">Join Us for Worship</h2>
+                    <h2 class="text-3xl font-black text-primary mb-4 leading-tight">Join Us to be with christ </h2>
                     <p class="text-slate-600 mb-8 leading-relaxed font-medium">
                         Whether you're visiting for the first time or looking for a home church, we'd love to welcome you. Our services are filled with authentic worship and practical teaching.
                     </p>

@@ -6,7 +6,7 @@ include 'includes/header.php'; ?>
      <div class="absolute inset-0 bg-gradient-to-br from-[#0a2540] via-[#1a3a5a] to-[#0a2540] z-0"></div>
      <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/graphy.png')] z-10"></div>
     <div class="relative z-20 container mx-auto px-4 mt-8">
-        <h1 class="text-5xl md:text-7xl font-black text-white mb-6 animate-fade-in tracking-tight">Iconic Churches</h1>
+        <h1 class="text-5xl md:text-7xl font-black text-white mb-6 animate-fade-in tracking-tight">Holy Spirit Church Sri Lanka </h1>
         <p class="text-xl md:text-2xl text-blue-100 max-w-2xl mx-auto font-medium opacity-90 leading-relaxed">Discover the most sacred and historic pilgrimage sites across Sri Lanka.</p>
     </div>
 </div>

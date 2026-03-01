@@ -285,13 +285,25 @@ endif; ?>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Age( වයස)</label>
                             <input type="number" name="age" required min="18" max="80" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
-                         <div>
+                        <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nationality( ජාතිය)</label>
-                            <input type="text" name="nationality" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <select name="nationality" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="" disabled selected>Select Nationality</option>
+                                <option value="Sri Lankan">Sri Lankan (ශ්‍රී ලාංකික)</option>
+                                <option value="Sinhalese">Sinhalese (සිංහල)</option>
+                                <option value="Tamil">Tamil (දෙමළ)</option>
+                                <option value="Burgher">Burgher (බර්ගර්)</option>
+                                <option value="Other">Other (වෙනත්)</option>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Mother Tongue(මව්බස)</label>
-                            <input type="text" name="language" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <select name="language" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="" disabled selected>Select Mother Tongue</option>
+                                <option value="Sinhala">Sinhala (සිංහල)</option>
+                                <option value="Tamil">Tamil (දෙමළ)</option>
+                                <option value="English">English (ඉංග්‍රීසි)</option>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Height in Feet (උස - අඩි)</label>
@@ -314,11 +326,49 @@ endif; ?>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">District(දිස්ත්‍රික්කය)</label>
-                            <input type="text" name="district" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <select name="district" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="" disabled selected>Select District</option>
+                                <option value="Ampara">Ampara (අම්පාර)</option>
+                                <option value="Anuradhapura">Anuradhapura (අනුරාධපුර)</option>
+                                <option value="Badulla">Badulla (බදුල්ල)</option>
+                                <option value="Batticaloa">Batticaloa (මඩකලපුව)</option>
+                                <option value="Colombo">Colombo (කොළඹ)</option>
+                                <option value="Galle">Galle (ගාල්ල)</option>
+                                <option value="Gampaha">Gampaha (ගම්පහ)</option>
+                                <option value="Hambantota">Hambantota (හම්බන්තොට)</option>
+                                <option value="Jaffna">Jaffna (යාපනය)</option>
+                                <option value="Kalutara">Kalutara (කළුතර)</option>
+                                <option value="Kandy">Kandy (මහනුවර)</option>
+                                <option value="Kegalle">Kegalle (කෑගල්ල)</option>
+                                <option value="Kilinochchi">Kilinochchi (කිලිනොච්චිය)</option>
+                                <option value="Kurunegala">Kurunegala (කුරුණෑගල)</option>
+                                <option value="Mannar">Mannar (මන්නාරම)</option>
+                                <option value="Matale">Matale (මාතලේ)</option>
+                                <option value="Matara">Matara (මාතර)</option>
+                                <option value="Moneragala">Moneragala (මොණරාගල)</option>
+                                <option value="Mullaitivu">Mullaitivu (මුලතිව්)</option>
+                                <option value="Nuwara Eliya">Nuwara Eliya (නුවර එළිය)</option>
+                                <option value="Polonnaruwa">Polonnaruwa (පොළොන්නරුව)</option>
+                                <option value="Puttalam">Puttalam (පුත්තලම)</option>
+                                <option value="Ratnapura">Ratnapura (රත්නපුර)</option>
+                                <option value="Trincomalee">Trincomalee (ත්‍රිකුණාමලය)</option>
+                                <option value="Vavuniya">Vavuniya (වවුනියාව)</option>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Province(පළාත)</label>
-                            <input type="text" name="province" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <select name="province" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="" disabled selected>Select Province</option>
+                                <option value="Western">Western (බස්නාහිර)</option>
+                                <option value="Central">Central (මධ්‍යම)</option>
+                                <option value="Southern">Southern (දකුණු)</option>
+                                <option value="Northern">Northern (උතුරු)</option>
+                                <option value="Eastern">Eastern (නැගෙනහිර)</option>
+                                <option value="North Western">North Western (වයඹ)</option>
+                                <option value="North Central">North Central (උතුරු මැද)</option>
+                                <option value="Uva">Uva (ඌව)</option>
+                                <option value="Sabaragamuwa">Sabaragamuwa (සබරගමුව)</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -333,7 +383,13 @@ endif; ?>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Educational Qualifications(අධ්‍යාපන සුදුසුකම්)</label>
-                            <textarea name="edu_qual" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Degrees, Diplomas, etc."></textarea>
+                            <select name="edu_qual" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="" disabled selected>Select Qualification</option>
+                                <option value="upto O/L">upto O/L (අපොස සාමාන්‍ය පෙළ දක්වා)</option>
+                                <option value="upto A/L">upto A/L (අපොස උසස් පෙළ දක්වා)</option>
+                                <option value="Degree">Degree (උපාධිය)</option>
+                                <option value="Other">Other (වෙනත්)</option>
+                            </select>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Additional Qualifications(අතිරේක සුදුසුකම්)</label>
@@ -366,7 +422,7 @@ endif; ?>
                             <textarea name="children_details" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="e.g., 2 children (Ages 5 and 8)"></textarea>
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Long-term Illness (requiring continuous treatment)(දීර්ඝ කාලීනව ප්‍රතිකාර ගන්නා වූ රෝගයකින් පෙළෙන්නේද)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Long-term Illness / Chronic Diseases (දීර්ඝ කාලීනව ප්‍රතිකාර ගන්නා වූ රෝගයකින් පෙළෙන්නේද)</label>
                             <textarea name="illness" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Describe if any, otherwise leave blank or type 'None'"></textarea>
                         </div>
                          <div class="md:col-span-2">
