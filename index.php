@@ -43,12 +43,14 @@ endif; ?>
     <div class="relative z-20 text-center px-4 max-w-5xl mx-auto">
         <span class="inline-block py-1 px-3 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-sm font-semibold tracking-wide mb-6 animate-fade-in opacity-0" style="animation-delay: 0.1s;"><?php echo $display_denomination; ?> MARRIAGE CONNECTION</span>
         
-        <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight animate-slide-up opacity-0" style="animation-delay: 0.2s;">
-            Find Your  Christian Soulmate,<br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-white">Blessed by Faith.</span>
+        <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight animate-slide-up opacity-0 min-h-[120px] md:min-h-[160px] flex items-center justify-center" style="animation-delay: 0.2s;">
+            <div id="hero-text-container" class="transition-opacity duration-500 opacity-100 w-full">
+                <span id="hero-line1">Find Your Christian Soulmate,</span><br>
+                <span id="hero-line2" class="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-white">Blessed by Faith.</span>
+            </div>
         </h1>
         
-        <p class="text-xl md:text-2xl text-gray-200 mb-10 max-w-2xl mx-auto animate-slide-up opacity-0" style="animation-delay: 0.4s;">
+        <p id="hero-subtext-container" class="text-xl md:text-2xl text-gray-200 mb-10 max-w-2xl mx-auto animate-slide-up opacity-0 transition-opacity duration-500" style="animation-delay: 0.4s;">
             Connecting Christian hearts to build strong, lifelong marriages centered on Christ and shared values.
         </p>
         
@@ -59,7 +61,7 @@ endif; ?>
                 </a>
             <?php
 else: ?>
-                <a href="registration_type.php" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-primary font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                <a href="guidelines.php" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-primary font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
                     Find Your Match
                 </a>
             <?php
@@ -99,6 +101,52 @@ endif; ?>
         if (totalSlides > 1) {
             setInterval(nextSlide, 5000);
         }
+
+        // Text animation for English/Sinhala
+        const heroContainer = document.getElementById('hero-text-container');
+        const heroLine1 = document.getElementById('hero-line1');
+        const heroLine2 = document.getElementById('hero-line2');
+        const heroSubtext = document.getElementById('hero-subtext-container');
+        
+        const texts = [
+            {
+                line1: 'Find Your Christian Soulmate,',
+                line2: 'Blessed by Faith.',
+                subtext: 'Connecting Christian hearts to build strong, lifelong marriages centered on Christ and shared values.'
+            },
+            {
+                line1: 'ඔබගේ කිතුනු සහකරු හෝ සහකාරිය සොයාගන්න',
+                line2: '',
+                subtext: 'ක්‍රිස්තුස් වහන්සේ සහ හවුල් වටිනාකම් මත පදනම් වූ ශක්තිමත්, ජීවිත කාලය පුරාම පවතින විවාහයන් ගොඩනැගීමට කිතුනු හදවත් සම්බන්ධ කිරීම.'
+            }
+        ];
+        
+        let currentTextIndex = 0;
+        const brElement = heroContainer.querySelector('br');
+        
+        setInterval(() => {
+            // Fade out
+            heroContainer.classList.replace('opacity-100', 'opacity-0');
+            heroSubtext.classList.replace('opacity-100', 'opacity-0');
+            
+            setTimeout(() => {
+                currentTextIndex = (currentTextIndex + 1) % texts.length;
+                heroLine1.innerText = texts[currentTextIndex].line1;
+                heroLine2.innerText = texts[currentTextIndex].line2;
+                heroSubtext.innerText = texts[currentTextIndex].subtext;
+                
+                if (texts[currentTextIndex].line2 === '') {
+                    brElement.style.display = 'none';
+                } else {
+                    brElement.style.display = 'inline';
+                }
+                
+                // Fade in
+                heroContainer.classList.replace('opacity-0', 'opacity-100');
+                heroSubtext.classList.replace('opacity-0', 'opacity-100');
+            }, 500); // Wait for fade out duration to complete
+            
+        }, 4000); // Switch text every 4 seconds
     });
 </script>
 
@@ -111,9 +159,11 @@ endif; ?>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="text-center mb-16 reveal reveal-up">
-            <h2 class="text-blue-600 font-bold text-sm tracking-uppercase uppercase mb-2">Beautiful Testimonies</h2>
-            <h3 class="text-4xl font-bold text-gray-900 mb-4">Blessed Success Stories</h3>
-            <p class="text-gray-500 max-w-2xl mx-auto">Discover how God has brought hearts together in our community. These are the stories of faith, love, and new beginnings.</p>
+            <div id="testimonies-text-container" class="transition-opacity duration-500 opacity-100">
+                <h2 id="testimonies-subtitle" class="text-blue-600 font-bold text-sm tracking-uppercase uppercase mb-2">Beautiful Testimonies</h2>
+                <h3 id="testimonies-title" class="text-4xl font-bold text-gray-900 mb-4">Blessed Success Stories</h3>
+                <p id="testimonies-desc" class="text-gray-500 max-w-2xl mx-auto">Discover how God has brought hearts together in our community. These are the stories of faith, love, and new beginnings.</p>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -170,6 +220,46 @@ endif; ?>
         </div>
     </div>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const testContainer = document.getElementById('testimonies-text-container');
+        if (!testContainer) return;
+        
+        const testSubtitle = document.getElementById('testimonies-subtitle');
+        const testTitle = document.getElementById('testimonies-title');
+        const testDesc = document.getElementById('testimonies-desc');
+        
+        const testTexts = [
+            {
+                subtitle: 'Beautiful Testimonies',
+                title: 'Blessed Success Stories',
+                desc: 'Discover how God has brought hearts together in our community. These are the stories of faith, love, and new beginnings.'
+            },
+            {
+                subtitle: 'අලංකාර සාක්ෂි',
+                title: 'ආශිර්වාද ලත් සාර්ථක කථා',
+                desc: 'දෙවියන් වහන්සේ අපගේ ප්‍රජාව තුළ හදවත් එකතු කර ඇති ආකාරය සොයා ගන්න. මේවා ඇදහිල්ලේ, ප්‍රේමයේ සහ නව ආරම්භයේ කථා වේ.'
+            }
+        ];
+        
+        let testTextIndex = 0;
+        
+        setInterval(() => {
+            testContainer.classList.replace('opacity-100', 'opacity-0');
+            
+            setTimeout(() => {
+                testTextIndex = (testTextIndex + 1) % testTexts.length;
+                testSubtitle.innerText = testTexts[testTextIndex].subtitle;
+                testTitle.innerText = testTexts[testTextIndex].title;
+                testDesc.innerText = testTexts[testTextIndex].desc;
+                
+                testContainer.classList.replace('opacity-0', 'opacity-100');
+            }, 500);
+            
+        }, 4000);
+    });
+</script>
 <?php endif; ?>
 
 

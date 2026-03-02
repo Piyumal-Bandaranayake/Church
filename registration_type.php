@@ -10,9 +10,18 @@ include 'includes/header.php';
             <h2 class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight">
                 Choose Your Denomination
             </h2>
-            <p class="mt-4 text-xl text-gray-600 font-medium">
+            <p class="mt-4 text-xl text-gray-600 font-medium mb-8">
                 To provide you with the best matches, please select your faith community.
             </p>
+            
+            <a href="registration_guide.php" class="inline-flex flex-col sm:flex-row items-center gap-2 px-8 py-3.5 bg-blue-50 text-blue-700 border border-blue-200 font-bold rounded-full hover:bg-blue-100 hover:shadow-md transition-all group mx-auto w-full sm:w-auto">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Read Registration Guide</span>
+                </div>
+                <span class="hidden sm:inline text-blue-300">|</span>
+                <span class="text-sm sm:text-base">ලියාපදිංචි වන ආකාරය</span>
+            </a>
         </div>
 
         <!-- Selection Cards -->
