@@ -189,82 +189,111 @@ include 'includes/admin_sidebar.php';
                 </div>
             </div>
 
-            <!-- Advanced Filtering Section -->
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 mb-12">
-                <form action="" method="GET" class="space-y-8">
-                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-gray-50 pb-6">
-                        <div class="flex-grow max-w-md">
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">
-                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                                </span>
-                                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search by name, hometown or job..." class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all">
-                            </div>
+            <!-- Compact Filtering Bar -->
+            <div class="mb-8 reveal reveal-up">
+                <form action="" method="GET" id="filterForm" class="space-y-4">
+                    <!-- Main Search & Sort Row -->
+                    <div class="bg-white p-4 rounded-3xl shadow-xl border border-gray-100 flex flex-col md:flex-row items-center gap-4">
+                        <!-- Search -->
+                        <div class="flex-grow w-full md:w-auto relative group">
+                            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 group-focus-within:text-primary transition-colors">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            </span>
+                            <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search name, hometown, job..." class="w-full pl-11 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-primary/10 outline-none transition-all">
                         </div>
-                        <div class="flex items-center gap-6">
-                            <div class="flex items-center gap-2">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sort:</label>
-                                <select name="sort" onchange="this.form.submit()" class="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
-                                    <option value="latest" <?php echo $sort === 'latest' ? 'selected' : ''; ?>>Latest</option>
-                                    <option value="age_asc" <?php echo $sort === 'age_asc' ? 'selected' : ''; ?>>Age ↑</option>
-                                    <option value="age_desc" <?php echo $sort === 'age_desc' ? 'selected' : ''; ?>>Age ↓</option>
+
+                        <div class="flex items-center gap-2 w-full md:w-auto">
+                            <!-- Advanced Filter Toggle -->
+                            <button type="button" onclick="toggleFilters()" class="flex-grow md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-gray-50 hover:bg-gray-100 text-gray-600 font-bold text-xs rounded-2xl transition-all border border-transparent hover:border-gray-200">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                                Filters
+                                <?php 
+                                $active_filters = 0;
+                                if($age_min || $age_max) $active_filters++;
+                                if($district) $active_filters++;
+                                if($height_min || $height_max) $active_filters++;
+                                if($church) $active_filters++;
+                                if($civil_status) $active_filters++;
+                                if($education) $active_filters++;
+                                if($active_filters > 0): ?>
+                                    <span class="bg-primary text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center"><?php echo $active_filters; ?></span>
+                                <?php endif; ?>
+                            </button>
+
+                            <!-- Sort Dropdown -->
+                            <select name="sort" onchange="this.form.submit()" class="flex-grow md:flex-none bg-primary text-white border-none rounded-2xl text-xs font-bold px-5 py-3 outline-none focus:ring-4 focus:ring-primary/20 cursor-pointer appearance-none shadow-lg shadow-primary/20">
+                                <option value="latest" <?php echo $sort === 'latest' ? 'selected' : ''; ?>>Latest</option>
+                                <option value="age_asc" <?php echo $sort === 'age_asc' ? 'selected' : ''; ?>>Age ↑</option>
+                                <option value="age_desc" <?php echo $sort === 'age_desc' ? 'selected' : ''; ?>>Age ↓</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Expanded Filters (Hidden by Default) -->
+                    <div id="advancedFilters" class="<?php echo $active_filters > 0 ? '' : 'hidden'; ?> bg-white p-8 rounded-[2.5rem] shadow-2xl border border-gray-100 animate-slide-down">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <!-- Age Filter -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Age Range</label>
+                                <div class="flex gap-2">
+                                    <input type="number" name="age_min" value="<?php echo htmlspecialchars($age_min); ?>" placeholder="Min" class="w-1/2 bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                                    <input type="number" name="age_max" value="<?php echo htmlspecialchars($age_max); ?>" placeholder="Max" class="w-1/2 bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                                </div>
+                            </div>
+
+                            <!-- District Filter -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">District</label>
+                                <select name="district" class="w-full bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                                    <option value="">All Districts</option>
+                                    <?php 
+                                    $districts = ['Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle', 'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle', 'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale', 'Matara', 'Moneragala', 'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 'Puttalam', 'Ratnapura', 'Trincomalee', 'Vavuniya'];
+                                    foreach($districts as $d): ?>
+                                        <option value="<?php echo $d; ?>" <?php echo $district === $d ? 'selected' : ''; ?>><?php echo $d; ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <!-- Age Filter -->
-                        <div class="space-y-3">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Age Range</label>
-                            <div class="flex gap-2">
-                                <input type="number" name="age_min" value="<?php echo htmlspecialchars($age_min); ?>" placeholder="Min" class="w-1/2 bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
-                                <input type="number" name="age_max" value="<?php echo htmlspecialchars($age_max); ?>" placeholder="Max" class="w-1/2 bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
+                            <!-- Height Filter -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Height (Ft)</label>
+                                <div class="flex gap-2">
+                                    <input type="number" name="height_min" step="0.1" value="<?php echo htmlspecialchars($height_min); ?>" placeholder="Min" class="w-1/2 bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                                    <input type="number" name="height_max" step="0.1" value="<?php echo htmlspecialchars($height_max); ?>" placeholder="Max" class="w-1/2 bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                                </div>
+                            </div>
+
+                            <!-- Civil Status -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Civil Status</label>
+                                <select name="civil_status" class="w-full bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                                    <option value="">Any</option>
+                                    <option value="Unmarried" <?php echo $civil_status === 'Unmarried' ? 'selected' : ''; ?>>Unmarried</option>
+                                    <option value="Divorced" <?php echo $civil_status === 'Divorced' ? 'selected' : ''; ?>>Divorced</option>
+                                    <option value="Widowed" <?php echo $civil_status === 'Widowed' ? 'selected' : ''; ?>>Widowed</option>
+                                </select>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="flex items-end gap-2 lg:col-span-1">
+                                <button type="submit" class="flex-grow bg-primary text-white font-bold text-xs py-3 rounded-xl hover:shadow-lg transition-all">
+                                    Apply Filters
+                                </button>
+                                <a href="approved_christian.php" class="p-3 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all group" title="Clear Filters">
+                                    <svg class="w-4 h-4 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </a>
                             </div>
                         </div>
-
-                        <!-- District Filter -->
-                        <div class="space-y-3">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">District</label>
-                            <select name="district" class="w-full bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
-                                <option value="">All Districts</option>
-                                <?php 
-                                $districts = ['Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle', 'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle', 'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale', 'Matara', 'Moneragala', 'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 'Puttalam', 'Ratnapura', 'Trincomalee', 'Vavuniya'];
-                                foreach($districts as $d): ?>
-                                    <option value="<?php echo $d; ?>" <?php echo $district === $d ? 'selected' : ''; ?>><?php echo $d; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <!-- Height -->
-                        <div class="space-y-3">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Height (Ft)</label>
-                            <div class="flex gap-2">
-                                <input type="number" name="height_min" step="0.1" value="<?php echo htmlspecialchars($height_min); ?>" placeholder="Min" class="w-1/2 bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
-                                <input type="number" name="height_max" step="0.1" value="<?php echo htmlspecialchars($height_max); ?>" placeholder="Max" class="w-1/2 bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
-                            </div>
-                        </div>
-
-                        <!-- Job Category -->
-                        <div class="space-y-3">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Job Category</label>
-                            <select name="job" class="w-full bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
-                                <option value="">Any Job</option>
-                                <option value="Govt" <?php echo $job === 'Govt' ? 'selected' : ''; ?>>Government</option>
-                                <option value="Business" <?php echo $job === 'Business' ? 'selected' : ''; ?>>Business</option>
-                                <option value="Student" <?php echo $job === 'Student' ? 'selected' : ''; ?>>Student</option>
-                                <option value="Unemployed" <?php echo $job === 'Unemployed' ? 'selected' : ''; ?>>Unemployed</option>
-                                <option value="Ministry" <?php echo $job === 'Ministry' ? 'selected' : ''; ?>>Ministry</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end gap-3 pt-4">
-                        <a href="approved_christian.php" class="px-6 py-3 bg-gray-100 text-gray-500 rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-gray-200 transition-all">Clear</a>
-                        <button type="submit" class="px-8 py-3 bg-primary text-white rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">Apply Filters</button>
                     </div>
                 </form>
             </div>
+
+            <script>
+                function toggleFilters() {
+                    const panel = document.getElementById('advancedFilters');
+                    panel.classList.toggle('hidden');
+                }
+            </script>
 
             <?php if (isset($_GET['success'])): ?>
                 <div class="mb-10 p-5 rounded-3xl bg-green-50 border border-green-100 text-green-700 flex items-center gap-4 animate-fade-in shadow-sm font-bold text-xs uppercase tracking-tight">
