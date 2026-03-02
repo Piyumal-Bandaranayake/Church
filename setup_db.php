@@ -36,6 +36,7 @@ try {
         parent_phone VARCHAR(20) NOT NULL,
         my_phone VARCHAR(20) NOT NULL,
         photo_path VARCHAR(255),
+        payment_slip_path VARCHAR(255),
         status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );";
@@ -58,7 +59,8 @@ try {
         'nic_number' => "VARCHAR(20) NOT NULL UNIQUE AFTER catholic_by_birth",
         'christianization_year' => "INT DEFAULT NULL AFTER nic_number",
         'sacraments_received' => "TEXT AFTER christianization_year",
-        'children_details' => "TEXT AFTER children"
+        'children_details' => "TEXT AFTER children",
+        'payment_slip_path' => "VARCHAR(255) AFTER photo_path"
     ];
 
     foreach ($columns_to_add as $column => $definition) {
