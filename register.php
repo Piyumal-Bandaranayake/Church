@@ -116,7 +116,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Photo Upload Validation
     $photo_path = null;
+    $payment_slip_path = null;
+
     if (empty($error)) {
+        // --- Photo Upload ---
         if (isset($_FILES['file-upload']) && $_FILES['file-upload']['error'] == 0) {
             $allowed = ['jpg', 'jpeg', 'png', 'gif'];
             $ext = strtolower(pathinfo($_FILES['file-upload']['name'], PATHINFO_EXTENSION));
@@ -142,14 +145,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $error = "Please upload a clear photograph of yourself.";
         }
+
+        // --- Payment Slip Upload ---
+        if (empty($error)) {
+            if (isset($_FILES['payment-slip']) && $_FILES['payment-slip']['error'] == 0) {
+                $allowed_slip = ['jpg', 'jpeg', 'png', 'pdf'];
+                $ext_slip = strtolower(pathinfo($_FILES['payment-slip']['name'], PATHINFO_EXTENSION));
+                $size_slip = $_FILES['payment-slip']['size'];
+
+                if (!in_array($ext_slip, $allowed_slip)) {
+                    $error = "Invalid format for payment slip. Only JPG, PNG and PDF are allowed.";
+                }
+                elseif ($size_slip > 5 * 1024 * 1024) {
+                    $error = "Payment slip size must be less than 5MB.";
+                }
+                else {
+                    $target_dir_slip = "uploads/payment_slips/";
+                    if (!is_dir($target_dir_slip)) mkdir($target_dir_slip, 0777, true);
+                    $file_name_slip = 'slip_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext_slip;
+                    $target_file_slip = $target_dir_slip . $file_name_slip;
+                    if (move_uploaded_file($_FILES["payment-slip"]["tmp_name"], $target_file_slip)) {
+                        $payment_slip_path = $target_file_slip;
+                    } else {
+                        $error = "Failed to save payment slip.";
+                    }
+                }
+            } else {
+                $error = "Please upload the payment slip to proceed with registration.";
+            }
+        }
     }
 
     if (empty($error)) {
         $password = password_hash($password_raw, PASSWORD_DEFAULT);
         try {
-            $sql = "INSERT INTO candidates (email, password, denomination, catholic_by_birth, nic_number, christianization_year, sacraments_received, fullname, sex, dob, age, nationality, language, address, hometown, district, province, height, occupation, edu_qual, add_qual, marital_status, children, children_details, illness, habits, church, pastor_name, pastor_phone, parent_phone, my_phone, photo_path, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
+            $sql = "INSERT INTO candidates (email, password, denomination, catholic_by_birth, nic_number, christianization_year, sacraments_received, fullname, sex, dob, age, nationality, language, address, hometown, district, province, height, occupation, edu_qual, add_qual, marital_status, children, children_details, illness, habits, church, pastor_name, pastor_phone, parent_phone, my_phone, photo_path, payment_slip_path, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$email, $password, $denomination, $catholic_by_birth, $nic_number, $christianization_year, $sacraments, $fullname, $sex, $dob, $age, $nationality, $language, $address, $hometown, $district, $province, $height, $occupation, $edu_qual, $add_qual, $marital_status, $children, $children_details, $illness, $habits, $church, $pastor_name, $pastor_phone, $parent_phone, $my_phone, $photo_path]);
+            $stmt->execute([$email, $password, $denomination, $catholic_by_birth, $nic_number, $christianization_year, $sacraments, $fullname, $sex, $dob, $age, $nationality, $language, $address, $hometown, $district, $province, $height, $occupation, $edu_qual, $add_qual, $marital_status, $children, $children_details, $illness, $habits, $church, $pastor_name, $pastor_phone, $parent_phone, $my_phone, $photo_path, $payment_slip_path]);
 
             header("Location: login.php?registered=true");
             exit();
@@ -239,7 +271,7 @@ endif; ?>
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Catholic by birth?(උපතින් කතෝලිකද?)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Catholic by birth? (උපතින් කතෝලිකද?)</label>
                             <select name="catholic_by_birth" onchange="toggleChristianization(this.value)" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 <option value="Yes">Yes</option>
                                 <option value="No">No</option>
@@ -262,7 +294,7 @@ endif; ?>
                     <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Personal Details</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name( නම)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name (නම)</label>
                             <input type="text" name="fullname" required minlength="3" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         
@@ -271,22 +303,22 @@ endif; ?>
                             <input type="text" name="nic_number" required placeholder="Ex: 199012345678 or 901234567V" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent uppercase">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Sex( ස්ත්‍රී පුරුෂ භාවය)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Sex (ස්ත්‍රී පුරුෂ භාවය)</label>
                             <select name="sex" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 <option>Male</option>
                                 <option>Female</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth(උපන්දිනය)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth (උපන්දිනය)</label>
                             <input type="date" name="dob" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Age( වයස)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Age (වයස)</label>
                             <input type="number" name="age" required min="18" max="80" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nationality( ජාතිය)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nationality (ජාතිය)</label>
                             <select name="nationality" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 <option value="" disabled selected>Select Nationality</option>
                                 <option value="Sri Lankan">Sri Lankan (ශ්‍රී ලාංකික)</option>
@@ -297,7 +329,7 @@ endif; ?>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Mother Tongue(මව්බස)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Mother Tongue (මව්බස)</label>
                             <select name="language" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 <option value="" disabled selected>Select Mother Tongue</option>
                                 <option value="Sinhala">Sinhala (සිංහල)</option>
@@ -317,15 +349,15 @@ endif; ?>
                     <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Location</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Permanent Address(ස්ථිර පදිංචි)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Permanent Address (ස්ථිර පදිංචි)</label>
                             <textarea name="address" rows="2" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Hometown(ගම)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Hometown (ගම)</label>
                             <input type="text" name="hometown" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">District(දිස්ත්‍රික්කය)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">District (දිස්ත්‍රික්කය)</label>
                             <select name="district" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 <option value="" disabled selected>Select District</option>
                                 <option value="Ampara">Ampara (අම්පාර)</option>
@@ -356,7 +388,7 @@ endif; ?>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Province(පළාත)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Province (පළාත)</label>
                             <select name="province" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 <option value="" disabled selected>Select Province</option>
                                 <option value="Western">Western (බස්නාහිර)</option>
@@ -375,14 +407,14 @@ endif; ?>
 
                  <!-- Professional & Education -->
                  <div>
-                    <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Education & Profession(අධ්‍යාපනය හා වෘත්තිය)</h2>
+                    <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Education & Profession (අධ්‍යාපනය හා වෘත්තිය)</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                          <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Occupation(වෘත්තිය)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Occupation (වෘත්තිය)</label>
                             <input type="text" name="occupation" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Educational Qualifications(අධ්‍යාපන සුදුසුකම්)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Educational Qualifications (අධ්‍යාපන සුදුසුකම්)</label>
                             <select name="edu_qual" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 <option value="" disabled selected>Select Qualification</option>
                                 <option value="upto O/L">upto O/L (අපොස සාමාන්‍ය පෙළ දක්වා)</option>
@@ -392,18 +424,18 @@ endif; ?>
                             </select>
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Additional Qualifications(අතිරේක සුදුසුකම්)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Additional Qualifications (අතිරේක සුදුසුකම්)</label>
                             <textarea name="add_qual" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Skills, Certifications, etc."></textarea>
                         </div>
                     </div>
                 </div>
 
                 <!-- Marital Status & Habits -->
-                <div>
-                    <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Personal Background(පෞද්ගලික පසුබිම)</h2>
+                 <div>
+                    <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Personal Background (පෞද්ගලික පසුබිම)</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Marital Status(විවාහක තත්ත්වය)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Marital Status (විවාහක තත්ත්වය)</label>
                             <select name="marital_status" onchange="toggleChildren(this.value)" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 <option value="Unmarried">Unmarried</option>
                                 <option value="Divorced">Divorced</option>
@@ -411,7 +443,7 @@ endif; ?>
                             </select>
                         </div>
                         <div id="children_field" class="hidden">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Do you have children?(ඔබට දරුවන් සිටීද?)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Do you have children? (ඔබට දරුවන් සිටීද?)</label>
                             <select name="children" onchange="toggleChildrenDetails(this.value)" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 <option value="No">No</option>
                                 <option value="Yes">Yes</option>
@@ -459,10 +491,10 @@ endif; ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                <?php echo $denomination === 'Christian' ? 'Mustache (නිකාය)' : 'Denomination / Church Name (නිකාය හෝ දේවස්ථානය)'; ?>
+                                <?php echo $denomination === 'Christian' ? 'Denomination (නිකාය)' : 'Church Name (දේවස්ථානය)'; ?>
                             </label>
                             <?php if ($denomination === 'Christian'): ?>
-                                <input type="text" name="church" required placeholder="Enter your Ministry / Mustache Name" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <input type="text" name="church" required placeholder="Enter your Ministry / Denomination Name" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                             <?php else: ?>
                                 <select name="church" id="church_select" onchange="toggleOtherChurch(this.value)" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                     <option value="" disabled selected>Select your church</option>
@@ -480,15 +512,15 @@ endif; ?>
                             <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider border-b pb-2 mb-4">Manual Church Details</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="md:col-span-2">
-                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Name of Church(දේවස්ථානය)</label>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Name of Church (දේවස්ථානය)</label>
                                     <input type="text" name="other_church_name" id="other_church_name" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Chief Pastor(ප්‍රධාන දේවගැතිතුමාගේ නම)</label>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1"><?php echo $denomination === 'Christian' ? 'Chief Pastor (ප්‍රධාන දේවගැතිතුමාගේ නම)' : 'Chief Father (ප්‍රධාන පියතුමාගේ නම)'; ?></label>
                                     <input type="text" name="other_church_pastor" id="other_church_pastor" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Location City(නගරය)</label>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Location City (නගරය)</label>
                                     <input type="text" name="other_church_location" id="other_church_location" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 </div>
                                 <div class="md:col-span-2 flex flex-col items-start gap-3">
@@ -503,22 +535,22 @@ endif; ?>
                         <?php endif; ?>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                <?php echo $denomination === 'Christian' ? 'Father Name (පියතුමාගේ නම)' : 'Name of Pastor (ප්‍රධාන දේවගැතිතුමාගේ නම)'; ?>
+                                <?php echo $denomination === 'Christian' ? 'Name of Pastor (ප්‍රධාන දේවගැතිතුමාගේ නම)' : 'Father Name (පියතුමාගේ නම)'; ?>
                             </label>
                             <input type="text" name="pastor_name" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                <?php echo $denomination === 'Christian' ? "Father's WhatsApp (පියතුමාගේ වට්ස්ඇප් අංකය)" : "Pastor's WhatsApp (දේවගැතිතුමාගේ වට්ස්ඇප් අංකය)"; ?>
+                                <?php echo $denomination === 'Christian' ? "Pastor's WhatsApp (දේවගැතිතුමාගේ වට්ස්ඇප් අංකය)" : "Father's WhatsApp (පියතුමාගේ වට්ස්ඇප් අංකය)"; ?>
                             </label>
                             <input type="tel" name="pastor_phone" required pattern="[0-9+]{9,15}" title="Please enter a valid phone number (9-15 digits)" placeholder="07XXXXXXXX" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Parent's WhatsApp(දෙමාපියන්ගේ වට්ස්ඇප් අංකය)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Parent's WhatsApp (දෙමාපියන්ගේ වට්ස්ඇප් අංකය)</label>
                             <input type="tel" name="parent_phone" required pattern="[0-9+]{9,15}" title="Please enter a valid phone number (9-15 digits)" placeholder="07XXXXXXXX" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                          <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Your WhatsApp(ඔබගේ වට්ස්ඇප් අංකය)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Your WhatsApp (ඔබගේ වට්ස්ඇප් අංකය)</label>
                             <input type="tel" name="my_phone" required pattern="[0-9+]{9,15}" title="Please enter a valid phone number (9-15 digits)" placeholder="07XXXXXXXX" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                     </div>
@@ -529,7 +561,7 @@ endif; ?>
                     <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Verification</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Recent Photograph (Face clearly visible)(මෑතකදී ගත් ඡායාරූපයක් (මුහුණ පැහැදිලිව පෙනෙන))</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Recent Photograph (Face clearly visible) (මෑතකදී ගත් ඡායාරූපයක් (මුහුණ පැහැදිලිව පෙනෙන))</label>
                              <div class="mt-1 flex flex-col items-center justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-primary transition-colors cursor-pointer bg-gray-50 relative group">
                                 <div id="preview-container" class="hidden w-48 h-64 mb-4 rounded-xl overflow-hidden shadow-lg border-4 border-white">
                                     <img id="image-preview" src="#" alt="Preview" class="w-full h-full object-cover">
@@ -549,8 +581,71 @@ endif; ?>
                                         </label>
                                         <p class="pl-1">or drag and drop</p>
                                     </div>
-                                    <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                    <p class="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Slip Section -->
+                        <div class="md:col-span-2 mt-8 space-y-6">
+                            <!-- Static Payment details -->
+                            <div class="bg-blue-50/50 p-6 rounded-2xl border-2 border-dashed border-blue-200">
+                                <h3 class="text-md font-black text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                    Payment Instructions (ගෙවීම් උපදෙස්)
+                                </h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                    <div class="space-y-1">
+                                        <p class="text-gray-500 font-bold uppercase text-[10px]">Bank Name (බැංකුව)</p>
+                                        <p class="text-gray-900 font-black">National Savings Bank (NSB)</p>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <p class="text-gray-500 font-bold uppercase text-[10px]">Branch (ශාඛාව)</p>
+                                        <p class="text-gray-900 font-black">Matale</p>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <p class="text-gray-500 font-bold uppercase text-[10px]">Account Number (ගිණුම් අංකය)</p>
+                                        <p class="text-gray-900 font-black">101230101234</p>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <p class="text-gray-500 font-bold uppercase text-[10px]">Account Holder (ගිණුමේ නම)</p>
+                                        <p class="text-gray-900 font-black">Church Admin Office</p>
+                                    </div>
+                                    <div class="sm:col-span-2 pt-2 border-t border-blue-100">
+                                        <p class="text-primary font-bold">Registration Fee: Rs. 1,000.00</p>
+                                    </div>
+                                </div>
+                                <p class="mt-4 text-[11px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
+                                    Note: This payment is for office verification purposes only. (සටහන: මෙම ගෙවීම කාර්යාලීය ප්‍රයෝජනය සඳහා පමණි.)
+                                </p>
+                            </div>
+
+                            <!-- File input for slip -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Upload Payment Slip (ගෙවීම් පත මෙහි ඇතුළත් කරන්න)</label>
+                                <div class="mt-1 flex flex-col items-center justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-primary transition-colors cursor-pointer bg-white relative group">
+                                    <div id="slip-preview-container" class="hidden w-48 h-64 mb-4 rounded-xl overflow-hidden shadow-lg border-4 border-white">
+                                        <img id="slip-preview" src="#" alt="Slip Preview" class="w-full h-full object-cover">
+                                        <button type="button" onclick="removeSlip(event)" class="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="slip-placeholder" class="space-y-1 text-center">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                        <div class="flex text-sm text-gray-600">
+                                            <label for="payment-slip" class="relative cursor-pointer bg-white rounded-md font-medium text-primary hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary">
+                                                <span>Upload Slip</span>
+                                                <input id="payment-slip" name="payment-slip" type="file" class="sr-only" required onchange="previewSlip(this)" accept="image/*,application/pdf">
+                                            </label>
+                                            <p class="pl-1">or drag and drop</p>
+                                        </div>
+                                        <p class="text-xs text-gray-500">PNG, JPG or PDF up to 5MB</p>
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-[10px] text-orange-600 font-bold uppercase tracking-widest">Mandatory to register * (ලියාපදිංචි වීමට අනිවාර්ය වේ)</p>
                             </div>
                         </div>
                     </div>
@@ -736,6 +831,54 @@ async function saveNewChurch() {
         btn.disabled = false;
         btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg> Save Church Details`;
     }
+}
+
+function previewSlip(input) {
+    const preview = document.getElementById('slip-preview');
+    const container = document.getElementById('slip-preview-container');
+    const placeholder = document.getElementById('slip-placeholder');
+    const file = input.files[0];
+    
+    if (file) {
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (!['jpg', 'jpeg', 'png', 'pdf'].includes(ext)) {
+            alert('Only JPG, PNG and PDF files are allowed.');
+            input.value = '';
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Slip size must be less than 5MB.');
+            input.value = '';
+            return;
+        }
+
+        if (ext === 'pdf') {
+            preview.src = "https://cdn-icons-png.flaticon.com/512/337/337946.png"; 
+            container.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        } else {
+            const reader = new FileReader();
+            reader.onloadend = function () {
+                preview.src = reader.result;
+                container.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+}
+
+function removeSlip(event) {
+    event.stopPropagation();
+    const input = document.getElementById('payment-slip');
+    const preview = document.getElementById('slip-preview');
+    const container = document.getElementById('slip-preview-container');
+    const placeholder = document.getElementById('slip-placeholder');
+    
+    input.value = "";
+    preview.src = "";
+    container.classList.add('hidden');
+    placeholder.classList.remove('hidden');
 }
 
 function removeImage(event) {

@@ -13,7 +13,7 @@ if (isset($_GET['approve_review'])) {
     $sql = "UPDATE reviews SET status = 'approved' WHERE id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id]);
-    header("Location: manage_testimonies.php?success=review_approved");
+    header("Location: " . $redirect_base . "success=review_approved");
     exit();
 }
 
@@ -22,7 +22,7 @@ if (isset($_GET['reject_review'])) {
     $sql = "UPDATE reviews SET status = 'rejected' WHERE id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id]);
-    header("Location: manage_testimonies.php?success=review_rejected");
+    header("Location: " . $redirect_base . "success=review_rejected");
     exit();
 }
 
@@ -43,11 +43,11 @@ if (isset($_GET['delete_review'])) {
     $sql = "DELETE FROM reviews WHERE id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id]);
-    header("Location: manage_testimonies.php?success=review_deleted");
+    header("Location: " . $redirect_base . "success=review_deleted");
     exit();
 }
 
-// Search Logic
+// Search & Sort Logic
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $search_query = "";
 $params = [];
@@ -57,15 +57,34 @@ if ($search !== '') {
     $params = ["%$search%", "%$search%"];
 }
 
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'latest';
+$order_by = "created_at DESC";
+if ($sort === 'oldest') {
+    $order_by = "created_at ASC";
+} elseif ($sort === 'name_asc') {
+    $order_by = "name ASC";
+}
+
+
 // Fetch Pending Reviews
-$stmt = $pdo->prepare("SELECT * FROM reviews WHERE status = 'pending' $search_query ORDER BY created_at DESC");
+$stmt = $pdo->prepare("SELECT * FROM reviews WHERE status = 'pending' $search_query ORDER BY $order_by");
 $stmt->execute($params);
 $pending_reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Fetch Approved Reviews
-$stmt = $pdo->prepare("SELECT * FROM reviews WHERE status = 'approved' $search_query ORDER BY created_at DESC");
+$stmt = $pdo->prepare("SELECT * FROM reviews WHERE status = 'approved' $search_query ORDER BY $order_by");
 $stmt->execute($params);
 $approved_reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Helper for redirect URL
+$current_params = $_GET;
+unset($current_params['success']);
+unset($current_params['approve_review']);
+unset($current_params['reject_review']);
+unset($current_params['delete_review']);
+$redirect_query = http_build_query($current_params);
+$redirect_base = "manage_testimonies.php?" . ($redirect_query ? $redirect_query . "&" : "");
+
 ?>
 
 <?php include 'includes/admin_head.php'; ?>
@@ -80,22 +99,45 @@ $approved_reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <p class="text-gray-500 mt-2">Moderate and manage success stories from our couples.</p>
                 </div>
 
-                <!-- Search Bar -->
-                <div class="w-full md:w-96">
-                    <form action="" method="GET" class="relative group">
-                        <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search by name or content..." 
-                               class="w-full pl-12 pr-4 py-3.5 bg-white border border-gray-200 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all shadow-sm group-hover:shadow-md">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-400 group-focus-within:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <!-- Compact Filtering Bar -->
+            <div class="mb-10 reveal reveal-up">
+                <form action="" method="GET" id="filterForm" class="flex flex-col md:flex-row items-center gap-4">
+                    <!-- Main Search & Sort Card -->
+                    <div class="bg-white p-3 rounded-3xl shadow-xl border border-gray-100 flex flex-col md:flex-row items-center gap-3 w-full">
+                        <!-- Search Box -->
+                        <div class="flex-grow w-full md:w-auto relative group">
+                            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 group-focus-within:text-primary transition-colors">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            </span>
+                            <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search couple name or testimony content..." class="w-full pl-11 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-primary/10 outline-none transition-all">
                         </div>
-                        <?php if ($search): ?>
-                            <a href="manage_testimonies.php" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-red-500">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                            </a>
-                        <?php
-endif; ?>
-                    </form>
-                </div>
+
+                        <div class="flex items-center gap-2 w-full md:w-auto">
+                            <!-- Hidden submit button for Enter key support -->
+                            <button type="submit" class="hidden"></button>
+                            
+                            <!-- Search Button -->
+                            <button type="submit" class="flex-grow md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white font-bold text-xs rounded-2xl transition-all shadow-lg shadow-primary/20 hover:bg-primary/90">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                Search
+                            </button>
+
+                            <!-- Sort Dropdown -->
+                            <select name="sort" onchange="this.form.submit()" class="flex-grow md:flex-none bg-gray-50 border-none rounded-2xl text-xs font-bold px-5 py-3 outline-none focus:ring-2 focus:ring-primary/10 cursor-pointer appearance-none">
+                                <option value="latest" <?php echo $sort === 'latest' ? 'selected' : ''; ?>>Latest</option>
+                                <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest</option>
+                                <option value="name_asc" <?php echo $sort === 'name_asc' ? 'selected' : ''; ?>>Name (A-Z)</option>
+                            </select>
+
+                            <?php if ($search): ?>
+                                <a href="manage_testimonies.php" class="p-3 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all group" title="Clear Search">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </form>
+            </div>
             </div>
 
             <!-- Feedback Messages -->

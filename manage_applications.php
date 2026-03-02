@@ -78,11 +78,17 @@ if (isset($_GET['reject'])) {
 
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
-    $stmt = $pdo->prepare("SELECT photo_path FROM candidates WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT photo_path, payment_slip_path FROM candidates WHERE id = ?");
     $stmt->execute([$id]);
-    $photo = $stmt->fetchColumn();
-    if ($photo && file_exists($photo)) {
-        unlink($photo);
+    $res = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($res) {
+        if ($res['photo_path'] && file_exists($res['photo_path'])) {
+            unlink($res['photo_path']);
+        }
+        if ($res['payment_slip_path'] && file_exists($res['payment_slip_path'])) {
+            unlink($res['payment_slip_path']);
+        }
     }
 
     $sql = "DELETE FROM candidates WHERE id = ?";

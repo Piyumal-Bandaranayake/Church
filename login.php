@@ -111,11 +111,15 @@ endif; ?>
                 </button>
             </form>
 
-            <div class="mt-8 pt-8 border-t border-gray-100 text-center reveal reveal-up delay-700">
-                <p class="text-sm text-gray-600">
-                    Don't have an account? 
-                    <a href="registration_type.php" class="font-bold text-primary hover:underline">Register here</a>
-                </p>
+            <div class="mt-8 pt-8 border-t border-gray-100 reveal reveal-up delay-700">
+                <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100/50 text-center">
+                    <p class="text-sm text-gray-600 mb-3">Don't have an account yet?</p>
+                    <a href="registration_type.php" class="inline-flex items-center justify-center gap-2 w-full py-3 bg-white text-primary border-2 border-primary hover:bg-primary hover:text-white font-black rounded-xl transition-all duration-300 shadow-sm group">
+                        Register Your Profile
+                        <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </a>
+                    <p class="mt-3 text-[10px] text-blue-400 font-bold uppercase tracking-widest">Join our faithful community today</p>
+                </div>
             </div>
         </div>
     </div>
