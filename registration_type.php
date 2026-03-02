@@ -10,15 +10,46 @@ include 'includes/header.php';
             <h2 class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight">
                 Choose Your Denomination
             </h2>
-            <p class="mt-4 text-xl text-gray-600 font-medium">
+            <p class="mt-4 text-xl text-gray-600 font-medium mb-8">
                 To provide you with the best matches, please select your faith community.
             </p>
+            
+            <a href="registration_guide.php" class="inline-flex flex-col sm:flex-row items-center gap-2 px-8 py-3.5 bg-blue-50 text-blue-700 border border-blue-200 font-bold rounded-full hover:bg-blue-100 hover:shadow-md transition-all group mx-auto w-full sm:w-auto">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Read Registration Guide</span>
+                </div>
+                <span class="hidden sm:inline text-blue-300">|</span>
+                <span class="text-sm sm:text-base">ලියාපදිංචි වන ආකාරය</span>
+            </a>
         </div>
 
         <!-- Selection Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+            <!-- Christian Card -->
+            <a href="register.php?type=christian" class="group relative overflow-hidden bg-white rounded-3xl shadow-2xl hover:shadow-primary/20 transition-all duration-500 transform hover:-translate-y-2 reveal reveal-left delay-100">
+                <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div class="p-10 flex flex-col items-center text-center space-y-6 relative z-10">
+                    <div class="w-24 h-24 bg-primary/5 rounded-2xl flex items-center justify-center group-hover:bg-primary transition-colors duration-500 shadow-inner">
+                        <svg class="w-12 h-12 text-primary group-hover:text-white transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v18M8 7h8" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900 group-hover:text-primary transition-colors duration-300">Pentecostal Christian</h3>
+                        <p class="mt-3 text-gray-500 leading-relaxed font-medium">
+                            Connect with the Pentecostal Christian community and build long-lasting faith-centered relationships.
+                        </p>
+                    </div>
+                    <div class="flex items-center text-primary font-bold uppercase tracking-widest text-sm group-hover:translate-x-2 transition-transform duration-300">
+                        Select Pentecostal Christian
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </div>
+                </div>
+            </a>
+
             <!-- Catholic Card -->
-            <a href="register.php?type=catholic" class="group relative overflow-hidden bg-white rounded-3xl shadow-2xl hover:shadow-primary/20 transition-all duration-500 transform hover:-translate-y-2 reveal reveal-left delay-100">
+            <a href="register.php?type=catholic" class="group relative overflow-hidden bg-white rounded-3xl shadow-2xl hover:shadow-primary/20 transition-all duration-500 transform hover:-translate-y-2 reveal reveal-right delay-200">
                 <div class="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div class="p-10 flex flex-col items-center text-center space-y-6 relative z-10">
                     <div class="w-24 h-24 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 transition-colors duration-500 shadow-inner">
@@ -34,28 +65,6 @@ include 'includes/header.php';
                     </div>
                     <div class="flex items-center text-blue-600 font-bold uppercase tracking-widest text-sm group-hover:translate-x-2 transition-transform duration-300">
                         Select Catholic
-                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Christian Card -->
-            <a href="register.php?type=christian" class="group relative overflow-hidden bg-white rounded-3xl shadow-2xl hover:shadow-primary/20 transition-all duration-500 transform hover:-translate-y-2 reveal reveal-right delay-200">
-                <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div class="p-10 flex flex-col items-center text-center space-y-6 relative z-10">
-                    <div class="w-24 h-24 bg-primary/5 rounded-2xl flex items-center justify-center group-hover:bg-primary transition-colors duration-500 shadow-inner">
-                        <svg class="w-12 h-12 text-primary group-hover:text-white transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v18M8 7h8" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-900 group-hover:text-primary transition-colors duration-300">Christian</h3>
-                        <p class="mt-3 text-gray-500 leading-relaxed font-medium">
-                            Connect with the wider Christian community and build long-lasting faith-centered relationships.
-                        </p>
-                    </div>
-                    <div class="flex items-center text-primary font-bold uppercase tracking-widest text-sm group-hover:translate-x-2 transition-transform duration-300">
-                        Select Christian
                         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </div>
                 </div>

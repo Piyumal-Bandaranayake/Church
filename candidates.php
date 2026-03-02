@@ -35,7 +35,14 @@ $query = "SELECT * FROM candidates WHERE status = 'approved'";
 $params = [];
 
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    $display_denomination = 'All';
+    $denom_filter = $_GET['denomination_filter'] ?? '';
+    if ($denom_filter) {
+        $query .= " AND denomination = ?";
+        $params[] = $denom_filter;
+        $display_denomination = $denom_filter;
+    } else {
+        $display_denomination = 'All';
+    }
 } else {
     $query .= " AND denomination = ?";
     $params[] = $user_denomination;
@@ -157,137 +164,146 @@ include 'includes/header.php'; ?>
     <!-- Main Content Area -->
     <div class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         
-        <!-- Advanced Filtering -->
-        <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100 mb-12 reveal reveal-up">
-            <form action="candidates.php" method="GET" id="filterForm" class="space-y-8">
-                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-gray-50 pb-6">
-                    <div class="flex-grow max-w-md">
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                            </span>
-                            <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search by name, hometown or job..." class="w-full pl-11 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all">
-                        </div>
+        <!-- Compact Filtering Bar -->
+        <div class="mb-8 reveal reveal-up">
+            <form action="candidates.php" method="GET" id="filterForm" class="space-y-4">
+                <!-- Main Search & Sort Row -->
+                <div class="bg-white p-4 rounded-3xl shadow-xl border border-gray-100 flex flex-col md:flex-row items-center gap-4">
+                    <!-- Search -->
+                    <div class="flex-grow w-full md:w-auto relative group">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 group-focus-within:text-primary transition-colors">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        </span>
+                        <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search name, hometown, job... (නම, නගරය හෝ රැකියාව අනුව සොයන්න)" class="w-full pl-11 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-primary/10 outline-none transition-all">
                     </div>
-                    <div class="flex items-center gap-6">
-                        <div class="flex items-center gap-2">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sort By:</label>
-                            <select name="sort" onchange="this.form.submit()" class="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
-                                <option value="latest" <?php echo $sort === 'latest' ? 'selected' : ''; ?>>Latest Registered</option>
-                                <option value="age_asc" <?php echo $sort === 'age_asc' ? 'selected' : ''; ?>>Age: Low to High</option>
-                                <option value="age_desc" <?php echo $sort === 'age_desc' ? 'selected' : ''; ?>>Age: High to Low</option>
-                            </select>
-                        </div>
+
+                    <!-- Denomination Filter -->
+                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                    <div class="w-full md:w-56">
+                        <select name="denomination_filter" class="w-full bg-gray-50 border-none rounded-2xl text-xs font-bold px-4 py-3 outline-none focus:ring-2 focus:ring-primary/10 cursor-pointer">
+                            <option value="">All Denominations (සියලුම නිකායන්)</option>
+                            <option value="Catholic" <?php echo ($_GET['denomination_filter'] ?? '') === 'Catholic' ? 'selected' : ''; ?>>Catholic (කතෝලික)</option>
+                            <option value="Christian" <?php echo ($_GET['denomination_filter'] ?? '') === 'Christian' ? 'selected' : ''; ?>>Christian (ක්‍රිස්තියානි)</option>
+                        </select>
+                    </div>
+                    <?php endif; ?>
+
+                    <div class="flex items-center gap-2 w-full md:w-auto">
+                        <!-- Advanced Filter Toggle -->
+                        <button type="button" onclick="toggleFilters()" class="flex-grow md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-gray-50 hover:bg-gray-100 text-gray-600 font-bold text-xs rounded-2xl transition-all border border-transparent hover:border-gray-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                            Filters (පෙරහන්)
+                            <?php 
+                            $active_filters = 0;
+                            if($age_min || $age_max) $active_filters++;
+                            if($district) $active_filters++;
+                            if($height_min || $height_max) $active_filters++;
+                            if($job) $active_filters++;
+                            if($church) $active_filters++;
+                            if($civil_status) $active_filters++;
+                            if($education) $active_filters++;
+                            if($active_filters > 0): ?>
+                                <span class="bg-primary text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center"><?php echo $active_filters; ?></span>
+                            <?php endif; ?>
+                        </button>
+
+                        <!-- Sort Dropdown -->
+                        <select name="sort" onchange="this.form.submit()" class="flex-grow md:flex-none bg-primary text-white border-none rounded-2xl text-xs font-bold px-5 py-3 outline-none focus:ring-4 focus:ring-primary/20 cursor-pointer appearance-none shadow-lg shadow-primary/20">
+                            <option value="latest" <?php echo $sort === 'latest' ? 'selected' : ''; ?>>Latest (අලුත්ම)</option>
+                            <option value="age_asc" <?php echo $sort === 'age_asc' ? 'selected' : ''; ?>>Age ↑ (වයස අඩු සිට)</option>
+                            <option value="age_desc" <?php echo $sort === 'age_desc' ? 'selected' : ''; ?>>Age ↓ (වයස වැඩි සිට)</option>
+                        </select>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    
-                    <!-- Age Filter -->
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z"/></svg>
-                            Age Range
-                        </label>
-                        <div class="flex gap-2">
-                            <input type="number" name="age_min" value="<?php echo htmlspecialchars($age_min); ?>" placeholder="Min Age" class="w-1/2 bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
-                            <input type="number" name="age_max" value="<?php echo htmlspecialchars($age_max); ?>" placeholder="Max Age" class="w-1/2 bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
+                <!-- Expanded Filters (Hidden by Default) -->
+                <div id="advancedFilters" class="<?php echo $active_filters > 0 ? '' : 'hidden'; ?> bg-white p-8 rounded-[2.5rem] shadow-2xl border border-gray-100 animate-slide-down">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Age Filter -->
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Age Range (වයස පරාසය)</label>
+                            <div class="flex gap-2">
+                                <input type="number" name="age_min" value="<?php echo htmlspecialchars($age_min); ?>" placeholder="Min (අවම)" class="w-1/2 bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                                <input type="number" name="age_max" value="<?php echo htmlspecialchars($age_max); ?>" placeholder="Max (උපරිම)" class="w-1/2 bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- District Filter -->
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            District
-                        </label>
-                        <select name="district" class="w-full bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
-                            <option value="">All Districts</option>
-                            <?php 
-                            $districts = ['Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle', 'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle', 'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale', 'Matara', 'Moneragala', 'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 'Puttalam', 'Ratnapura', 'Trincomalee', 'Vavuniya'];
-                            foreach($districts as $d): ?>
-                                <option value="<?php echo $d; ?>" <?php echo $district === $d ? 'selected' : ''; ?>><?php echo $d; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
-                            Height (Feet)
-                        </label>
-                        <div class="flex gap-2">
-                            <input type="number" name="height_min" step="0.1" value="<?php echo htmlspecialchars($height_min); ?>" placeholder="Min ft" class="w-1/2 bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
-                            <input type="number" name="height_max" step="0.1" value="<?php echo htmlspecialchars($height_max); ?>" placeholder="Max ft" class="w-1/2 bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
+                        <!-- District Filter -->
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">District (දිස්ත්‍රික්කය)</label>
+                            <select name="district" class="w-full bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                                <option value="">All Districts (සියලුම දිස්ත්‍රික්ක)</option>
+                                <?php 
+                                $districts = ['Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle', 'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle', 'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale', 'Matara', 'Moneragala', 'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 'Puttalam', 'Ratnapura', 'Trincomalee', 'Vavuniya'];
+                                foreach($districts as $d): ?>
+                                    <option value="<?php echo $d; ?>" <?php echo $district === $d ? 'selected' : ''; ?>><?php echo $d; ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
-                    </div>
 
-                    <!-- Job Filter -->
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 00-2 2z"/></svg>
-                            Job Category
-                        </label>
-                        <select name="job" class="w-full bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
-                            <option value="">Any Job</option>
-                            <option value="Govt" <?php echo $job === 'Govt' ? 'selected' : ''; ?>>Government Agent</option>
-                            <option value="Business" <?php echo $job === 'Business' ? 'selected' : ''; ?>>Business</option>
-                            <option value="Student" <?php echo $job === 'Student' ? 'selected' : ''; ?>>Student</option>
-                            <option value="Unemployed" <?php echo $job === 'Unemployed' ? 'selected' : ''; ?>>Unemployed</option>
-                            <option value="Ministry" <?php echo $job === 'Ministry' ? 'selected' : ''; ?>>Full-time Ministry</option>
-                        </select>
-                    </div>
+                        <!-- Height Filter -->
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Height (Ft) (උස)</label>
+                            <div class="flex gap-2">
+                                <input type="number" name="height_min" step="0.1" value="<?php echo htmlspecialchars($height_min); ?>" placeholder="Min (අවම)" class="w-1/2 bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                                <input type="number" name="height_max" step="0.1" value="<?php echo htmlspecialchars($height_max); ?>" placeholder="Max (උපරිම)" class="w-1/2 bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                            </div>
+                        </div>
 
-                    <!-- Church Filter -->
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                            Church / Fellowship
-                        </label>
-                        <input type="text" name="church" value="<?php echo htmlspecialchars($church); ?>" placeholder="Search church name..." class="w-full bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
-                    </div>
+                        <!-- Job Filter -->
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Occupation (රැකියාව)</label>
+                            <input type="text" name="job" value="<?php echo htmlspecialchars($job); ?>" placeholder="Job title... (රැකියාව)" class="w-full bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                        </div>
 
-                    <!-- Civil Status -->
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                            Civil Status
-                        </label>
-                        <select name="civil_status" class="w-full bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
-                            <option value="">Any</option>
-                            <option value="Unmarried" <?php echo $civil_status === 'Unmarried' ? 'selected' : ''; ?>>Unmarried</option>
-                            <option value="Divorced" <?php echo $civil_status === 'Divorced' ? 'selected' : ''; ?>>Divorced</option>
-                            <option value="Widowed" <?php echo $civil_status === 'Widowed' ? 'selected' : ''; ?>>Widowed</option>
-                        </select>
-                    </div>
+                        <!-- Church Filter -->
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Church (දේවස්ථානය)</label>
+                            <input type="text" name="church" value="<?php echo htmlspecialchars($church); ?>" placeholder="Church name... (දේවස්ථානයේ නම)" class="w-full bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                        </div>
 
-                    <!-- Education -->
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                            Education
-                        </label>
-                        <select name="education" class="w-full bg-gray-50 border-none rounded-2xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/20">
-                            <option value="">Any Level</option>
-                            <option value="O/L" <?php echo $education === 'O/L' ? 'selected' : ''; ?>>O/L Qualified</option>
-                            <option value="A/L" <?php echo $education === 'A/L' ? 'selected' : ''; ?>>A/L Qualified</option>
-                            <option value="Degree" <?php echo $education === 'Degree' ? 'selected' : ''; ?>>Graduate / Degree</option>
-                        </select>
-                    </div>
+                        <!-- Civil Status -->
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Civil Status (විවාහක/අවිවාහක බව)</label>
+                            <select name="civil_status" class="w-full bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                                <option value="">Any (සියල්ල)</option>
+                                <option value="Unmarried" <?php echo $civil_status === 'Unmarried' ? 'selected' : ''; ?>>Unmarried (අවිවාහක)</option>
+                                <option value="Divorced" <?php echo $civil_status === 'Divorced' ? 'selected' : ''; ?>>Divorced (දික්කසාද)</option>
+                                <option value="Widowed" <?php echo $civil_status === 'Widowed' ? 'selected' : ''; ?>>Widowed (වැන්දඹු)</option>
+                            </select>
+                        </div>
 
-                    <!-- Actions -->
-                    <div class="flex items-end gap-3 lg:col-span-1">
-                        <button type="submit" class="flex-grow bg-primary text-white font-bold text-sm py-3.5 rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
-                            Apply Filters
-                        </button>
-                        <a href="candidates.php" class="p-3.5 bg-gray-50 text-gray-400 rounded-2xl hover:bg-gray-100 transition-colors group" title="Clear Filters">
-                            <svg class="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                        </a>
+                        <!-- Education -->
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Education (අධ්‍යාපනය)</label>
+                            <select name="education" class="w-full bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                                <option value="">Any Level (සියලුම)</option>
+                                <option value="O/L" <?php echo $education === 'O/L' ? 'selected' : ''; ?>>O/L Qualified (සා.පෙළ)</option>
+                                <option value="A/L" <?php echo $education === 'A/L' ? 'selected' : ''; ?>>A/L Qualified (උ.පෙළ)</option>
+                                <option value="Degree" <?php echo $education === 'Degree' ? 'selected' : ''; ?>>Graduate / Degree (උපාධිධාරී)</option>
+                            </select>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex items-end gap-2">
+                            <button type="submit" class="flex-grow bg-primary text-white font-bold text-xs py-3 rounded-xl hover:shadow-lg transition-all animate-pulse-slow">
+                                Apply (භාවිතා කරන්න)
+                            </button>
+                            <a href="candidates.php" class="p-3 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all group" title="Clear (ඉවත් කරන්න)">
+                                <svg class="w-4 h-4 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </form>
         </div>
+
+        <script>
+            function toggleFilters() {
+                const advanced = document.getElementById('advancedFilters');
+                advanced.classList.toggle('hidden');
+            }
+        </script>
 
         <?php if (empty($candidates)): ?>
              <div class="bg-white p-20 rounded-3xl shadow-sm border border-gray-100 text-center">
@@ -296,7 +312,6 @@ include 'includes/header.php'; ?>
                 </div>
                 <h2 class="text-2xl font-bold text-gray-900 mb-2">No Profiles Found</h2>
                 <p class="text-gray-500 max-w-sm mx-auto">We couldn't find any approved candidates at the moment. Please check back later or modify your search.</p>
-                <a href="register.php" class="mt-8 inline-block px-8 py-3 bg-primary text-white font-bold rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-transform">Create Your Profile</a>
              </div>
         <?php
 else: ?>

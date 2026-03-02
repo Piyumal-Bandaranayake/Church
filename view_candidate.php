@@ -200,7 +200,7 @@ endif; ?>
                                 <p class="font-bold text-blue-600"><?php echo htmlspecialchars($candidate['denomination'] ?? 'Not set'); ?></p>
                             </div>
                             <div>
-                                <span class="text-gray-500 text-xs block uppercase"><?php echo $candidate['denomination'] === 'Christian' ? 'Mustache' : 'Church Name'; ?></span>
+                                <span class="text-gray-500 text-xs block uppercase"><?php echo $candidate['denomination'] === 'Christian' ? 'Denomination' : 'Church Name'; ?></span>
                                 <p class="font-bold text-primary"><?php echo htmlspecialchars($candidate['church']); ?></p>
                             </div>
                             <?php if ($candidate['denomination'] === 'Catholic'): ?>
@@ -226,11 +226,11 @@ endif; ?>
                             <?php endif; ?>
                             <div class="grid grid-cols-2 gap-4 mt-4">
                                 <div>
-                                    <span class="text-gray-500 text-xs block uppercase"><?php echo $candidate['denomination'] === 'Christian' ? 'Father Name' : 'Pastor Name'; ?></span>
+                                    <span class="text-gray-500 text-xs block uppercase"><?php echo $candidate['denomination'] === 'Christian' ? 'Pastor Name' : 'Father Name'; ?></span>
                                     <p class="font-semibold text-gray-900 text-sm"><?php echo htmlspecialchars($candidate['pastor_name']); ?></p>
                                 </div>
                                 <div>
-                                    <span class="text-gray-500 text-xs block uppercase"><?php echo $candidate['denomination'] === 'Christian' ? "Father's WhatsApp" : "Pastor's WhatsApp"; ?></span>
+                                    <span class="text-gray-500 text-xs block uppercase"><?php echo $candidate['denomination'] === 'Christian' ? "Pastor's WhatsApp" : "Father's WhatsApp"; ?></span>
                                     <p class="font-semibold text-gray-900 text-sm"><?php echo htmlspecialchars($candidate['pastor_phone']); ?></p>
                                 </div>
                             </div>
@@ -256,6 +256,36 @@ endif; ?>
                         <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-2">Account Login Info</h3>
                         <p class="text-gray-600 text-sm">Email: <span class="font-mono bg-white px-2 py-0.5 rounded border border-gray-200"><?php echo $candidate['email']; ?></span></p>
                         <p class="text-gray-400 text-[10px] mt-2 italic">* Password is encrypted and cannot be viewed.</p>
+                    </section>
+
+                    <!-- Payment Verification -->
+                    <section>
+                        <h3 class="text-sm font-bold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <span class="w-6 h-px bg-primary/20"></span> Payment Verification
+                        </h3>
+                        <?php if (!empty($candidate['payment_slip_path'])): ?>
+                            <div class="relative group cursor-pointer" onclick="openImageModal('<?php echo htmlspecialchars($candidate['payment_slip_path']); ?>')">
+                                <?php 
+                                $is_pdf = strtolower(pathinfo($candidate['payment_slip_path'], PATHINFO_EXTENSION)) === 'pdf';
+                                if ($is_pdf): 
+                                ?>
+                                    <div class="w-full p-6 bg-red-50 rounded-2xl border-2 border-dashed border-red-200 flex flex-col items-center justify-center gap-3">
+                                        <svg class="w-12 h-12 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z" /><path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" /></svg>
+                                        <span class="text-red-700 font-bold">PDF Payment Slip</span>
+                                        <a href="<?php echo htmlspecialchars($candidate['payment_slip_path']); ?>" target="_blank" class="px-4 py-2 bg-red-500 text-white rounded-lg text-xs font-bold hover:bg-red-600 transition">View PDF</a>
+                                    </div>
+                                <?php else: ?>
+                                    <img src="<?php echo htmlspecialchars($candidate['payment_slip_path']); ?>" class="w-full rounded-2xl shadow-lg border-4 border-white group-hover:opacity-90 transition-opacity">
+                                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-2xl">
+                                        <span class="bg-white text-primary px-4 py-2 rounded-full font-bold text-sm shadow-xl">View Full Slip</span>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="p-6 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 text-center text-gray-400 font-bold uppercase text-xs">
+                                No payment slip uploaded
+                            </div>
+                        <?php endif; ?>
                     </section>
                 </div>
 

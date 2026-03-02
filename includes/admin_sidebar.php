@@ -1,5 +1,19 @@
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
+
+// Fetch pending counts
+$catholic_pending_count = 0;
+$christian_pending_count = 0;
+
+if (isset($pdo)) {
+    $stmt_catholic = $pdo->prepare("SELECT COUNT(*) FROM candidates WHERE status = 'pending' AND denomination = 'Catholic'");
+    $stmt_catholic->execute();
+    $catholic_pending_count = $stmt_catholic->fetchColumn();
+
+    $stmt_christian = $pdo->prepare("SELECT COUNT(*) FROM candidates WHERE status = 'pending' AND denomination = 'Christian'");
+    $stmt_christian->execute();
+    $christian_pending_count = $stmt_christian->fetchColumn();
+}
 ?>
 
 <!-- Mobile Toggle Button -->
@@ -32,15 +46,25 @@ $current_page = basename($_SERVER['PHP_SELF']);
          <div class="py-2 font-semibold">
             <p class="px-3 text-[10px] font-bold text-white/30 uppercase tracking-widest">Pending Registrations</p>
             <li class="mt-1">
-               <a href="pending_catholic.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm <?php echo ($current_page == 'pending_catholic.php' || (isset($active_page) && $active_page == 'pending_catholic')) ? 'bg-white/10 text-white font-bold' : ''; ?>">
-                  <svg class="w-4 h-4 text-blue-400 group-hover:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  <span class="ms-3">Catholic Pending</span>
+               <a href="pending_catholic.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm w-full justify-between <?php echo ($current_page == 'pending_catholic.php' || (isset($active_page) && $active_page == 'pending_catholic')) ? 'bg-white/10 text-white font-bold' : ''; ?>">
+                  <div class="flex items-center">
+                     <svg class="w-4 h-4 text-blue-400 group-hover:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                     <span class="ms-3">Catholic Pending</span>
+                  </div>
+                  <?php if ($catholic_pending_count > 0): ?>
+                     <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-blue-500 rounded-full"><?php echo $catholic_pending_count; ?></span>
+                  <?php endif; ?>
                </a>
             </li>
             <li>
-               <a href="pending_christian.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm <?php echo ($current_page == 'pending_christian.php' || (isset($active_page) && $active_page == 'pending_christian')) ? 'bg-white/10 text-white font-bold' : ''; ?>">
-                  <svg class="w-4 h-4 text-purple-400 group-hover:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  <span class="ms-3">Christian Pending</span>
+               <a href="pending_christian.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm w-full justify-between <?php echo ($current_page == 'pending_christian.php' || (isset($active_page) && $active_page == 'pending_christian')) ? 'bg-white/10 text-white font-bold' : ''; ?>">
+                  <div class="flex items-center">
+                     <svg class="w-4 h-4 text-purple-400 group-hover:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                     <span class="ms-3">Christian Pending</span>
+                  </div>
+                  <?php if ($christian_pending_count > 0): ?>
+                     <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-purple-500 rounded-full"><?php echo $christian_pending_count; ?></span>
+                  <?php endif; ?>
                </a>
             </li>
          </div>

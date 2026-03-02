@@ -11,12 +11,18 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
 if (isset($_GET['delete_found'])) {
     $id = $_GET['delete_found'];
     
-    // Get photo path to delete file
-    $stmt = $pdo->prepare("SELECT photo_path FROM candidates WHERE id = ?");
+    // Get paths to delete files
+    $stmt = $pdo->prepare("SELECT photo_path, payment_slip_path FROM candidates WHERE id = ?");
     $stmt->execute([$id]);
-    $photo = $stmt->fetchColumn();
-    if ($photo && file_exists($photo)) {
-        unlink($photo);
+    $res = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($res) {
+        if ($res['photo_path'] && file_exists($res['photo_path'])) {
+            unlink($res['photo_path']);
+        }
+        if ($res['payment_slip_path'] && file_exists($res['payment_slip_path'])) {
+            unlink($res['payment_slip_path']);
+        }
     }
 
     $stmt = $pdo->prepare("DELETE FROM candidates WHERE id = ?");
@@ -93,7 +99,7 @@ catch (PDOException $e) {
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 pb-20">
             <!-- Stats Cards Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 mb-12">
                 <!-- Success Stories Card -->
                 <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
                     <div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-green-600 group-hover:text-white transition-all">
@@ -121,20 +127,7 @@ catch (PDOException $e) {
                     <h3 class="text-2xl font-black text-gray-900"><?php echo (int)$approved_count; ?></h3>
                 </div>
 
-                <!-- Pending -->
-                <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300 relative">
-                    <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-orange-600 group-hover:text-white transition-all">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    </div>
-                    <?php if ($pending_count > 0): ?>
-                        <span class="absolute top-4 right-4 flex h-2 w-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
-                        </span>
-                    <?php endif; ?>
-                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Pending</p>
-                    <h3 class="text-2xl font-black text-gray-900"><?php echo (int)$pending_count; ?></h3>
-                </div>
+
 
                 <!-- Testimonies -->
                 <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">

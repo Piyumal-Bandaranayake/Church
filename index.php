@@ -43,13 +43,15 @@ endif; ?>
     <div class="relative z-20 text-center px-4 max-w-5xl mx-auto">
         <span class="inline-block py-1 px-3 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-sm font-semibold tracking-wide mb-6 animate-fade-in opacity-0" style="animation-delay: 0.1s;"><?php echo $display_denomination; ?> MARRIAGE CONNECTION</span>
         
-        <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight animate-slide-up opacity-0" style="animation-delay: 0.2s;">
-            Find Your Soulmate,<br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-white">Blessed by Faith.</span>
+        <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight animate-slide-up opacity-0 min-h-[120px] md:min-h-[160px] flex items-center justify-center" style="animation-delay: 0.2s;">
+            <div id="hero-text-container" class="transition-opacity duration-500 opacity-100 w-full">
+                <span id="hero-line1">Find Your Christian Soulmate,</span><br>
+                <span id="hero-line2" class="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-white">Blessed by Faith.</span>
+            </div>
         </h1>
         
-        <p class="text-xl md:text-2xl text-gray-200 mb-10 max-w-2xl mx-auto animate-slide-up opacity-0" style="animation-delay: 0.4s;">
-            Connecting <?php echo ucfirst(strtolower($display_denomination)); ?> hearts to build strong, lifelong marriages centered on Christ and shared values.
+        <p id="hero-subtext-container" class="text-xl md:text-2xl text-gray-200 mb-10 max-w-2xl mx-auto animate-slide-up opacity-0 transition-opacity duration-500" style="animation-delay: 0.4s;">
+            Connecting Christian hearts to build strong, lifelong marriages centered on Christ and shared values.
         </p>
         
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up opacity-0" style="animation-delay: 0.6s;">
@@ -59,7 +61,7 @@ endif; ?>
                 </a>
             <?php
 else: ?>
-                <a href="registration_type.php" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-primary font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                <a href="guidelines.php" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-primary font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
                     Find Your Match
                 </a>
             <?php
@@ -99,6 +101,52 @@ endif; ?>
         if (totalSlides > 1) {
             setInterval(nextSlide, 5000);
         }
+
+        // Text animation for English/Sinhala
+        const heroContainer = document.getElementById('hero-text-container');
+        const heroLine1 = document.getElementById('hero-line1');
+        const heroLine2 = document.getElementById('hero-line2');
+        const heroSubtext = document.getElementById('hero-subtext-container');
+        
+        const texts = [
+            {
+                line1: 'Find Your Christian Soulmate,',
+                line2: 'Blessed by Faith.',
+                subtext: 'Connecting Christian hearts to build strong, lifelong marriages centered on Christ and shared values.'
+            },
+            {
+                line1: 'ඔබගේ කිතුනු සහකරු හෝ සහකාරිය සොයාගන්න',
+                line2: '',
+                subtext: 'ක්‍රිස්තුස් වහන්සේ සහ හවුල් වටිනාකම් මත පදනම් වූ ශක්තිමත්, ජීවිත කාලය පුරාම පවතින විවාහයන් ගොඩනැගීමට කිතුනු හදවත් සම්බන්ධ කිරීම.'
+            }
+        ];
+        
+        let currentTextIndex = 0;
+        const brElement = heroContainer.querySelector('br');
+        
+        setInterval(() => {
+            // Fade out
+            heroContainer.classList.replace('opacity-100', 'opacity-0');
+            heroSubtext.classList.replace('opacity-100', 'opacity-0');
+            
+            setTimeout(() => {
+                currentTextIndex = (currentTextIndex + 1) % texts.length;
+                heroLine1.innerText = texts[currentTextIndex].line1;
+                heroLine2.innerText = texts[currentTextIndex].line2;
+                heroSubtext.innerText = texts[currentTextIndex].subtext;
+                
+                if (texts[currentTextIndex].line2 === '') {
+                    brElement.style.display = 'none';
+                } else {
+                    brElement.style.display = 'inline';
+                }
+                
+                // Fade in
+                heroContainer.classList.replace('opacity-0', 'opacity-100');
+                heroSubtext.classList.replace('opacity-0', 'opacity-100');
+            }, 500); // Wait for fade out duration to complete
+            
+        }, 4000); // Switch text every 4 seconds
     });
 </script>
 
@@ -111,9 +159,11 @@ endif; ?>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="text-center mb-16 reveal reveal-up">
-            <h2 class="text-blue-600 font-bold text-sm tracking-uppercase uppercase mb-2">Beautiful Testimonies</h2>
-            <h3 class="text-4xl font-bold text-gray-900 mb-4">Blessed Success Stories</h3>
-            <p class="text-gray-500 max-w-2xl mx-auto">Discover how God has brought hearts together in our community. These are the stories of faith, love, and new beginnings.</p>
+            <div id="testimonies-text-container" class="transition-opacity duration-500 opacity-100">
+                <h2 id="testimonies-subtitle" class="text-blue-600 font-bold text-sm tracking-uppercase uppercase mb-2">Beautiful Testimonies</h2>
+                <h3 id="testimonies-title" class="text-4xl font-bold text-gray-900 mb-4">Blessed Success Stories</h3>
+                <p id="testimonies-desc" class="text-gray-500 max-w-2xl mx-auto">Discover how God has brought hearts together in our community. These are the stories of faith, love, and new beginnings.</p>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -133,7 +183,7 @@ endif; ?>
                         <img src="<?php echo htmlspecialchars($review_img); ?>" alt="Couple" class="w-full h-full object-cover">
                     </div>
                     <div>
-                        <h4 class="text-lg font-bold text-gray-900"><?php echo htmlspecialchars($review['name']); ?></h4>
+                        <h4 class="text-lg font-bold text-gray-900 mb-1"><?php echo htmlspecialchars($review['name']); ?></h4>
                         <div class="flex gap-0.5 mt-1 text-yellow-400">
                             <?php for ($i = 0; $i < 5; $i++): ?>
                             <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
@@ -144,20 +194,9 @@ endif; ?>
                 </div>
 
                 <div class="flex-grow reveal reveal-up delay-100">
-                    <p class="text-gray-600 leading-relaxed italic relative z-10 line-clamp-4">
+                    <p class="text-gray-600 leading-relaxed italic relative z-10 line-clamp-4 pb-4">
                         "<?php echo nl2br(htmlspecialchars($review['description'])); ?>"
                     </p>
-                </div>
-
-                <div class="mt-8 flex items-center justify-between reveal reveal-up delay-200">
-                    <div class="flex items-center gap-2 text-xs font-bold text-blue-600/50 uppercase tracking-widest">
-                        <span class="w-8 h-px bg-blue-100"></span>
-                        Verified Testimony
-                    </div>
-                    <span class="text-xs font-bold text-blue-600 group-hover:underline flex items-center gap-1">
-                        View More 
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </span>
                 </div>
             </div>
 
@@ -165,8 +204,14 @@ endif; ?>
     endforeach; ?>
         </div>
 
-        <div class="text-center mt-16">
-            <a href="candidates.php" class="inline-flex items-center gap-3 px-8 py-4 bg-primary text-white font-bold rounded-full hover:bg-primary-hover transition-all shadow-xl shadow-primary/20 group">
+        <div class="flex flex-col sm:flex-row justify-center gap-4 mt-16">
+            <a href="all_testimonies.php" class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-primary border-2 border-primary/20 font-bold rounded-full hover:bg-gray-50 hover:border-primary/40 transition-all shadow-lg group">
+                View More
+                <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+            </a>
+            <a href="candidates.php" class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-primary text-white font-bold rounded-full hover:bg-primary-hover transition-all shadow-xl shadow-primary/20 group">
                 Share Your Success Story
                 <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -175,8 +220,47 @@ endif; ?>
         </div>
     </div>
 </section>
-<?php
-endif; ?>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const testContainer = document.getElementById('testimonies-text-container');
+        if (!testContainer) return;
+        
+        const testSubtitle = document.getElementById('testimonies-subtitle');
+        const testTitle = document.getElementById('testimonies-title');
+        const testDesc = document.getElementById('testimonies-desc');
+        
+        const testTexts = [
+            {
+                subtitle: 'Beautiful Testimonies',
+                title: 'Blessed Success Stories',
+                desc: 'Discover how God has brought hearts together in our community. These are the stories of faith, love, and new beginnings.'
+            },
+            {
+                subtitle: 'අලංකාර සාක්ෂි',
+                title: 'ආශිර්වාද ලත් සාර්ථක කථා',
+                desc: 'දෙවියන් වහන්සේ අපගේ ප්‍රජාව තුළ හදවත් එකතු කර ඇති ආකාරය සොයා ගන්න. මේවා ඇදහිල්ලේ, ප්‍රේමයේ සහ නව ආරම්භයේ කථා වේ.'
+            }
+        ];
+        
+        let testTextIndex = 0;
+        
+        setInterval(() => {
+            testContainer.classList.replace('opacity-100', 'opacity-0');
+            
+            setTimeout(() => {
+                testTextIndex = (testTextIndex + 1) % testTexts.length;
+                testSubtitle.innerText = testTexts[testTextIndex].subtitle;
+                testTitle.innerText = testTexts[testTextIndex].title;
+                testDesc.innerText = testTexts[testTextIndex].desc;
+                
+                testContainer.classList.replace('opacity-0', 'opacity-100');
+            }, 500);
+            
+        }, 4000);
+    });
+</script>
+<?php endif; ?>
 
 
 <!-- Service Times Section -->
@@ -200,7 +284,7 @@ endif; ?>
                     </svg>
                 </div>
                 <h4 class="text-xl font-bold text-gray-900 mb-2">Sunday Morning</h4>
-                <p class="text-4xl font-extrabold text-blue-600 mb-4">9:00 AM</p>
+                <p class="text-3xl font-extrabold text-blue-600 mb-4">8:30 AM</p>
                 <p class="text-gray-500 text-sm">Main Worship Service<br>Kids Ministry Available</p>
             </div>
 
@@ -212,7 +296,7 @@ endif; ?>
                     </svg>
                 </div>
                 <h4 class="text-xl font-bold text-gray-900 mb-2">Prayer Group</h4>
-                <p class="text-3xl font-extrabold text-indigo-600 mb-4">8:30 AM | 11:30 PM</p>
+                <p class="text-2xl font-extrabold text-indigo-600 mb-4">8:30 AM | 11:30 PM</p>
                 <p class="text-gray-500 text-sm">Daily Prayer & Worship Sessions<br>Everyone Welcome</p>
             </div>
 
@@ -223,9 +307,9 @@ endif; ?>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                 </div>
-                <h4 class="text-xl font-bold text-gray-900 mb-2">Wednesday Study</h4>
-                <p class="text-4xl font-extrabold text-purple-600 mb-4">7:00 PM</p>
-                <p class="text-gray-500 text-sm">Bible Study Groups<br>Focus on Discipleship</p>
+                <h4 class="text-xl font-bold text-gray-900 mb-2">Wednesday fasting prayer </h4>
+                <p class="text-2xl font-extrabold text-purple-600 mb-4">8.30 AM - 11.30 AM</p>
+                <p class="text-gray-500 text-sm">Bible Study Groups 11.30 AM-2.30 PM<br> House visiting 3.30</p>
             </div>
         </div>
     </div>
@@ -280,168 +364,7 @@ endif; ?>
 </div>
 
 
-<!-- Testimony Popup Modal -->
-<div id="testimony-modal" class="fixed inset-0 z-[150] hidden flex items-center justify-center p-4 bg-primary/40 backdrop-blur-xl animate-fade-in">
-    <div class="bg-white w-full max-w-4xl rounded-[3rem] shadow-2xl overflow-hidden relative flex flex-col md:flex-row max-h-[90vh] animate-slide-up">
-        <!-- Close Button -->
-        <button onclick="closeTestimonyModal()" class="absolute top-6 right-6 z-30 p-2.5 bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full transition-all duration-300 shadow-sm border border-gray-100 group">
-            <svg class="w-5 h-5 transform group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-        </button>
+<?php include 'includes/testimony_modal.php'; ?>
 
-        <!-- Left: Image Gallery -->
-        <div class="md:w-1/2 bg-gray-100 relative h-64 md:h-auto overflow-hidden">
-            <div id="modal-image-container" class="w-full h-full flex transition-transform duration-500">
-                <!-- Images will be injected here -->
-            </div>
-            
-            <!-- Gallery Navigation -->
-            <div id="gallery-nav" class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-                <!-- Dots will be injected here -->
-            </div>
-
-            <!-- Arrows -->
-            <button onclick="prevModalImage()" class="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-full text-white transition-all z-20 hidden gallery-arrow">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-            </button>
-            <button onclick="nextModalImage()" class="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-full text-white transition-all z-20 hidden gallery-arrow">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-            </button>
-        </div>
-
-        <!-- Right: Testimony Content -->
-        <div class="md:w-1/2 p-10 md:p-14 overflow-y-auto flex flex-col">
-            <div class="mb-10">
-                <span class="inline-block px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">Blessed Union</span>
-                <h2 id="modal-title" class="text-3xl font-black text-gray-900 leading-tight"></h2>
-                <div class="flex gap-1 mt-2 text-yellow-400">
-                    <?php for ($i = 0; $i < 5; $i++): ?>
-                    <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <?php
-endfor; ?>
-                </div>
-            </div>
-
-            <div class="flex-grow">
-                <div class="text-blue-100 mb-6">
-                    <svg class="w-12 h-12 opacity-20" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                    </svg>
-                </div>
-                <p id="modal-description" class="text-lg text-gray-600 leading-relaxed italic"></p>
-            </div>
-
-            <div class="mt-12 pt-8 border-t border-gray-100 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs ring-4 ring-blue-50">
-                        ✝
-                    </div>
-                    <div>
-                        <p class="text-xs font-black text-gray-900 uppercase tracking-widest">Guideway Network</p>
-                        <p class="text-[10px] text-gray-400 font-bold uppercase">Faith-Based Matchmaking</p>
-                    </div>
-                </div>
-                <div class="text-[10px] font-black text-blue-600/30 uppercase tracking-[0.2em]">Verified Story</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    let currentModalImageIndex = 0;
-    let modalImages = [];
-
-    function openTestimonyModal(data) {
-        const modal = document.getElementById('testimony-modal');
-        const container = document.getElementById('modal-image-container');
-        const nav = document.getElementById('gallery-nav');
-        const arrows = document.querySelectorAll('.gallery-arrow');
-        
-        // Reset
-        container.innerHTML = '';
-        nav.innerHTML = '';
-        modalImages = [];
-        currentModalImageIndex = 0;
-
-        // Collect images
-        for(let i=1; i<=5; i++) {
-            if(data['image'+i]) modalImages.push(data['image'+i]);
-        }
-
-        if(modalImages.length === 0) modalImages.push('https://via.placeholder.com/800x800?text=No+Image');
-
-        // Populate images
-        modalImages.forEach((src, idx) => {
-            const img = document.createElement('img');
-            img.src = src;
-            img.className = 'w-full h-full object-cover flex-shrink-0';
-            container.appendChild(img);
-
-            // Nav dots
-            if(modalImages.length > 1) {
-                const dot = document.createElement('button');
-                dot.className = `w-2 h-2 rounded-full transition-all ${idx === 0 ? 'bg-white w-6' : 'bg-white/40'}`;
-                dot.onclick = () => goToModalImage(idx);
-                nav.appendChild(dot);
-            }
-        });
-
-        // Show arrows if multiple images
-        arrows.forEach(a => a.style.display = modalImages.length > 1 ? 'block' : 'none');
-
-        // Text content
-        document.getElementById('modal-title').innerText = data.name;
-        document.getElementById('modal-description').innerText = '"' + data.description + '"';
-
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        updateModalGallery();
-    }
-
-    function updateModalGallery() {
-        const container = document.getElementById('modal-image-container');
-        const dots = document.querySelectorAll('#gallery-nav button');
-        
-        container.style.transform = `translateX(-${currentModalImageIndex * 100}%)`;
-        
-        dots.forEach((dot, idx) => {
-            if(idx === currentModalImageIndex) {
-                dot.classList.add('bg-white', 'w-6');
-                dot.classList.remove('bg-white/40');
-            } else {
-                dot.classList.remove('bg-white', 'w-6');
-                dot.classList.add('bg-white/40');
-            }
-        });
-    }
-
-    function nextModalImage() {
-        if(modalImages.length <= 1) return;
-        currentModalImageIndex = (currentModalImageIndex + 1) % modalImages.length;
-        updateModalGallery();
-    }
-
-    function prevModalImage() {
-        if(modalImages.length <= 1) return;
-        currentModalImageIndex = (currentModalImageIndex - 1 + modalImages.length) % modalImages.length;
-        updateModalGallery();
-    }
-
-    function goToModalImage(idx) {
-        currentModalImageIndex = idx;
-        updateModalGallery();
-    }
-
-    function closeTestimonyModal() {
-        document.getElementById('testimony-modal').classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    }
-
-    // Close on background click
-    window.addEventListener('click', (e) => {
-        const modal = document.getElementById('testimony-modal');
-        if(e.target === modal) closeTestimonyModal();
-    });
-</script>
 
 <?php include 'includes/footer.php'; ?>
-

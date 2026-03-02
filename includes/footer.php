@@ -30,15 +30,23 @@
                     <ul class="space-y-2 text-sm text-gray-400">
                         <li class="flex justify-between">
                             <span>Sunday Morning</span>
-                            <span class="text-white">9:00 AM</span>
+                            <span class="text-white">8:30 AM</span>
                         </li>
                         <li class="flex justify-between">
                             <span>Prayer Group</span>
                             <span class="text-white">8:30 AM | 11:30 PM</span>
                         </li>
                         <li class="flex justify-between">
-                            <span>Wednesday Study</span>
-                            <span class="text-white">7:00 PM</span>
+                            <span>Wednesday Fasting</span>
+                            <span class="text-white">8:30 AM - 11:30 AM</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Bible Study</span>
+                            <span class="text-white">11:30 AM - 2:30 PM</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>House Visiting</span>
+                            <span class="text-white">3:30 PM Onwards</span>
                         </li>
                     </ul>
                 </div>

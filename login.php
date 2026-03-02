@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($user && password_verify($password, $user['password'])) {
                 if ($user['status'] !== 'approved') {
-                    $error = "Your account is pending admin approval.";
+                    $error = "Your profile is in review.";
                 }
                 else {
                     $_SESSION['user_id'] = $user['id'];
@@ -98,8 +98,38 @@ endif; ?>
                         <label for="password" class="block text-sm font-semibold text-gray-700">Password</label>
                         <a href="forgot_password.php" class="text-sm font-medium text-primary hover:underline">Forgot password?</a>
                     </div>
-                    <input id="password" name="password" type="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                    <div class="relative">
+                        <input id="password" name="password" type="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent transition-all pr-12">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 hover:text-primary transition-colors focus:outline-none">
+                            <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
+
+                <script>
+                    function togglePasswordVisibility() {
+                        const passwordInput = document.getElementById('password');
+                        const eyeIcon = document.getElementById('eye-icon');
+                        
+                        if (passwordInput.type === 'password') {
+                            passwordInput.type = 'text';
+                            // Eye slash icon path
+                            eyeIcon.innerHTML = `
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                            `;
+                        } else {
+                            passwordInput.type = 'password';
+                            // Normal eye icon path
+                            eyeIcon.innerHTML = `
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            `;
+                        }
+                    }
+                </script>
 
                 <div class="flex items-center reveal reveal-up delay-500">
                     <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded cursor-pointer">
@@ -111,11 +141,15 @@ endif; ?>
                 </button>
             </form>
 
-            <div class="mt-8 pt-8 border-t border-gray-100 text-center reveal reveal-up delay-700">
-                <p class="text-sm text-gray-600">
-                    Don't have an account? 
-                    <a href="registration_type.php" class="font-bold text-primary hover:underline">Register here</a>
-                </p>
+            <div class="mt-8 pt-8 border-t border-gray-100 reveal reveal-up delay-700">
+                <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100/50 text-center">
+                    <p class="text-sm text-gray-600 mb-3">Don't have an account yet?</p>
+                    <a href="registration_type.php" class="inline-flex items-center justify-center gap-2 w-full py-3 bg-white text-primary border-2 border-primary hover:bg-primary hover:text-white font-black rounded-xl transition-all duration-300 shadow-sm group">
+                        Register Your Profile
+                        <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </a>
+                    <p class="mt-3 text-[10px] text-blue-400 font-bold uppercase tracking-widest">Join our faithful community today</p>
+                </div>
             </div>
         </div>
     </div>
