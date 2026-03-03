@@ -93,6 +93,12 @@ if (isset($pdo)) {
                   <span class="ms-3">Testimonies</span>
                </a>
             </li>
+            <li>
+               <a href="admin_partner_found.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm <?php echo $current_page == 'admin_partner_found.php' ? 'bg-white/10 text-white font-bold' : ''; ?>">
+                  <svg class="w-5 h-5 text-white/40 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                  <span class="ms-3">Partner Found</span>
+               </a>
+            </li>
          </div>
 
          <div class="py-2 border-t border-white/5 font-semibold">

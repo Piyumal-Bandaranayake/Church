@@ -269,9 +269,26 @@ endforeach; ?>
                 </div>
                 
                 <form action="report_partner.php" method="POST" class="space-y-6">
-                    <div>
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">Thank You Message to Admin</label>
-                        <textarea name="message" required placeholder="Write a small thank you message..." class="w-full bg-gray-50 border-none rounded-2xl text-sm font-medium p-4 outline-none focus:ring-2 focus:ring-green-500/20 min-h-[120px] resize-none"></textarea>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">Your Name (His/Her Name)</label>
+                            <input type="text" name="his_name" required placeholder="Enter your full name" class="w-full bg-gray-50 border-none rounded-2xl text-sm font-medium p-4 outline-none focus:ring-2 focus:ring-green-500/20">
+                        </div>
+                        
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">Partner's Name</label>
+                            <input type="text" name="partner_name" required placeholder="Enter partner's full name" class="w-full bg-gray-50 border-none rounded-2xl text-sm font-medium p-4 outline-none focus:ring-2 focus:ring-green-500/20">
+                        </div>
+                        
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">Mobile Number</label>
+                            <input type="text" name="mobile_number" required placeholder="Enter your contact number" class="w-full bg-gray-50 border-none rounded-2xl text-sm font-medium p-4 outline-none focus:ring-2 focus:ring-green-500/20">
+                        </div>
+                        
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">Thank You Message to Admin</label>
+                            <textarea name="message" required placeholder="Write a small thank you message..." class="w-full bg-gray-50 border-none rounded-2xl text-sm font-medium p-4 outline-none focus:ring-2 focus:ring-green-500/20 min-h-[100px] resize-none"></textarea>
+                        </div>
                     </div>
                     
                     <div class="space-y-3 pt-2">

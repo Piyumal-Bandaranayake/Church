@@ -7,7 +7,7 @@ include 'includes/header.php';
 include 'includes/db.php';
 
 // Fetch approved reviews
-$reviews_stmt = $pdo->query("SELECT * FROM reviews WHERE status = 'approved' ORDER BY id DESC LIMIT 6");
+$reviews_stmt = $pdo->query("SELECT * FROM reviews WHERE status = 'approved' ORDER BY id DESC LIMIT 3");
 $reviews = $reviews_stmt->fetchAll(PDO::FETCH_ASSOC);
 // Get current user's denomination if role is candidate
 $user_denomination = $_SESSION['denomination'] ?? '';
@@ -43,14 +43,14 @@ endif; ?>
     <div class="relative z-20 text-center px-4 max-w-5xl mx-auto">
         <span class="inline-block py-1 px-3 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-sm font-semibold tracking-wide mb-6 animate-fade-in opacity-0" style="animation-delay: 0.1s;"><?php echo $display_denomination; ?> MARRIAGE CONNECTION</span>
         
-        <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight animate-slide-up opacity-0 min-h-[120px] md:min-h-[160px] flex items-center justify-center" style="animation-delay: 0.2s;">
+        <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight tracking-tight animate-slide-up opacity-0 min-h-[120px] md:min-h-[160px] flex items-center justify-center" style="animation-delay: 0.2s;">
             <div id="hero-text-container" class="transition-opacity duration-500 opacity-100 w-full">
                 <span id="hero-line1">Find Your Christian Soulmate,</span><br>
                 <span id="hero-line2" class="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-white">Blessed by Faith.</span>
             </div>
         </h1>
         
-        <p id="hero-subtext-container" class="text-xl md:text-2xl text-gray-200 mb-10 max-w-2xl mx-auto animate-slide-up opacity-0 transition-opacity duration-500" style="animation-delay: 0.4s;">
+        <p id="hero-subtext-container" class="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl mx-auto animate-slide-up opacity-0 transition-opacity duration-500" style="animation-delay: 0.4s;">
             Connecting Christian hearts to build strong, lifelong marriages centered on Christ and shared values.
         </p>
         
@@ -134,6 +134,15 @@ endif; ?>
                 heroLine1.innerText = texts[currentTextIndex].line1;
                 heroLine2.innerText = texts[currentTextIndex].line2;
                 heroSubtext.innerText = texts[currentTextIndex].subtext;
+                
+                // Change font for Sinhala
+                if (currentTextIndex === 1) {
+                    heroContainer.parentElement.style.fontFamily = "'Sinhala-UN-Gurulugomi', sans-serif";
+                    heroSubtext.style.fontFamily = "'Sinhala-UN-Gurulugomi', sans-serif";
+                } else {
+                    heroContainer.parentElement.style.fontFamily = "";
+                    heroSubtext.style.fontFamily = "";
+                }
                 
                 if (texts[currentTextIndex].line2 === '') {
                     brElement.style.display = 'none';
