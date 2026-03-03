@@ -7,6 +7,20 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
     exit();
 }
 
+// Handle Admin User Deletion
+if (isset($_GET['delete_admin'])) {
+    $id = $_GET['delete_admin'];
+    
+    // Security check: Admins cannot delete their own account
+    if ($id != $_SESSION['user_id']) {
+        $stmt = $pdo->prepare("DELETE FROM admins WHERE id = ?");
+        $stmt->execute([$id]);
+        
+        header("Location: admin_dashboard.php?success=admin_deleted");
+        exit();
+    }
+}
+
 // Handle Direct Deletions from Dashboard
 if (isset($_GET['delete_found'])) {
     $id = $_GET['delete_found'];
@@ -139,12 +153,44 @@ catch (PDOException $e) {
                 </div>
             </div>
 
-            <!-- Feedback Messages -->
+            <!-- Feedback Messages Popup -->
             <?php if (isset($_GET['success'])): ?>
-                <div class="mb-8 p-4 rounded-2xl flex items-center gap-3 animate-fade-in text-xs font-bold uppercase tracking-tight <?php echo(strpos($_GET['success'], 'approved') !== false ? 'bg-green-50 text-green-700 border border-green-200' : (strpos($_GET['success'], 'deleted') !== false ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-orange-50 text-orange-700 border border-orange-200')); ?>">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                    <span>Action successful</span>
+                <?php
+                // Determine message and styling
+                $is_deleted = strpos($_GET['success'], 'deleted') !== false || $_GET['success'] == 'profile_removed_after_partner_found';
+                $is_approved = strpos($_GET['success'], 'approved') !== false || $_GET['success'] == 'admin_created';
+                
+                $msg_text = "Action successful";
+                if ($_GET['success'] == 'admin_deleted') {
+                    $msg_text = "Administrator account securely deleted.";
+                } elseif ($_GET['success'] == 'admin_created') {
+                    $msg_text = "New administrator account created successfully.";
+                } elseif ($_GET['success'] == 'profile_removed_after_partner_found') {
+                    $msg_text = "Candidate profile successfully removed.";
+                }
+
+                $bg_class = $is_approved ? 'bg-green-50 border-green-200 text-green-700 shadow-green-100/50' : 
+                            ($is_deleted ? 'bg-red-50 border-red-200 text-red-700 shadow-red-100/50' : 
+                            'bg-orange-50 border-orange-200 text-orange-700 shadow-orange-100/50');
+                ?>
+                <div id="toast-success" class="fixed bottom-8 right-8 z-[100] flex items-center p-4 mb-4 text-sm font-bold border rounded-2xl shadow-xl <?php echo $bg_class; ?> animate-fade-in-up" role="alert">
+                    <svg class="w-5 h-5 flex-shrink-0 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span><?php echo $msg_text; ?></span>
+                    <button type="button" class="ml-auto -mx-1.5 -my-1.5 ml-4 rounded-xl focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-black/5 inline-flex items-center justify-center h-8 w-8 text-current transition-colors" data-dismiss-target="#toast-success" aria-label="Close" onclick="document.getElementById('toast-success').remove()">
+                        <span class="sr-only">Close</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
                 </div>
+                <!-- Auto-hide script -->
+                <script>
+                    setTimeout(() => {
+                        const toast = document.getElementById('toast-success');
+                        if (toast) {
+                            toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                            setTimeout(() => toast.remove(), 500);
+                        }
+                    }, 4000);
+                </script>
             <?php endif; ?>
 
             <!-- Partner Found Notifications Section -->
@@ -282,6 +328,11 @@ endif; ?>
                                 <h4 class="font-black text-gray-900 leading-tight"><?php echo htmlspecialchars($admin['username']); ?></h4>
                                 <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Administrator</span>
                             </div>
+                            <?php if ($admin['id'] != $_SESSION['user_id']): ?>
+                            <a href="?delete_admin=<?php echo $admin['id']; ?>" onclick="return confirm('WARNING: Are you sure you want to delete this administrator account?')" class="ml-auto w-8 h-8 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-100 shadow-sm shadow-red-100/50" title="Delete Admin">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </a>
+                            <?php endif; ?>
                         </div>
                         <div class="space-y-2">
                             <div class="flex items-center gap-2 text-gray-500">

@@ -68,7 +68,6 @@ try {
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-gray-50/50 border-b border-gray-100">
-                                <th class="p-5 px-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Date</th>
                                 <th class="p-5 px-6 text-[10px] font-black uppercase tracking-widest text-gray-400">His/Her Name</th>
                                 <th class="p-5 px-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Partner's Name</th>
                                 <th class="p-5 px-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Mobile Number</th>
@@ -79,11 +78,7 @@ try {
                         <tbody class="divide-y divide-gray-50">
                             <?php foreach ($reports as $report): ?>
                             <tr class="hover:bg-gray-50/50 transition-colors group">
-                                <td class="p-5 px-6">
-                                    <span class="text-xs font-bold text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-100 shadow-sm whitespace-nowrap">
-                                        <?php echo date('M d, Y', strtotime($report['created_at'])); ?>
-                                    </span>
-                                </td>
+
                                 <td class="p-5 px-6">
                                     <h4 class="text-sm font-black text-gray-900 whitespace-nowrap"><?php echo htmlspecialchars($report['his_name']); ?></h4>
                                 </td>
@@ -107,9 +102,14 @@ try {
                                     </div>
                                 </td>
                                 <td class="p-5 px-6 text-center">
-                                    <a href="?delete=<?php echo $report['id']; ?>" onclick="return confirm('Are you sure you want to delete this record?')" class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-50 text-red-500 hover:bg-red-600 hover:text-white transition-all border border-red-100 shadow-sm shadow-red-100/50" title="Delete Record">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                    </a>
+                                    <div class="flex items-center justify-center gap-2">
+                                        <a href="view_candidate.php?id=<?php echo $report['user_id']; ?>" class="inline-flex items-center justify-center h-10 px-4 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all border border-blue-100 shadow-sm shadow-blue-100/50 text-[10px] font-black uppercase tracking-widest" title="View Profile">
+                                            View Profile
+                                        </a>
+                                        <a href="?delete=<?php echo $report['id']; ?>" onclick="return confirm('Are you sure you want to delete this record?')" class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-50 text-red-500 hover:bg-red-600 hover:text-white transition-all border border-red-100 shadow-sm shadow-red-100/50" title="Delete Record">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             <?php endforeach; ?>

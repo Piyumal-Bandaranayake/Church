@@ -40,7 +40,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $dob = $_POST['dob'];
     $age = intval($_POST['age']);
     $nationality = trim($_POST['nationality']);
+    if ($nationality === 'Other' && !empty($_POST['other_nationality'])) {
+        $nationality = trim($_POST['other_nationality']);
+    }
     $language = trim($_POST['language']);
+    if ($language === 'Other' && !empty($_POST['other_language'])) {
+        $language = trim($_POST['other_language']);
+    }
     $address = trim($_POST['address']);
     $hometown = trim($_POST['hometown']);
     $district = trim($_POST['district']);
@@ -223,15 +229,15 @@ endif; ?>
                 <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
                     <h2 class="text-xl font-bold text-primary mb-4 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                        Account Setup
+                        Account Setup (ගිණුම පිහිටුවීම)
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address (විද්‍යුත් තැපෑල)</label>
                             <input type="email" name="email" required placeholder="example@mail.com" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password (මුරපදය)</label>
                             <div class="relative">
                                 <input id="password" type="password" name="password" required minlength="6" oninput="checkStrength(this.value)" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent pr-10">
                                 <button type="button" onclick="togglePassword('password')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
@@ -249,7 +255,7 @@ endif; ?>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password (මුරපදය තහවුරු කරන්න)</label>
                             <div class="relative">
                                 <input id="re_password" type="password" name="re_password" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent pr-10">
                                 <button type="button" onclick="togglePassword('re_password')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
@@ -319,7 +325,7 @@ endif; ?>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nationality (ජාතිය)</label>
-                            <select name="nationality" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <select name="nationality" id="nationality" onchange="toggleOptionField('nationality', 'other_nationality_div', 'other_nationality')" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 <option value="" disabled selected>Select Nationality</option>
                                 <option value="Sri Lankan">Sri Lankan (ශ්‍රී ලාංකික)</option>
                                 <option value="Sinhalese">Sinhalese (සිංහල)</option>
@@ -327,15 +333,22 @@ endif; ?>
                                 <option value="Burgher">Burgher (බර්ගර්)</option>
                                 <option value="Other">Other (වෙනත්)</option>
                             </select>
+                            <div id="other_nationality_div" class="hidden mt-3 animate-fade-in">
+                                <input type="text" name="other_nationality" id="other_nationality" placeholder="Please specify your nationality" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Mother Tongue (මව්බස)</label>
-                            <select name="language" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <select name="language" id="language" onchange="toggleOptionField('language', 'other_language_div', 'other_language')" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                                 <option value="" disabled selected>Select Mother Tongue</option>
                                 <option value="Sinhala">Sinhala (සිංහල)</option>
                                 <option value="Tamil">Tamil (දෙමළ)</option>
                                 <option value="English">English (ඉංග්‍රීසි)</option>
+                                <option value="Other">Other (වෙනත්)</option>
                             </select>
+                            <div id="other_language_div" class="hidden mt-3 animate-fade-in">
+                                <input type="text" name="other_language" id="other_language" placeholder="Please specify your mother tongue" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Height in Feet (උස - අඩි)</label>
@@ -713,6 +726,20 @@ function toggleChildrenDetails(hasChildren) {
         detailsField.classList.remove('hidden');
     } else {
         detailsField.classList.add('hidden');
+    }
+}
+
+function toggleOptionField(selectId, divId, inputId) {
+    const select = document.getElementById(selectId);
+    const div = document.getElementById(divId);
+    const input = document.getElementById(inputId);
+    if (select.value === 'Other') {
+        div.classList.remove('hidden');
+        input.setAttribute('required', 'true');
+    } else {
+        div.classList.add('hidden');
+        input.removeAttribute('required');
+        input.value = '';
     }
 }
 
