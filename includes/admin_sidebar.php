@@ -4,6 +4,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 // Fetch pending counts
 $catholic_pending_count = 0;
 $christian_pending_count = 0;
+$partner_found_count = 0;
 
 if (isset($pdo)) {
     $stmt_catholic = $pdo->prepare("SELECT COUNT(*) FROM candidates WHERE status = 'pending' AND denomination = 'Catholic'");
@@ -13,6 +14,14 @@ if (isset($pdo)) {
     $stmt_christian = $pdo->prepare("SELECT COUNT(*) FROM candidates WHERE status = 'pending' AND denomination = 'Christian'");
     $stmt_christian->execute();
     $christian_pending_count = $stmt_christian->fetchColumn();
+
+    try {
+        $stmt_pf = $pdo->prepare("SELECT COUNT(*) FROM partner_found_reports");
+        $stmt_pf->execute();
+        $partner_found_count = $stmt_pf->fetchColumn();
+    } catch(PDOException $e) {
+        $partner_found_count = 0;
+    }
 }
 ?>
 
@@ -91,6 +100,17 @@ if (isset($pdo)) {
                <a href="manage_testimonies.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm <?php echo $current_page == 'manage_testimonies.php' ? 'bg-white/10 text-white font-bold' : ''; ?>">
                   <svg class="w-5 h-5 text-white/40 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                   <span class="ms-3">Testimonies</span>
+               </a>
+            </li>
+            <li>
+               <a href="admin_partner_found.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm w-full justify-between <?php echo $current_page == 'admin_partner_found.php' ? 'bg-white/10 text-white font-bold' : ''; ?>">
+                  <div class="flex items-center">
+                      <svg class="w-5 h-5 text-white/40 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                      <span class="ms-3 whitespace-nowrap">Partner Found</span>
+                  </div>
+                  <?php if ($partner_found_count > 0): ?>
+                      <span class="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold text-white bg-green-500 rounded-full shrink-0 shadow-sm shadow-green-500/50"><?php echo $partner_found_count; ?> NEW</span>
+                  <?php endif; ?>
                </a>
             </li>
          </div>

@@ -7,6 +7,20 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
     exit();
 }
 
+// Handle Admin User Deletion
+if (isset($_GET['delete_admin'])) {
+    $id = $_GET['delete_admin'];
+    
+    // Security check: Admins cannot delete their own account
+    if ($id != $_SESSION['user_id']) {
+        $stmt = $pdo->prepare("DELETE FROM admins WHERE id = ?");
+        $stmt->execute([$id]);
+        
+        header("Location: admin_dashboard.php?success=admin_deleted");
+        exit();
+    }
+}
+
 // Handle Direct Deletions from Dashboard
 if (isset($_GET['delete_found'])) {
     $id = $_GET['delete_found'];
@@ -139,65 +153,47 @@ catch (PDOException $e) {
                 </div>
             </div>
 
-            <!-- Feedback Messages -->
+            <!-- Feedback Messages Popup -->
             <?php if (isset($_GET['success'])): ?>
-                <div class="mb-8 p-4 rounded-2xl flex items-center gap-3 animate-fade-in text-xs font-bold uppercase tracking-tight <?php echo(strpos($_GET['success'], 'approved') !== false ? 'bg-green-50 text-green-700 border border-green-200' : (strpos($_GET['success'], 'deleted') !== false ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-orange-50 text-orange-700 border border-orange-200')); ?>">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                    <span>Action successful</span>
+                <?php
+                // Determine message and styling
+                $is_deleted = strpos($_GET['success'], 'deleted') !== false || $_GET['success'] == 'profile_removed_after_partner_found';
+                $is_approved = strpos($_GET['success'], 'approved') !== false || $_GET['success'] == 'admin_created';
+                
+                $msg_text = "Action successful";
+                if ($_GET['success'] == 'admin_deleted') {
+                    $msg_text = "Administrator account securely deleted.";
+                } elseif ($_GET['success'] == 'admin_created') {
+                    $msg_text = "New administrator account created successfully.";
+                } elseif ($_GET['success'] == 'profile_removed_after_partner_found') {
+                    $msg_text = "Candidate profile successfully removed.";
+                }
+
+                $bg_class = $is_approved ? 'bg-green-50 border-green-200 text-green-700 shadow-green-100/50' : 
+                            ($is_deleted ? 'bg-red-50 border-red-200 text-red-700 shadow-red-100/50' : 
+                            'bg-orange-50 border-orange-200 text-orange-700 shadow-orange-100/50');
+                ?>
+                <div id="toast-success" class="fixed bottom-8 right-8 z-[100] flex items-center p-4 mb-4 text-sm font-bold border rounded-2xl shadow-xl <?php echo $bg_class; ?> animate-fade-in-up" role="alert">
+                    <svg class="w-5 h-5 flex-shrink-0 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span><?php echo $msg_text; ?></span>
+                    <button type="button" class="ml-auto -mx-1.5 -my-1.5 ml-4 rounded-xl focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-black/5 inline-flex items-center justify-center h-8 w-8 text-current transition-colors" data-dismiss-target="#toast-success" aria-label="Close" onclick="document.getElementById('toast-success').remove()">
+                        <span class="sr-only">Close</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
                 </div>
+                <!-- Auto-hide script -->
+                <script>
+                    setTimeout(() => {
+                        const toast = document.getElementById('toast-success');
+                        if (toast) {
+                            toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                            setTimeout(() => toast.remove(), 500);
+                        }
+                    }, 4000);
+                </script>
             <?php endif; ?>
 
             <!-- Partner Found Notifications Section -->
-            <div class="mt-12">
-                <div class="flex items-center gap-3 mb-8 px-2">
-                    <span class="w-1.5 h-6 bg-green-500 rounded-full"></span>
-                    <h2 class="text-xl font-black text-gray-900 uppercase tracking-tighter">Partner Found Notifications</h2>
-                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full"><?php echo $partner_found_count; ?> NEW</span>
-                </div>
-
-                <?php if (empty($partner_found_candidates)): ?>
-                    <div class="bg-white rounded-[2rem] p-12 border border-dashed border-gray-200 text-center">
-                        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        </div>
-                        <p class="text-gray-400 font-bold uppercase tracking-widest text-[10px]">No new partner success reports</p>
-                    </div>
-                <?php else: ?>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <?php foreach ($partner_found_candidates as $p_candidate): ?>
-                        <div class="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-gray-200/30 border border-gray-100 flex flex-col group animate-fade-in hover:-translate-y-1 transition-all">
-                            <div class="flex items-center gap-4 mb-6">
-                                <div class="relative shrink-0">
-                                    <?php $p_img = !empty($p_candidate['photo_path']) ? $p_candidate['photo_path'] : 'https://via.placeholder.com/100?text=None'; ?>
-                                    <img src="<?php echo htmlspecialchars($p_img); ?>" class="w-16 h-16 rounded-2xl object-cover ring-4 ring-gray-50 group-hover:ring-green-100 transition-all">
-                                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white rounded-full flex items-center justify-center">
-                                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 class="text-lg font-black text-gray-900 leading-tight mb-1"><?php echo htmlspecialchars($p_candidate['fullname']); ?></h4>
-                                    <span class="text-[9px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase"><?php echo $p_candidate['denomination']; ?></span>
-                                </div>
-                            </div>
-                            
-                            <div class="bg-[#fcfdfd] rounded-[1.5rem] p-5 mb-8 flex-grow relative overflow-hidden ring-1 ring-gray-50">
-                                <span class="absolute top-2 left-3 text-4xl text-gray-100 font-serif">"</span>
-                                <p class="text-[13px] text-gray-600 font-medium italic leading-relaxed relative z-10">
-                                    <?php echo nl2br(htmlspecialchars($p_candidate['partner_message'])); ?>
-                                </p>
-                            </div>
-
-                            <div class="flex gap-3">
-                                <a href="view_candidate.php?id=<?php echo $p_candidate['id']; ?>" class="flex-grow py-3.5 bg-gray-50 text-gray-400 text-[10px] font-black uppercase text-center rounded-2xl hover:bg-primary/5 hover:text-primary transition-all tracking-widest border border-transparent hover:border-primary/10">View Profile</a>
-                                <a href="?delete_found=<?php echo $p_candidate['id']; ?>" onclick="return confirm('Found partner confirmed. Remove this profile permanently?')" class="w-12 py-3.5 bg-red-50 text-red-600 rounded-2xl hover:bg-red-600 hover:text-white transition-all flex items-center justify-center shadow-sm shadow-red-100/50">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                </a>
-                            </div>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-            </div>
 
             <!-- Recent Activity Sections -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
@@ -332,6 +328,11 @@ endif; ?>
                                 <h4 class="font-black text-gray-900 leading-tight"><?php echo htmlspecialchars($admin['username']); ?></h4>
                                 <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Administrator</span>
                             </div>
+                            <?php if ($admin['id'] != $_SESSION['user_id']): ?>
+                            <a href="?delete_admin=<?php echo $admin['id']; ?>" onclick="return confirm('WARNING: Are you sure you want to delete this administrator account?')" class="ml-auto w-8 h-8 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-100 shadow-sm shadow-red-100/50" title="Delete Admin">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </a>
+                            <?php endif; ?>
                         </div>
                         <div class="space-y-2">
                             <div class="flex items-center gap-2 text-gray-500">

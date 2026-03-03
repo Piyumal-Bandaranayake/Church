@@ -188,11 +188,11 @@ include 'includes/header.php'; ?>
                     </div>
                     <?php endif; ?>
 
-                    <div class="flex items-center gap-2 w-full md:w-auto">
+                    <div class="flex items-center gap-2 w-full md:w-auto flex-col sm:flex-row">
                         <!-- Advanced Filter Toggle -->
-                        <button type="button" onclick="toggleFilters()" class="flex-grow md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-gray-50 hover:bg-gray-100 text-gray-600 font-bold text-xs rounded-2xl transition-all border border-transparent hover:border-gray-200">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
-                            Filters (පෙරහන්)
+                        <button type="button" onclick="toggleFilters()" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-gray-50 hover:bg-gray-100 text-gray-600 font-bold text-xs md:text-sm rounded-2xl transition-all border border-transparent hover:border-gray-200">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                            සහකරු හෝ සහකාරිය තෝරාගන්න
                             <?php 
                             $active_filters = 0;
                             if($age_min || $age_max) $active_filters++;
@@ -208,7 +208,7 @@ include 'includes/header.php'; ?>
                         </button>
 
                         <!-- Sort Dropdown -->
-                        <select name="sort" onchange="this.form.submit()" class="flex-grow md:flex-none bg-primary text-white border-none rounded-2xl text-xs font-bold px-5 py-3 outline-none focus:ring-4 focus:ring-primary/20 cursor-pointer appearance-none shadow-lg shadow-primary/20">
+                        <select name="sort" onchange="this.form.submit()" class="w-full sm:w-auto bg-primary text-white border-none rounded-2xl text-xs md:text-sm font-bold px-5 py-3 outline-none focus:ring-4 focus:ring-primary/20 cursor-pointer shadow-lg shadow-primary/20">
                             <option value="latest" <?php echo $sort === 'latest' ? 'selected' : ''; ?>>Latest (අලුත්ම)</option>
                             <option value="age_asc" <?php echo $sort === 'age_asc' ? 'selected' : ''; ?>>Age ↑ (වයස අඩු සිට)</option>
                             <option value="age_desc" <?php echo $sort === 'age_desc' ? 'selected' : ''; ?>>Age ↓ (වයස වැඩි සිට)</option>

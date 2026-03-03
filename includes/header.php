@@ -261,7 +261,7 @@ endif; ?>
         </div>
 
         <!-- Mobile Menu (Hidden by default) -->
-        <div class="md:hidden hidden bg-white border-t border-gray-100 absolute w-full" id="mobile-menu">
+        <div class="md:hidden hidden bg-white border-t border-gray-100 absolute top-full left-0 w-full z-50" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-xl">
                 <a href="index.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('index.php', $current_page); ?>">Home</a>
                 <a href="about.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('about.php', $current_page); ?>">About Us</a>

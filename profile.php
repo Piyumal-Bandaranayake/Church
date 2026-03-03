@@ -252,34 +252,54 @@ endforeach; ?>
 </div>
 
 <!-- Partner Found Modal -->
-<div id="partnerModal" class="fixed inset-0 z-[100] hidden">
+<div id="partnerModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
     <!-- Backdrop -->
-    <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onclick="toggleModal('partnerModal')"></div>
+    <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onclick="toggleModal('partnerModal')"></div>
     
-    <!-- Modal Content -->
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md px-4">
-        <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100 animate-fade-in-up">
-            <div class="p-8 md:p-10">
-                <div class="text-center mb-8">
-                    <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
-                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+    <div class="min-h-full flex items-center justify-center p-4 text-center">
+        <!-- Modal Content -->
+        <div class="relative w-full max-w-sm text-left bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-gray-100 animate-fade-in-up my-8">
+            <!-- Close X Button -->
+            <button type="button" onclick="toggleModal('partnerModal')" class="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors z-20">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <div class="p-6">
+                <div class="text-center mb-5 mt-2">
+                    <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                     </div>
-                    <h3 class="text-2xl font-black text-gray-900 mb-2">Praise the Lord!</h3>
-                    <p class="text-gray-500 font-medium">Found your partner through our platform?</p>
+                    <h3 class="text-xl font-black text-gray-900 mb-1">Praise the Lord!</h3>
+                    <p class="text-[11px] text-gray-500 font-bold mb-1">දෙවියන් වහන්සේට ප්‍රශංසා වේවා!</p>
+                    <p class="text-[12px] text-gray-400 font-medium leading-tight">Found your partner through our platform?<br><span class="text-[10px]">අපගේ සේවාව හරහා ඔබේ සහකරු/සහකාරිය සොයා ගත්තාද?</span></p>
                 </div>
                 
-                <form action="report_partner.php" method="POST" class="space-y-6">
-                    <div>
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">Thank You Message to Admin</label>
-                        <textarea name="message" required placeholder="Write a small thank you message..." class="w-full bg-gray-50 border-none rounded-2xl text-sm font-medium p-4 outline-none focus:ring-2 focus:ring-green-500/20 min-h-[120px] resize-none"></textarea>
+                <form action="report_partner.php" method="POST" class="space-y-4">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-1">Your Name (ඔබේ නම)</label>
+                            <input type="text" name="his_name" required minlength="2" maxlength="100" value="<?php echo htmlspecialchars($_SESSION['username'] ?? ''); ?>" placeholder="Enter your full name" class="w-full bg-gray-50 border-none rounded-[1rem] text-sm font-medium p-3 outline-none focus:ring-2 focus:ring-green-500/20">
+                        </div>
+                        
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-1">Partner's Name (සහකරුගේ/සහකාරියගේ නම)</label>
+                            <input type="text" name="partner_name" required minlength="2" maxlength="100" placeholder="Enter partner's full name" class="w-full bg-gray-50 border-none rounded-[1rem] text-sm font-medium p-3 outline-none focus:ring-2 focus:ring-green-500/20">
+                        </div>
+                        
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-1">Mobile Number (ජංගම දුරකථන අංකය)</label>
+                            <input type="tel" name="mobile_number" required pattern="[0-9\s\-\+]{9,15}" title="Please enter a valid mobile number" placeholder="e.g. 07XXXXXXXX" class="w-full bg-gray-50 border-none rounded-[1rem] text-sm font-medium p-3 outline-none focus:ring-2 focus:ring-green-500/20">
+                        </div>
+                        
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-1">Thank You Message (ස්තූති පණිවිඩය)</label>
+                            <textarea name="message" required minlength="5" maxlength="500" placeholder="Write a small thank you message..." class="w-full bg-gray-50 border-none rounded-[1rem] text-sm font-medium p-3 outline-none focus:ring-2 focus:ring-green-500/20 min-h-[80px] resize-none"></textarea>
+                        </div>
                     </div>
                     
-                    <div class="space-y-3 pt-2">
-                        <button type="submit" class="w-full py-4 bg-green-600 text-white font-bold rounded-2xl shadow-lg shadow-green-200 hover:scale-[1.02] transition-transform">
-                            Send Notification
-                        </button>
-                        <button type="button" onclick="toggleModal('partnerModal')" class="w-full py-4 bg-gray-50 text-gray-500 font-bold rounded-2xl hover:bg-gray-100 transition-colors">
-                            Wait, not yet
+                    <div class="pt-2">
+                        <button type="submit" class="w-full py-3.5 bg-green-600 text-white font-bold rounded-[1rem] shadow-lg shadow-green-200 hover:scale-[1.02] transition-transform flex flex-col items-center justify-center leading-tight">
+                            <span>Send Notification</span>
+                            <span class="text-[10px] opacity-90 font-medium mt-0.5">දැනුම් දෙන්න</span>
                         </button>
                     </div>
                 </form>

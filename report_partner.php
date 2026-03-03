@@ -10,7 +10,15 @@ if (!isset($_SESSION['user_id'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['message'])) {
     $user_id = $_SESSION['user_id'];
     $message = $_POST['message'];
+    $his_name = $_POST['his_name'] ?? '';
+    $partner_name = $_POST['partner_name'] ?? '';
+    $mobile_number = $_POST['mobile_number'] ?? '';
 
+    // Insert into the new partner_found_reports table
+    $insert_stmt = $pdo->prepare("INSERT INTO partner_found_reports (user_id, his_name, partner_name, message, mobile_number) VALUES (?, ?, ?, ?, ?)");
+    $insert_stmt->execute([$user_id, $his_name, $partner_name, $message, $mobile_number]);
+
+    // Keep updating the candidates table for the legacy dashboard queries
     $stmt = $pdo->prepare("UPDATE candidates SET partner_found = 1, partner_message = ? WHERE id = ?");
     $stmt->execute([$message, $user_id]);
 

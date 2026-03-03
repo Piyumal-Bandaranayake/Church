@@ -7,6 +7,15 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
     exit();
 }
 
+// Helper for redirect URL
+$current_params = $_GET;
+unset($current_params['success']);
+unset($current_params['approve_review']);
+unset($current_params['reject_review']);
+unset($current_params['delete_review']);
+$redirect_query = http_build_query($current_params);
+$redirect_base = "manage_testimonies.php?" . ($redirect_query ? $redirect_query . "&" : "");
+
 // Handle Review Actions
 if (isset($_GET['approve_review'])) {
     $id = $_GET['approve_review'];
@@ -75,15 +84,6 @@ $pending_reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt = $pdo->prepare("SELECT * FROM reviews WHERE status = 'approved' $search_query ORDER BY $order_by");
 $stmt->execute($params);
 $approved_reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Helper for redirect URL
-$current_params = $_GET;
-unset($current_params['success']);
-unset($current_params['approve_review']);
-unset($current_params['reject_review']);
-unset($current_params['delete_review']);
-$redirect_query = http_build_query($current_params);
-$redirect_base = "manage_testimonies.php?" . ($redirect_query ? $redirect_query . "&" : "");
 
 ?>
 
