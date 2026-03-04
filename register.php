@@ -471,7 +471,7 @@ endif; ?>
                                     <option value="Fisher">Fisher (ධීවර)</option>
                                     <option value="Builder / Labourer">Builder / Construction Labourer (ඉදිකිරීම් කාර්මික)</option>
                                     <option value="Driver">Driver (රියදුරු)</option>
-                                    <option value="Tailor">Tailor (කිරාල)</option>
+                                    <option value="Tailor">Tailor (ටේලර්)</option>
                                     <option value="Cook">Cook / Chef (සූපවේදී)</option>
                                     <option value="Plumber">Plumber (පයිප් කාර්මික)</option>
                                 </optgroup>

@@ -253,7 +253,73 @@ include 'includes/header.php'; ?>
                         <!-- Job Filter -->
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Occupation (රැකියාව)</label>
-                            <input type="text" name="job" value="<?php echo htmlspecialchars($job); ?>" placeholder="Job title... (රැකියාව)" class="w-full bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                            <select name="job" class="w-full bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
+                                <option value="">All Occupations (සියලුම රැකියා)</option>
+
+                                <optgroup label="Government & Public Service (රාජ්‍ය සේවය)">
+                                    <option value="Government Officer" <?php echo $job === 'Government Officer' ? 'selected' : ''; ?>>Government Officer (රාජ්‍ය නිලධාරී)</option>
+                                    <option value="Teacher" <?php echo $job === 'Teacher' ? 'selected' : ''; ?>>Teacher (ගුරුවරයා / ගුරුවරිය)</option>
+                                    <option value="Principal" <?php echo $job === 'Principal' ? 'selected' : ''; ?>>Principal (විදුහල්පති)</option>
+                                    <option value="Lecturer" <?php echo $job === 'Lecturer' ? 'selected' : ''; ?>>Lecturer (කථිකාචාර්ය)</option>
+                                    <option value="Police Officer" <?php echo $job === 'Police Officer' ? 'selected' : ''; ?>>Police Officer (පොලිස් නිලධාරී)</option>
+                                    <option value="Military Officer" <?php echo $job === 'Military Officer' ? 'selected' : ''; ?>>Military / Armed Forces (හමුදා නිලධාරී)</option>
+                                    <option value="Public Health Inspector" <?php echo $job === 'Public Health Inspector' ? 'selected' : ''; ?>>Public Health Inspector (PHI)</option>
+                                    <option value="Local Government Officer" <?php echo $job === 'Local Government Officer' ? 'selected' : ''; ?>>Local Government Officer (ප්‍රාදේශීය සභා නිලධාරී)</option>
+                                    <option value="Postal Officer" <?php echo $job === 'Postal Officer' ? 'selected' : ''; ?>>Postal Officer (තැපෑල් නිලධාරී)</option>
+                                </optgroup>
+
+                                <optgroup label="Healthcare (සෞඛ්‍ය සේවය)">
+                                    <option value="Doctor" <?php echo $job === 'Doctor' ? 'selected' : ''; ?>>Doctor / Physician (වෛද්‍යවරයා)</option>
+                                    <option value="Nurse" <?php echo $job === 'Nurse' ? 'selected' : ''; ?>>Nurse (හෙද / හෙදිය)</option>
+                                    <option value="Pharmacist" <?php echo $job === 'Pharmacist' ? 'selected' : ''; ?>>Pharmacist (ඖෂධවේදී)</option>
+                                    <option value="Dentist" <?php echo $job === 'Dentist' ? 'selected' : ''; ?>>Dentist (දන්ත වෛද්‍යවරයා)</option>
+                                    <option value="Medical Lab Technician" <?php echo $job === 'Medical Lab Technician' ? 'selected' : ''; ?>>Medical Lab Technician (වෛද්‍ය රසායනාගාර තාක්ෂණවේදී)</option>
+                                </optgroup>
+
+                                <optgroup label="Engineering & Technology (ඉංජිනේරු & තාක්ෂණ)">
+                                    <option value="Engineer" <?php echo $job === 'Engineer' ? 'selected' : ''; ?>>Engineer (ඉංජිනේරු)</option>
+                                    <option value="Software Developer" <?php echo $job === 'Software Developer' ? 'selected' : ''; ?>>Software Developer / IT (මෘදුකාංග නිර්මාතෘ)</option>
+                                    <option value="Electrician" <?php echo $job === 'Electrician' ? 'selected' : ''; ?>>Electrician (විදුලි කාර්මික)</option>
+                                    <option value="Mechanic" <?php echo $job === 'Mechanic' ? 'selected' : ''; ?>>Mechanic (යන්ත්‍ර කාර්මික)</option>
+                                    <option value="Civil Technician" <?php echo $job === 'Civil Technician' ? 'selected' : ''; ?>>Civil Technician (සිවිල් තාක්ෂණවේදී)</option>
+                                    <option value="Architect" <?php echo $job === 'Architect' ? 'selected' : ''; ?>>Architect (ගෘහ නිර්මාණ ශිල්පී)</option>
+                                </optgroup>
+
+                                <optgroup label="Business & Finance (ව්‍යාපාර & මූල්‍ය)">
+                                    <option value="Accountant" <?php echo $job === 'Accountant' ? 'selected' : ''; ?>>Accountant (ගණකාධිකාරී)</option>
+                                    <option value="Bank Officer" <?php echo $job === 'Bank Officer' ? 'selected' : ''; ?>>Bank Officer (බැංකු නිලධාරී)</option>
+                                    <option value="Businessman / Businesswoman" <?php echo $job === 'Businessman / Businesswoman' ? 'selected' : ''; ?>>Businessman / Businesswoman (ව්‍යාපාරික)</option>
+                                    <option value="Manager" <?php echo $job === 'Manager' ? 'selected' : ''; ?>>Manager (කළමනාකාර)</option>
+                                    <option value="Sales Representative" <?php echo $job === 'Sales Representative' ? 'selected' : ''; ?>>Sales Representative (විකුණුම් නියෝජිත)</option>
+                                    <option value="Clerk" <?php echo $job === 'Clerk' ? 'selected' : ''; ?>>Clerk / Office Staff (කාර්යාල ශ්‍රමිකයා)</option>
+                                    <option value="Lawyer" <?php echo $job === 'Lawyer' ? 'selected' : ''; ?>>Lawyer (නීතිඥ)</option>
+                                </optgroup>
+
+                                <optgroup label="Agriculture & Manual Work (කෘෂිකර්ම & ශ්‍රමය)">
+                                    <option value="Farmer" <?php echo $job === 'Farmer' ? 'selected' : ''; ?>>Farmer (ගොවිතැන)</option>
+                                    <option value="Fisher" <?php echo $job === 'Fisher' ? 'selected' : ''; ?>>Fisher (ධීවර)</option>
+                                    <option value="Builder / Labourer" <?php echo $job === 'Builder / Labourer' ? 'selected' : ''; ?>>Builder / Construction Labourer (ඉදිකිරීම් කාර්මික)</option>
+                                    <option value="Driver" <?php echo $job === 'Driver' ? 'selected' : ''; ?>>Driver (රියදුරු)</option>
+                                    <option value="Tailor" <?php echo $job === 'Tailor' ? 'selected' : ''; ?>>Tailor (ටේලර්)</option>
+                                    <option value="Cook" <?php echo $job === 'Cook' ? 'selected' : ''; ?>>Cook / Chef (සූපවේදී)</option>
+                                    <option value="Plumber" <?php echo $job === 'Plumber' ? 'selected' : ''; ?>>Plumber (පයිප් කාර්මික)</option>
+                                </optgroup>
+
+                                <optgroup label="Religious & Social Service (ආගමික & සමාජ සේවය)">
+                                    <option value="Clergy / Religious Worker" <?php echo $job === 'Clergy / Religious Worker' ? 'selected' : ''; ?>>Clergy / Religious Worker (ආගමික සේවය)</option>
+                                    <option value="Social Worker" <?php echo $job === 'Social Worker' ? 'selected' : ''; ?>>Social Worker (සමාජ සේවක)</option>
+                                    <option value="NGO Worker" <?php echo $job === 'NGO Worker' ? 'selected' : ''; ?>>NGO Worker (රාජ්‍ය නොවන සංවිධාන)</option>
+                                </optgroup>
+
+                                <optgroup label="Other (වෙනත්)">
+                                    <option value="Student" <?php echo $job === 'Student' ? 'selected' : ''; ?>>Student (ශිෂ්‍ය)</option>
+                                    <option value="Self-Employed" <?php echo $job === 'Self-Employed' ? 'selected' : ''; ?>>Self-Employed (ස්වයං රැකියා)</option>
+                                    <option value="Housewife / Homemaker" <?php echo $job === 'Housewife / Homemaker' ? 'selected' : ''; ?>>Housewife / Homemaker (ගෘහිණිය)</option>
+                                    <option value="Retired" <?php echo $job === 'Retired' ? 'selected' : ''; ?>>Retired (විශ්‍රාමිකයා)</option>
+                                    <option value="Unemployed" <?php echo $job === 'Unemployed' ? 'selected' : ''; ?>>Unemployed (රැකියා රහිත)</option>
+                                    <option value="Other" <?php echo $job === 'Other' ? 'selected' : ''; ?>>Other (වෙනත්)</option>
+                                </optgroup>
+                            </select>
                         </div>
 
                         <!-- Church Filter -->

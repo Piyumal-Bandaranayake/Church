@@ -178,7 +178,7 @@ function isActiveMobile($page_name, $current_page)
                 <div class="hidden md:flex items-center space-x-6">
                     <a href="index.php" class="nav-link <?php echo isActive('index.php', $current_page); ?>">Home</a>
                     <a href="about.php" class="nav-link <?php echo isActive('about.php', $current_page); ?>">About Us</a>
-                    <a href="churches.php" class="nav-link <?php echo isActive('churches.php', $current_page); ?>">Churches</a>
+                    <a href="churches.php" class="nav-link <?php echo isActive('churches.php', $current_page); ?>">Ministry</a>
                     <a href="contact.php" class="nav-link <?php echo isActive('contact.php', $current_page); ?>">Contact</a>
                     <?php if (isset($_SESSION['user_id'])): ?>
                     <a href="candidates.php" class="<?php echo isActive('candidates.php', $current_page); ?>">Candidates</a>
@@ -265,7 +265,7 @@ endif; ?>
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-xl">
                 <a href="index.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('index.php', $current_page); ?>">Home</a>
                 <a href="about.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('about.php', $current_page); ?>">About Us</a>
-                <a href="churches.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('churches.php', $current_page); ?>">Churches</a>
+                <a href="churches.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('churches.php', $current_page); ?>">The MINISTRY</a>
                 <a href="contact.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('contact.php', $current_page); ?>">Contact Us</a>
                 <?php if (isset($_SESSION['user_id'])): ?>
                 <a href="candidates.php" class="block px-3 py-2 rounded-md text-base font-medium <?php echo isActiveMobile('candidates.php', $current_page); ?>">Candidates</a>
