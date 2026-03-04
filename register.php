@@ -424,7 +424,73 @@ endif; ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                          <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Occupation (වෘත්තිය)</label>
-                            <input type="text" name="occupation" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <select name="occupation" required class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="" disabled selected>Select Occupation (රැකියාව තෝරන්න)</option>
+
+                                <optgroup label="Government &amp; Public Service (රාජ්‍ය සේවය)">
+                                    <option value="Government Officer">Government Officer (රාජ්‍ය නිලධාරී)</option>
+                                    <option value="Teacher">Teacher (ගුරුවරයා / ගුරුවරිය)</option>
+                                    <option value="Principal">Principal (විදුහල්පති)</option>
+                                    <option value="Lecturer">Lecturer (කථිකාචාර්ය)</option>
+                                    <option value="Police Officer">Police Officer (පොලිස් නිලධාරී)</option>
+                                    <option value="Military Officer">Military / Armed Forces (හමුදා නිලධාරී)</option>
+                                    <option value="Public Health Inspector">Public Health Inspector (PHI)</option>
+                                    <option value="Local Government Officer">Local Government Officer (ප්‍රාදේශීය සභා නිලධාරී)</option>
+                                    <option value="Postal Officer">Postal Officer (තැපෑල් නිලධාරී)</option>
+                                </optgroup>
+
+                                <optgroup label="Healthcare (සෞඛ්‍ය සේවය)">
+                                    <option value="Doctor">Doctor / Physician (වෛද්‍යවරයා)</option>
+                                    <option value="Nurse">Nurse (හෙද / හෙදිය)</option>
+                                    <option value="Pharmacist">Pharmacist (ඖෂධවේදී)</option>
+                                    <option value="Dentist">Dentist (දන්ත වෛද්‍යවරයා)</option>
+                                    <option value="Medical Lab Technician">Medical Lab Technician (වෛද්‍ය රසායනාගාර තාක්ෂණවේදී)</option>
+                                </optgroup>
+
+                                <optgroup label="Engineering &amp; Technology (ඉංජිනේරු &amp; තාක්ෂණ)">
+                                    <option value="Engineer">Engineer (ඉංජිනේරු)</option>
+                                    <option value="Software Developer">Software Developer / IT (මෘදුකාංග නිර්මාතෘ)</option>
+                                    <option value="Electrician">Electrician (විදුලි කාර්මික)</option>
+                                    <option value="Mechanic">Mechanic (යන්ත්‍ර කාර්මික)</option>
+                                    <option value="Civil Technician">Civil Technician (සිවිල් තාක්ෂණවේදී)</option>
+                                    <option value="Architect">Architect (ගෘහ නිර්මාණ ශිල්පී)</option>
+                                </optgroup>
+
+                                <optgroup label="Business &amp; Finance (ව්‍යාපාර &amp; මූල්‍ය)">
+                                    <option value="Accountant">Accountant (ගණකාධිකාරී)</option>
+                                    <option value="Bank Officer">Bank Officer (බැංකු නිලධාරී)</option>
+                                    <option value="Businessman / Businesswoman">Businessman / Businesswoman (ව්‍යාපාරික)</option>
+                                    <option value="Manager">Manager (කළමනාකාර)</option>
+                                    <option value="Sales Representative">Sales Representative (විකුණුම් නියෝජිත)</option>
+                                    <option value="Clerk">Clerk / Office Staff (කාර්යාල ශ්‍රමිකයා)</option>
+                                    <option value="Lawyer">Lawyer (නීතිඥ)</option>
+                                </optgroup>
+
+                                <optgroup label="Agriculture &amp; Manual Work (කෘෂිකර්ම &amp; ශ්‍රමය)">
+                                    <option value="Farmer">Farmer (ගොවිතැන)</option>
+                                    <option value="Fisher">Fisher (ධීවර)</option>
+                                    <option value="Builder / Labourer">Builder / Construction Labourer (ඉදිකිරීම් කාර්මික)</option>
+                                    <option value="Driver">Driver (රියදුරු)</option>
+                                    <option value="Tailor">Tailor (කිරාල)</option>
+                                    <option value="Cook">Cook / Chef (සූපවේදී)</option>
+                                    <option value="Plumber">Plumber (පයිප් කාර්මික)</option>
+                                </optgroup>
+
+                                <optgroup label="Religious &amp; Social Service (ආගමික &amp; සමාජ සේවය)">
+                                    <option value="Clergy / Religious Worker">Clergy / Religious Worker (ආගමික සේවය)</option>
+                                    <option value="Social Worker">Social Worker (සමාජ සේවක)</option>
+                                    <option value="NGO Worker">NGO Worker (රාජ්‍ය නොවන සංවිධාන)</option>
+                                </optgroup>
+
+                                <optgroup label="Other (වෙනත්)">
+                                    <option value="Student">Student (ශිෂ්‍ය)</option>
+                                    <option value="Self-Employed">Self-Employed (ස්වයං රැකියා)</option>
+                                    <option value="Housewife / Homemaker">Housewife / Homemaker (ගෘහිණිය)</option>
+                                    <option value="Retired">Retired (විශ්‍රාමිකයා)</option>
+                                    <option value="Unemployed">Unemployed (රැකියා රහිත)</option>
+                                    <option value="Other">Other (වෙනත්)</option>
+                                </optgroup>
+                            </select>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Educational Qualifications (අධ්‍යාපන සුදුසුකම්)</label>
@@ -957,7 +1023,7 @@ const validateRules = {
     address: { minLength: 10, message: "Full address is required." },
     hometown: { minLength: 2, message: "Hometown is required." },
     district: { minLength: 2, message: "District is required." },
-    occupation: { minLength: 2, message: "Occupation is required." },
+    occupation: { required: true, message: "Please select your occupation." },
     church: { required: true, message: "Please select or enter your church." },
     pastor_name: { minLength: 3, message: "Pastor/Father's name is required." },
     pastor_phone: { pattern: /^[0-9+]{9,15}$/, message: "Valid phone required." },
