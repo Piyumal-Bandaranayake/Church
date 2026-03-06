@@ -40,6 +40,22 @@ $current_package = $package_labels[$candidate['package']] ?? $candidate['package
 <main class="min-h-screen py-10 px-4 sm:px-6 lg:px-8 themed-background">
     <div class="max-w-5xl mx-auto">
         
+        <!-- Notification Message -->
+        <?php if (isset($_GET['action_success']) && isset($_GET['message'])): ?>
+            <div class="mb-6 p-4 bg-green-100 border border-green-200 text-green-700 rounded-2xl flex items-center gap-3 reveal reveal-up">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                <span class="font-bold text-sm"><?php echo htmlspecialchars($_GET['message']); ?></span>
+            </div>
+        <?php endif; ?>
+
+        <!-- Special Redirect Handle (from report_partner.php) -->
+        <?php if (isset($_GET['notified'])): ?>
+            <div class="mb-6 p-4 bg-pink-100 border border-pink-200 text-pink-700 rounded-2xl flex items-center gap-3 reveal reveal-up">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
+                <span class="font-bold text-sm">Thank you for notifying us! Your profile has been updated.</span>
+            </div>
+        <?php endif; ?>
+
         <!-- Header Section -->
         <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6 reveal reveal-up">
             <div>
@@ -262,6 +278,67 @@ $current_package = $package_labels[$candidate['package']] ?? $candidate['package
                     </div>
                 </section>
 
+                <hr class="border-gray-100">
+
+                <!-- Account & Profile Settings -->
+                <section>
+                    <h3 class="flex items-center gap-3 text-lg font-black text-primary mb-8">
+                        <span class="w-2.5 h-6 bg-gray-600 rounded-full"></span>
+                        Account & Profile Settings
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Found My Partner Section -->
+                        <div class="bg-gray-50 rounded-3xl p-6 border border-gray-100 relative overflow-hidden text-left shadow-sm">
+                            <h4 class="text-md font-black text-gray-800 mb-4 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-pink-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
+                                Found My Partner
+                            </h4>
+                            
+                            <?php if ($candidate['partner_found']): ?>
+                                <div class="p-4 bg-pink-50 border border-pink-100 rounded-2xl">
+                                    <p class="text-pink-700 text-sm font-bold">Congratulations! You have marked your profile as "Partner Found".</p>
+                                    <p class="text-pink-600 text-xs mt-1">Our team has been notified. We wish you a blessed journey ahead!</p>
+                                </div>
+                            <?php else: ?>
+                                <p class="text-gray-500 text-xs mb-6 font-medium leading-relaxed">If you have found your life partner through our service or elsewhere, please let us know. This will help us maintain an updated database.</p>
+                                <button onclick="document.getElementById('partnerModal').classList.remove('hidden')" class="w-full py-4 bg-white border-2 border-pink-200 text-pink-600 rounded-2xl font-bold hover:bg-pink-50 hover:border-pink-300 transition-all duration-300 flex items-center justify-center gap-2 group">
+                                    Notify: I Found My Partner
+                                    <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                                </button>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Visibility Control Section -->
+                        <div class="bg-gray-50 rounded-3xl p-6 border border-gray-100 text-left shadow-sm">
+                            <h4 class="text-md font-black text-gray-800 mb-4 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" /></svg>
+                                Profile Visibility
+                            </h4>
+                            
+                            <?php if ($candidate['disable_requested'] && !$candidate['is_disabled']): ?>
+                                <div class="p-4 bg-amber-50 border border-amber-100 rounded-2xl mb-4">
+                                    <p class="text-amber-700 text-sm font-bold leading-tight">Request Pending Review</p>
+                                    <p class="text-amber-600 text-xs mt-1">Your request to disable your profile is currently being reviewed by our administrator.</p>
+                                </div>
+                            <?php else: ?>
+                                <p class="text-gray-500 text-xs mb-6 font-medium leading-relaxed">
+                                    <?php echo $candidate['is_disabled'] ? 'Your profile has been disabled by the administrator. Contact support to re-enable.' : 'You can request to hide your profile from other members. This request will be reviewed by the administrator.'; ?>
+                                </p>
+                                
+                                <?php if (!$candidate['is_disabled']): ?>
+                                    <a href="disable_profile.php" onclick="return confirm('Are you sure you want to request your profile to be disabled? This will hide you from other members and prevent further logins once approved.')" class="w-full py-4 bg-white border-2 border-amber-200 text-amber-600 hover:bg-amber-50 hover:border-amber-300 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center gap-2 group">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.046m4.596-4.596A9.964 9.964 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.059 10.059 0 01-2.27 4.013M15.549 15.549A3 3 0 1111.45 11.451m4.099 4.099L3 3m18 18l-18-18" /></svg>
+                                        Request Profile Disable
+                                    </a>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="border-gray-100">
+
             </div>
             
             <!-- Footer Verification -->
@@ -271,5 +348,45 @@ $current_package = $package_labels[$candidate['package']] ?? $candidate['package
         </div>
     </div>
 </main>
+
+<!-- Partner Found Modal -->
+<div id="partnerModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden reveal reveal-up">
+        <div class="p-8 border-b border-gray-100 flex justify-between items-center text-left">
+            <h3 class="text-xl font-black text-gray-900">I Found My Partner</h3>
+            <button onclick="document.getElementById('partnerModal').classList.add('hidden')" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+        
+        <form action="report_partner.php" method="POST" class="p-8 space-y-6 text-left">
+            <input type="hidden" name="his_name" value="<?php echo htmlspecialchars($candidate['fullname']); ?>">
+            
+            <div>
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">My Partner's Name</label>
+                <input type="text" name="partner_name" required class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none font-bold text-gray-800" placeholder="Enter partner's name">
+            </div>
+            
+            <div>
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">My Partner's Register Number</label>
+                <input type="text" name="partner_reg_number" required class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none font-bold text-gray-800" placeholder="e.g. REG/2026/001">
+            </div>
+            
+            <div>
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">My Mobile Number</label>
+                <input type="text" name="mobile_number" value="<?php echo htmlspecialchars($candidate['my_phone']); ?>" required class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none font-bold text-gray-800">
+            </div>
+            
+            <div>
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">A Short Message (Optional)</label>
+                <textarea name="message" rows="3" class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none font-bold text-gray-800" placeholder="Share your joy with us..."></textarea>
+            </div>
+            
+            <button type="submit" class="w-full py-5 bg-pink-500 text-white rounded-2xl font-black shadow-xl shadow-pink-200 hover:bg-pink-600 transition-all duration-300 transform active:scale-[0.98]">
+                Submit Notification
+            </button>
+        </form>
+    </div>
+</div>
 
 <?php include 'includes/footer.php'; ?>

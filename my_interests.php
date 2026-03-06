@@ -52,15 +52,15 @@ $my_details = $me_stmt->fetch(PDO::FETCH_ASSOC);
         <!-- Header Section -->
         <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 reveal reveal-up">
             <div>
-                <h1 class="text-4xl font-black text-primary mb-2">My Interests</h1>
-                <p class="text-gray-500 font-medium">Manage your requests and connections with other candidates</p>
+                <h1 class="text-4xl font-black text-primary mb-2">My Interests (මගේ උනන්දුවීම්)</h1>
+                <p class="text-gray-500 font-medium">Manage your requests and connections (ඔබගේ ඉල්ලීම් සහ සම්බන්ධතා කළමනාකරණය කරන්න)</p>
             </div>
             <div class="flex items-center gap-4">
-                <a href="my_profile.php" class="px-6 py-3 bg-white text-gray-700 font-bold rounded-2xl shadow-sm border border-gray-100 hover:bg-gray-50 transition-all">
-                    Dashboard
+                <a href="my_profile.php" class="px-6 py-3 bg-white text-gray-700 font-bold rounded-2xl shadow-sm border border-gray-100 hover:bg-gray-50 transition-all text-sm">
+                    Dashboard (පුවරුව)
                 </a>
-                <a href="candidates.php" class="px-6 py-3 bg-primary text-white font-bold rounded-2xl shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">
-                    Browse More
+                <a href="candidates.php" class="px-6 py-3 bg-primary text-white font-bold rounded-2xl shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all text-sm">
+                    Browse More (තව සොයන්න)
                 </a>
             </div>
         </div>
@@ -73,7 +73,7 @@ $my_details = $me_stmt->fetch(PDO::FETCH_ASSOC);
                     <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-primary">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
                     </div>
-                    <h2 class="text-2xl font-black text-gray-900">Received Requests</h2>
+                    <h2 class="text-2xl font-black text-gray-900">Received Requests (ලැබුණු ඉල්ලීම්)</h2>
                     <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-bold"><?php echo count($received_interests); ?></span>
                 </div>
 
@@ -82,7 +82,7 @@ $my_details = $me_stmt->fetch(PDO::FETCH_ASSOC);
                         <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0a2 2 0 01-2 2H6a2 2 0 01-2-2m16 0l-8 5-8-5" /></svg>
                         </div>
-                        <p class="text-gray-500 font-bold uppercase text-[10px] tracking-widest">No requests yet</p>
+                        <p class="text-gray-500 font-bold uppercase text-[10px] tracking-widest">No requests yet (තවමත් ඉල්ලීම් නැත)</p>
                     </div>
                 <?php else: ?>
                     <?php foreach ($received_interests as $item): ?>
@@ -97,21 +97,21 @@ $my_details = $me_stmt->fetch(PDO::FETCH_ASSOC);
                                         <span class="text-[9px] text-gray-400 font-bold uppercase"><?php echo date('M d', strtotime($item['created_at'])); ?></span>
                                     </div>
                                     <h3 class="text-lg font-black text-gray-900 truncate"><?php echo htmlspecialchars($item['fullname']); ?></h3>
-                                    <p class="text-xs text-gray-500 font-medium"><?php echo $item['age']; ?> yrs · <?php echo htmlspecialchars($item['hometown']); ?></p>
+                                    <p class="text-xs text-gray-500 font-medium"><?php echo $item['age']; ?> yrs (වයස) · <?php echo htmlspecialchars($item['hometown']); ?> (ගම)</p>
                                     
                                     <!-- Status Badge -->
                                     <div class="mt-3 flex items-center gap-2">
                                         <?php if ($item['status'] === 'accepted'): ?>
                                             <span class="px-3 py-1 bg-green-50 text-green-600 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
-                                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Accepted
+                                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Accepted (පිළිගත්තා)
                                             </span>
                                         <?php elseif ($item['status'] === 'rejected'): ?>
                                             <span class="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
-                                                <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Declined
+                                                <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Declined (ප්‍රතික්ෂේප කළා)
                                             </span>
                                         <?php else: ?>
                                             <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
-                                                <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span> Pending
+                                                <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span> Pending (අපේක්ෂිතයි)
                                             </span>
                                         <?php endif; ?>
                                     </div>
@@ -126,15 +126,15 @@ $my_details = $me_stmt->fetch(PDO::FETCH_ASSOC);
                                         data-sender-phone="<?php echo htmlspecialchars($item['parent_phone'] ?: $item['my_phone']); ?>"
                                         data-sender-name="<?php echo htmlspecialchars($item['fullname']); ?>"
                                         data-sender-reg="<?php echo htmlspecialchars($item['reg_number']); ?>"
-                                        class="py-3 bg-green-500 text-white font-bold rounded-2xl hover:bg-green-600 transition-all text-xs shadow-lg shadow-green-500/20 active:scale-95">
-                                        Accept Request
+                                        class="py-3 bg-green-500 text-white font-bold rounded-2xl hover:bg-green-600 transition-all text-[11px] shadow-lg shadow-green-500/20 active:scale-95 uppercase tracking-wider">
+                                        Accept (පිළිගන්න)
                                     </button>
-                                    <button onclick="handleInterest(this, <?php echo $item['id']; ?>, 'reject')" class="py-3 bg-gray-50 text-gray-500 font-bold rounded-2xl hover:bg-red-50 hover:text-red-500 transition-all text-xs active:scale-95">
-                                        Decline
+                                    <button onclick="handleInterest(this, <?php echo $item['id']; ?>, 'reject')" class="py-3 bg-gray-50 text-gray-500 font-bold rounded-2xl hover:bg-red-50 hover:text-red-500 transition-all text-[11px] active:scale-95 uppercase tracking-wider">
+                                        Decline (ප්‍රතික්ෂේප කරන්න)
                                     </button>
                                 <?php else: ?>
-                                    <a href="profile.php?id=<?php echo $item['sender_id']; ?>" class="col-span-2 py-3 bg-primary text-white font-bold rounded-2xl hover:bg-primary-hover transition-all text-xs text-center shadow-lg shadow-primary/20">
-                                        View Full Profile
+                                    <a href="profile.php?id=<?php echo $item['sender_id']; ?>" class="col-span-2 py-3 bg-primary text-white font-bold rounded-2xl hover:bg-primary-hover transition-all text-[11px] text-center shadow-lg shadow-primary/20 uppercase tracking-wider">
+                                        View Profile (ප්‍රෝෆයිලය බලන්න)
                                     </a>
                                 <?php endif; ?>
                             </div>
@@ -149,7 +149,7 @@ $my_details = $me_stmt->fetch(PDO::FETCH_ASSOC);
                     <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
                     </div>
-                    <h2 class="text-2xl font-black text-gray-900">Sent Interests</h2>
+                    <h2 class="text-2xl font-black text-gray-900">Sent Interests (යැවූ ඉල්ලීම්)</h2>
                     <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-bold"><?php echo count($sent_interests); ?></span>
                 </div>
 
@@ -158,7 +158,7 @@ $my_details = $me_stmt->fetch(PDO::FETCH_ASSOC);
                         <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
                         </div>
-                        <p class="text-gray-500 font-bold uppercase text-[10px] tracking-widest">You haven't sent any interests</p>
+                        <p class="text-gray-500 font-bold uppercase text-[10px] tracking-widest">You haven't sent any interests (ඔබ තවමත් කිසිවෙකුට කැමැත්ත ප්‍රකාශ කර නැත)</p>
                     </div>
                 <?php else: ?>
                     <?php foreach ($sent_interests as $item): ?>
@@ -173,33 +173,33 @@ $my_details = $me_stmt->fetch(PDO::FETCH_ASSOC);
                                         <span class="text-[9px] text-gray-400 font-bold uppercase"><?php echo date('M d', strtotime($item['created_at'])); ?></span>
                                     </div>
                                     <h3 class="text-lg font-black text-gray-900 truncate"><?php echo htmlspecialchars($item['fullname']); ?></h3>
-                                    <p class="text-xs text-gray-500 font-medium"><?php echo $item['occupation']; ?></p>
+                                    <p class="text-xs text-gray-500 font-medium"><?php echo htmlspecialchars($item['occupation']); ?></p>
                                     
                                     <!-- Status Badge -->
                                     <div class="mt-3 flex items-center gap-2">
                                         <?php if ($item['status'] === 'accepted'): ?>
                                             <span class="px-3 py-1 bg-green-50 text-green-600 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
-                                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Accepted by Candidate
+                                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Accepted (කැමැත්ත ලැබුණා)
                                             </span>
                                         <?php elseif ($item['status'] === 'rejected'): ?>
                                             <span class="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
-                                                <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Declined
+                                                <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Declined (ප්‍රතික්ෂේප කළා)
                                             </span>
                                         <?php else: ?>
                                             <span class="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
-                                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span> Waiting Response
+                                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span> Waiting Response (පිළිතුරක් අපේක්ෂාවෙන්)
                                             </span>
                                         <?php endif; ?>
                                     </div>
                                 </div>
-                                <button onclick="handleInterest(this, <?php echo $item['id']; ?>, 'delete')" class="p-2 text-gray-300 hover:text-red-500 transition-colors" title="Withdraw Interest">
+                                <button onclick="handleInterest(this, <?php echo $item['id']; ?>, 'delete')" class="p-2 text-gray-300 hover:text-red-500 transition-colors" title="Withdraw Interest (අස්කරගන්න)">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                 </button>
                             </div>
                             
                             <div class="mt-5">
-                                <a href="profile.php?id=<?php echo $item['receiver_id']; ?>" class="block w-full py-3 bg-gray-50 text-gray-700 font-bold rounded-2xl hover:bg-primary hover:text-white transition-all text-xs text-center border border-gray-100">
-                                    View Profile
+                                <a href="profile.php?id=<?php echo $item['receiver_id']; ?>" class="block w-full py-3 bg-gray-50 text-gray-700 font-bold rounded-2xl hover:bg-primary hover:text-white transition-all text-[11px] text-center border border-gray-100 uppercase tracking-wider">
+                                    View Profile (ප්‍රෝෆයිලය බලන්න)
                                 </a>
                             </div>
                         </div>
