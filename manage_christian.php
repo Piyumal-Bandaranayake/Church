@@ -50,8 +50,9 @@ $search_query = "";
 $params = [];
 
 if ($search !== '') {
-    $search_query = " AND (fullname LIKE ? OR email LIKE ? OR occupation LIKE ? OR my_phone LIKE ?)";
-    $params = ["%$search%", "%$search%", "%$search%", "%$search%"];
+    $search_query = " AND (fullname LIKE ? OR email LIKE ? OR occupation LIKE ? OR my_phone LIKE ? OR reg_number LIKE ?)";
+    $term = "%$search%";
+    $params = [$term, $term, $term, $term, $term];
 }
 
 // Fetch Pending
@@ -90,7 +91,10 @@ function renderTable($list, $is_pending) {
                                 <img src="<?php echo htmlspecialchars($img); ?>" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-gray-50 group-hover:ring-primary/10 transition-all shadow-sm">
                                 <div>
                                     <h4 class="text-base font-black text-gray-900"><?php echo htmlspecialchars($candidate['fullname']); ?></h4>
-                                    <div class="flex items-center gap-3 mt-1">
+                                    <div class="flex items-center gap-3 mt-1 flex-wrap">
+                                        <?php if (!empty($candidate['reg_number'])): ?>
+                                            <span class="text-[10px] font-black text-primary uppercase tracking-tight bg-primary/5 px-2 py-0.5 rounded border border-primary/10">#<?php echo htmlspecialchars($candidate['reg_number']); ?></span>
+                                        <?php endif; ?>
                                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-tight bg-gray-100 px-2 py-0.5 rounded"><?php echo htmlspecialchars($candidate['district']); ?></span>
                                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-tight underline italic shrink-0"><?php echo htmlspecialchars($candidate['occupation']); ?></span>
                                     </div>
@@ -101,6 +105,9 @@ function renderTable($list, $is_pending) {
                             <div class="flex justify-end gap-2">
                                 <a href="view_candidate.php?id=<?php echo $candidate['id']; ?>" class="p-3 bg-white text-gray-400 hover:text-primary hover:bg-primary/5 border border-gray-100 rounded-2xl transition-all shadow-sm" title="View Detail">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                </a>
+                                <a href="admin_edit_profile.php?id=<?php echo $candidate['id']; ?>" class="p-3 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-2xl transition-all shadow-sm" title="Edit Profile">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                 </a>
                                 <?php if ($is_pending): ?>
                                     <a href="?approve=<?php echo $candidate['id']; ?>" class="p-3 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white rounded-2xl transition-all shadow-sm" title="Approve">

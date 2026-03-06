@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 03, 2026 at 11:07 AM
+-- Generation Time: Mar 06, 2026 at 06:33 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -84,21 +84,16 @@ CREATE TABLE `candidates` (
   `my_phone` varchar(20) NOT NULL,
   `photo_path` varchar(255) DEFAULT NULL,
   `payment_slip_path` varchar(255) DEFAULT NULL,
+  `package` varchar(20) DEFAULT '3_months',
+  `reg_number` varchar(20) DEFAULT NULL,
   `status` enum('pending','approved','rejected') DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `role` enum('admin','user') DEFAULT 'user',
   `partner_found` tinyint(1) DEFAULT 0,
-  `partner_message` text DEFAULT NULL
+  `partner_message` text DEFAULT NULL,
+  `is_disabled` tinyint(1) DEFAULT 0,
+  `disable_requested` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `candidates`
---
-
-INSERT INTO `candidates` (`id`, `email`, `password`, `denomination`, `catholic_by_birth`, `nic_number`, `christianization_year`, `sacraments_received`, `fullname`, `sex`, `dob`, `age`, `nationality`, `language`, `address`, `hometown`, `district`, `province`, `height`, `occupation`, `edu_qual`, `add_qual`, `marital_status`, `children`, `children_details`, `illness`, `habits`, `church`, `pastor_name`, `pastor_phone`, `parent_phone`, `my_phone`, `photo_path`, `payment_slip_path`, `status`, `created_at`, `role`, `partner_found`, `partner_message`) VALUES
-(10, 'piyumalshalinda24790@gmail.com', '$2y$10$nZAvE7u3LGJ2GUu1OoZXSOKSg7OjaBnp/MwEgT/kczGDPa0D9aU3a', 'Christian', NULL, '200305601029', NULL, '', 'kalni kavindya', 'Male', '2000-02-22', 26, 'sinhala', 'sinhala', '112 kuriwela ukuwela', 'Matale', 'ssss', 'central', '5.2', 'sssss', 'ssssssssss', 'ssssssssssss', 'Unmarried', 'No', '', 'sssssssssssss', 'none', 'ssssssssss', 'ssssssssssssss', '0705765890', '0705765890', '0705765890', 'uploads/1772026253_88509707.jpg', NULL, 'approved', '2026-02-25 13:30:53', 'user', 0, NULL),
-(12, 'kasunkalhara@gmial.com', '$2y$10$maQnpaAGDvpjlBpFCOi/nOxiF7N3CoxG8fFBiFzF8JvIkq5da/Xp.', 'Christian', NULL, '202205001226', NULL, '', 'kamala kumari', 'Male', '1995-02-11', 31, 'sinhala', 'sinhala', '12 kumara road kadwath', 'colombo', 'colombo', 'centrel', '5.6', 'sssss', 'ssssssssssssss', 'sssssssssssssssssss', 'Unmarried', 'No', '', 'sssssssssssssssssssssssss', 'none', 'ssssssss', 'sssssssss', '0705765890', '0705765890', '0705765890', 'uploads/1772026934_e425e723.png', NULL, 'approved', '2026-02-25 13:42:14', 'user', 1, 'aaaaaaaaaa'),
-(16, 'kamal@gamil.com', '$2y$10$berl0MLJlpD.bOIkMPeAaeDcGATDrJJJKS81YD6kKJ/sSVDJ55RIq', 'Christian', NULL, '200306001026', NULL, '', 'piyumal shalinda', 'Male', '2000-02-02', 26, 'aknkaf', 'ssssssssss', 'kanday jansjas', 'kandy', 'Anuradhapura', 'Central', '5.3', 'wswwwwwwwwwww', 'upto A/L', 'wwwwwwwwwwwwwwww', 'Unmarried', 'No', '', 'wwwwwwwwwwwwwwwwwwwwww', 'none', 'wwwwwwwwwwwwwwwwwww', 'wwwwwwwwwwwwwwwwwwwwwww', '0705765890', '0705765890', '0705765890', 'uploads/1772530086_747e024a.jpg', 'uploads/payment_slips/slip_1772530086_c9d7f76e.png', 'pending', '2026-03-03 09:28:07', 'user', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -177,7 +172,23 @@ INSERT INTO `churches` (`id`, `name`, `created_at`, `pastor_name`, `location`) V
 (56, 'Zion Church of God', '2026-02-13 08:37:53', NULL, NULL),
 (57, 'Zion Fountain Church', '2026-02-13 08:37:53', NULL, NULL),
 (58, 'INDEPENDENT / FREE CHURCH', '2026-02-13 08:37:53', NULL, NULL),
+(59, 'HOUSE - CHURCH', '2026-02-13 08:37:53', NULL, NULL),
+(60, 'aaaa', '2026-02-13 09:30:50', 'aaaaa', 'aaaaa'),
+(61, 'ssssssssssssss', '2026-02-13 10:29:16', 'ssssssssssssssss', 'ssssssssssss');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `interests`
+--
+
+CREATE TABLE `interests` (
+  `id` int(11) NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `receiver_id` int(11) NOT NULL,
+  `status` enum('pending','accepted','rejected') DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -192,15 +203,9 @@ CREATE TABLE `partner_found_reports` (
   `partner_name` varchar(255) DEFAULT NULL,
   `message` text DEFAULT NULL,
   `mobile_number` varchar(50) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `partner_reg_number` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `partner_found_reports`
---
-
-INSERT INTO `partner_found_reports` (`id`, `user_id`, `his_name`, `partner_name`, `message`, `mobile_number`, `created_at`) VALUES
-(2, 12, 'kasun', 'kamani', 'aaaaaaaaaa', '0705465890', '2026-03-03 08:28:14');
 
 -- --------------------------------------------------------
 
@@ -220,17 +225,6 @@ CREATE TABLE `reviews` (
   `status` enum('pending','approved','rejected') DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `reviews`
---
-
-INSERT INTO `reviews` (`id`, `name`, `description`, `image1`, `image2`, `image3`, `image4`, `image5`, `status`, `created_at`) VALUES
-(1, 'ssss', 'ssssssssssssssssssss', 'uploads/reviews/review1_6997553bcdd16.jpg', NULL, NULL, NULL, NULL, 'approved', '2026-02-19 18:23:56'),
-(2, 'mmmm', 'mmmmm', 'uploads/reviews/review1_69975ab7d12d9.jpg', 'uploads/reviews/review2_69975ab7d30ea.jpg', NULL, NULL, NULL, 'approved', '2026-02-19 18:47:19'),
-(3, 'mmmm', 'ssssssssssssssss', 'uploads/reviews/review1_699effd33db03.jpeg', 'uploads/reviews/review2_699effd344a0e.jpeg', NULL, NULL, NULL, 'approved', '2026-02-25 13:57:39'),
-(4, 'kamala saduni', 'sssssssssss', 'uploads/reviews/review1_69a65bc2799f5.png', NULL, NULL, NULL, NULL, 'approved', '2026-03-03 03:55:46'),
-(5, 'ssssssssss', 'ssssssssssssss', 'uploads/reviews/review1_69a65c7993f0d.png', NULL, NULL, NULL, NULL, 'approved', '2026-03-03 03:58:49');
 
 --
 -- Indexes for dumped tables
@@ -261,6 +255,14 @@ ALTER TABLE `churches`
   ADD UNIQUE KEY `name` (`name`);
 
 --
+-- Indexes for table `interests`
+--
+ALTER TABLE `interests`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `sender_id` (`sender_id`,`receiver_id`),
+  ADD KEY `receiver_id` (`receiver_id`);
+
+--
 -- Indexes for table `partner_found_reports`
 --
 ALTER TABLE `partner_found_reports`
@@ -286,7 +288,7 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `candidates`
 --
 ALTER TABLE `candidates`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `churches`
@@ -295,16 +297,33 @@ ALTER TABLE `churches`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
+-- AUTO_INCREMENT for table `interests`
+--
+ALTER TABLE `interests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
 -- AUTO_INCREMENT for table `partner_found_reports`
 --
 ALTER TABLE `partner_found_reports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `interests`
+--
+ALTER TABLE `interests`
+  ADD CONSTRAINT `interests_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `candidates` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `interests_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `candidates` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

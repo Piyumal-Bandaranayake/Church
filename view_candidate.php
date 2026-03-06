@@ -22,11 +22,19 @@ if (!$candidate) {
     die("Candidate not found.");
 }
 
-// Handle Status Updates from this page too
+// Handle Status & Disable Updates
 if (isset($_POST['action'])) {
-    $new_status = $_POST['action'];
-    $stmt = $pdo->prepare("UPDATE candidates SET status = ? WHERE id = ?");
-    $stmt->execute([$new_status, $id]);
+    $action = $_POST['action'];
+    if ($action === 'approved' || $action === 'rejected') {
+        $stmt = $pdo->prepare("UPDATE candidates SET status = ? WHERE id = ?");
+        $stmt->execute([$action, $id]);
+    } elseif ($action === 'enable') {
+        $stmt = $pdo->prepare("UPDATE candidates SET is_disabled = 0, disable_requested = 0 WHERE id = ?");
+        $stmt->execute([$id]);
+    } elseif ($action === 'disable') {
+        $stmt = $pdo->prepare("UPDATE candidates SET is_disabled = 1, disable_requested = 0 WHERE id = ?");
+        $stmt->execute([$id]);
+    }
     header("Location: view_candidate.php?id=" . $id . "&updated=1");
     exit();
 }
@@ -36,23 +44,36 @@ if (isset($_POST['action'])) {
 <?php include 'includes/admin_sidebar.php'; ?>
 
 <div class="sm:ml-64">
-    <main class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <main class="min-h-screen pt-20 pb-12 sm:py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
         <!-- Breadcrumb & Actions -->
-        <div class="flex items-center justify-between mb-8">
-            <a href="admin_dashboard.php" class="flex items-center text-primary hover:underline gap-2 font-medium">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 mt-8 sm:mt-0">
+            <a href="admin_dashboard.php" class="flex items-center text-primary hover:underline gap-2 font-bold text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                 Back to Dashboard
             </a>
-            <div class="flex gap-2">
-                <form method="POST" class="inline">
+            
+            <div class="flex flex-wrap items-center gap-2">
+                <form method="POST" class="flex flex-wrap gap-2">
                     <?php if ($candidate['status'] == 'pending'): ?>
-                        <button name="action" value="approved" class="px-4 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition shadow-sm">Approve Application</button>
-                        <button name="action" value="rejected" class="px-4 py-2 bg-orange-500 text-white rounded-lg font-bold hover:bg-orange-600 transition shadow-sm">Reject Application</button>
-                    <?php
-endif; ?>
+                        <button name="action" value="approved" class="flex-1 sm:flex-none px-4 py-2.5 bg-green-600 text-white rounded-xl text-xs font-black uppercase tracking-wider hover:bg-green-700 transition shadow-lg shadow-green-600/20 active:scale-95">Approve</button>
+                        <button name="action" value="rejected" class="flex-1 sm:flex-none px-4 py-2.5 bg-orange-500 text-white rounded-xl text-xs font-black uppercase tracking-wider hover:bg-orange-600 transition shadow-lg shadow-orange-500/20 active:scale-95">Reject</button>
+                    <?php endif; ?>
+                    
+                    <?php if ($candidate['is_disabled'] == 1): ?>
+                        <button name="action" value="enable" class="flex-1 sm:flex-none px-4 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-wider hover:bg-blue-700 transition shadow-lg shadow-blue-600/20 active:scale-95">Enable Profile</button>
+                    <?php else: ?>
+                        <button name="action" value="disable" onclick="return confirm('Disable this profile? It will be hidden from all users.')" class="flex-1 sm:flex-none px-4 py-2.5 bg-gray-600 text-white rounded-xl text-xs font-black uppercase tracking-wider hover:bg-gray-700 transition shadow-lg active:scale-95">Disable Profile</button>
+                    <?php endif; ?>
                 </form>
-                <a href="admin_dashboard.php?delete=<?php echo $candidate['id']; ?>" onclick="return confirm('Permanently delete this application?')" class="px-4 py-2 bg-red-100 text-red-600 rounded-lg font-bold hover:bg-red-600 hover:text-white transition">Delete Profile</a>
+
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <a href="admin_edit_profile.php?id=<?php echo $candidate['id']; ?>" class="flex-1 sm:flex-none px-4 py-2.5 bg-blue-50 text-blue-600 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-blue-600 hover:text-white transition flex items-center justify-center gap-2 border border-blue-100 active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                        Edit
+                    </a>
+                    <a href="admin_dashboard.php?delete=<?php echo $candidate['id']; ?>" onclick="return confirm('Permanently delete this application?')" class="flex-1 sm:flex-none px-4 py-2.5 bg-red-50 text-red-600 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-red-600 hover:text-white transition text-center border border-red-100 active:scale-95">Delete</a>
+                </div>
             </div>
         </div>
 
@@ -75,8 +96,15 @@ endif; ?>
                     </div>
                 </div>
                 <div class="text-center md:text-left">
-                    <div class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3 <?php echo $candidate['status'] == 'approved' ? 'bg-green-500' : 'bg-orange-500'; ?>">
-                        <?php echo $candidate['status']; ?>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <div class="inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest <?php echo $candidate['status'] == 'approved' ? 'bg-green-500' : 'bg-orange-500'; ?>">
+                            <?php echo $candidate['status']; ?>
+                        </div>
+                        <?php if ($candidate['is_disabled'] == 1): ?>
+                            <div class="inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-red-600 animate-pulse">
+                                Account Disabled
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <h1 class="text-4xl font-bold"><?php echo htmlspecialchars($candidate['fullname']); ?></h1>
                     <p class="text-blue-200 text-lg mt-1"><?php echo htmlspecialchars($candidate['occupation']); ?> &middot; <?php echo htmlspecialchars($candidate['age']); ?> Years Old</p>

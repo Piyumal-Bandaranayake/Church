@@ -37,7 +37,7 @@ include 'includes/header.php'; ?>
                 </div>
                 <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Our Location</h3>
                 <p class="text-md font-bold text-primary">Grace Community Church</p>
-                <p class="text-[10px] text-slate-500 font-bold mt-1">Negombo, Sri Lanka</p>
+                <p class="text-[10px] text-slate-500 font-bold mt-1">No. 125, St. Peter's RD, Gedara Watta, Maggona, Sri Lanka, 12060</p>
             </div>
         </div>
 
@@ -65,8 +65,16 @@ include 'includes/header.php'; ?>
                     </div>
                 </div>
                 <div class="md:w-1/2 min-h-[400px] relative reveal reveal-right delay-200">
-                    <img src="https://images.unsplash.com/photo-1438032005730-c779502df39b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Church Interior" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-blue-900/20"></div>
+                    <iframe
+                        src="https://maps.google.com/maps?q=No.+125,+St.+Peters+RD,+Gedara+Watta,+Maggona,+Sri+Lanka,+12060&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                        width="100%"
+                        height="100%"
+                        style="border:0; min-height:400px;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="Grace Community Church - No. 125, St. Peter's RD, Gedara Watta, Maggona, Sri Lanka">
+                    </iframe>
                 </div>
             </div>
         </div>

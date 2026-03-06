@@ -44,12 +44,9 @@ $query = "SELECT * FROM candidates WHERE status = 'approved' AND denomination = 
 $params = [$denomination_filter];
 
 if ($search) {
-    $query .= " AND (fullname LIKE ? OR hometown LIKE ? OR occupation LIKE ? OR church LIKE ? OR district LIKE ?)";
-    $params[] = "%$search%";
-    $params[] = "%$search%";
-    $params[] = "%$search%";
-    $params[] = "%$search%";
-    $params[] = "%$search%";
+    $query .= " AND (fullname LIKE ? OR hometown LIKE ? OR occupation LIKE ? OR church LIKE ? OR district LIKE ? OR reg_number LIKE ? OR email LIKE ?)";
+    $term = "%$search%";
+    $params[] = $term; $params[] = $term; $params[] = $term; $params[] = $term; $params[] = $term; $params[] = $term; $params[] = $term;
 }
 
 if ($age_min !== '' && $age_max !== '') {
@@ -141,6 +138,9 @@ function renderTable($list) {
                                 <div>
                                     <h4 class="text-base font-black text-gray-900 line-clamp-1"><?php echo htmlspecialchars($candidate['fullname']); ?></h4>
                                     <div class="flex items-center gap-2 mt-1 flex-wrap">
+                                        <?php if (!empty($candidate['reg_number'])): ?>
+                                            <span class="text-[9px] font-black text-primary uppercase tracking-tight bg-primary/5 px-2 py-0.5 rounded border border-primary/10">#<?php echo htmlspecialchars($candidate['reg_number']); ?></span>
+                                        <?php endif; ?>
                                         <span class="text-[9px] font-black text-green-600 uppercase tracking-tight bg-green-50 px-2 py-0.5 rounded"><?php echo htmlspecialchars($candidate['district']); ?></span>
                                         <span class="text-[9px] font-black text-gray-400 uppercase tracking-tight bg-gray-100 px-2 py-0.5 rounded"><?php echo $candidate['age']; ?> Yrs</span>
                                         <span class="text-[9px] font-black text-gray-400 uppercase tracking-tight bg-gray-100 px-2 py-0.5 rounded"><?php echo $candidate['height']; ?> Ft</span>
@@ -153,6 +153,9 @@ function renderTable($list) {
                             <div class="flex justify-end gap-2 text-white">
                                 <a href="view_candidate.php?id=<?php echo $candidate['id']; ?>" class="p-3 bg-white text-gray-400 hover:text-primary hover:bg-primary/5 border border-gray-100 rounded-2xl transition-all shadow-sm" title="View Detail">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                </a>
+                                <a href="admin_edit_profile.php?id=<?php echo $candidate['id']; ?>" class="p-3 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-2xl transition-all shadow-sm" title="Edit Profile">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                 </a>
                                 <a href="?delete=<?php echo $candidate['id']; ?>" onclick="return confirm('Permanently delete this approved profile?')" class="p-3 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-2xl transition-all shadow-sm" title="Delete">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>

@@ -114,15 +114,6 @@ catch (PDOException $e) {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 pb-20">
             <!-- Stats Cards Grid -->
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 mb-12">
-                <!-- Success Stories Card -->
-                <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
-                    <div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-green-600 group-hover:text-white transition-all">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-                    </div>
-                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Success</p>
-                    <h3 class="text-2xl font-black text-gray-900"><?php echo (int)$success_count; ?></h3>
-                </div>
-
                 <!-- Total Users -->
                 <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
                     <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all">
@@ -133,24 +124,31 @@ catch (PDOException $e) {
                 </div>
 
                 <!-- Approved -->
-                <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
+                <a href="approved_christian.php" class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
                     <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-all">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </div>
                     <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Approved</p>
                     <h3 class="text-2xl font-black text-gray-900"><?php echo (int)$approved_count; ?></h3>
-                </div>
+                </a>
 
-
+                <!-- Applicants -->
+                <a href="pending_christian.php" class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-orange-600 group-hover:text-white transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    </div>
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Applicants</p>
+                    <h3 class="text-2xl font-black text-gray-900"><?php echo (int)$pending_count; ?></h3>
+                </a>
 
                 <!-- Testimonies -->
-                <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
+                <a href="manage_testimonies.php" class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
                     <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition-all">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                     </div>
                     <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Stories</p>
                     <h3 class="text-2xl font-black text-gray-900"><?php echo (int)$review_total_count; ?></h3>
-                </div>
+                </a>
             </div>
 
             <!-- Feedback Messages Popup -->
@@ -167,6 +165,10 @@ catch (PDOException $e) {
                     $msg_text = "New administrator account created successfully.";
                 } elseif ($_GET['success'] == 'profile_removed_after_partner_found') {
                     $msg_text = "Candidate profile successfully removed.";
+                } elseif ($_GET['success'] == 'profile_disabled') {
+                    $msg_text = "Profile has been successfully disabled.";
+                } elseif ($_GET['success'] == 'disable_request_rejected') {
+                    $msg_text = "Disable request has been rejected.";
                 }
 
                 $bg_class = $is_approved ? 'bg-green-50 border-green-200 text-green-700 shadow-green-100/50' : 
@@ -193,6 +195,8 @@ catch (PDOException $e) {
                 </script>
             <?php endif; ?>
 
+
+
             <!-- Partner Found Notifications Section -->
 
             <!-- Recent Activity Sections -->
@@ -204,7 +208,7 @@ catch (PDOException $e) {
                             <h2 class="text-xl font-black text-gray-900 leading-none">Recent Applications</h2>
                             <p class="text-xs text-gray-400 mt-2 font-medium tracking-wide uppercase">Awaiting your review</p>
                         </div>
-                        <a href="manage_applications.php" class="p-2 bg-white border border-gray-200 rounded-xl text-primary hover:bg-primary hover:text-white transition-all duration-300 shadow-sm">
+                        <a href="pending_christian.php" class="p-2 bg-white border border-gray-200 rounded-xl text-primary hover:bg-primary hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                         </a>
                     </div>
@@ -233,7 +237,7 @@ else: ?>
                                             <p class="text-[11px] text-gray-500 font-medium italic mt-0.5"><?php echo htmlspecialchars($candidate['occupation']); ?></p>
                                         </div>
                                     </div>
-                                    <a href="manage_applications.php" class="text-[11px] font-black text-primary uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                                    <a href="view_candidate.php?id=<?php echo $candidate['id']; ?>" class="text-[11px] font-black text-primary uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
                                         Review Detail →
                                     </a>
                                 </div>
@@ -245,7 +249,7 @@ endif; ?>
                     </div>
                     <?php if (!empty($pending_candidates)): ?>
                     <div class="p-4 bg-gray-50 border-t border-gray-100 text-center text-xs font-bold">
-                        <a href="manage_applications.php" class="text-blue-600 hover:text-blue-700">View all <?php echo (int)$pending_count; ?> pending applications</a>
+                        <a href="pending_christian.php" class="text-blue-600 hover:text-blue-700">View all <?php echo (int)$pending_count; ?> pending applications</a>
                     </div>
                     <?php
 endif; ?>
@@ -304,6 +308,7 @@ endif; ?>
 endif; ?>
                 </div>
             </div>
+
 
             <!-- System Administrators Section -->
             <div class="mt-12">
