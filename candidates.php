@@ -7,6 +7,13 @@ if (!isset($_SESSION['user_id'])) {
 
 include 'includes/db.php';
 
+// Ensure interests table exists (Auto-migration)
+try {
+    $pdo->query("SELECT 1 FROM interests LIMIT 1");
+} catch (Exception $e) {
+    include_once 'setup_db.php';
+}
+
 // Get current user's denomination if role is candidate
 $user_denomination = $_SESSION['denomination'] ?? '';
 if (empty($user_denomination) && $_SESSION['role'] === 'candidate') {
@@ -33,6 +40,12 @@ $sort = $_GET['sort'] ?? 'latest';
 // Build dynamic query
 $query = "SELECT * FROM candidates WHERE status = 'approved'";
 $params = [];
+
+// Don't show the logged-in user's own profile in the list
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'candidate') {
+    $query .= " AND id != ?";
+    $params[] = $_SESSION['user_id'];
+}
 
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     $denom_filter = $_GET['denomination_filter'] ?? '';
@@ -132,6 +145,19 @@ $candidates = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Success/Error Message System
 $review_success = isset($_GET['success']) && $_GET['success'] == 'review_submitted';
 $review_error = isset($_GET['error']);
+
+// Fetch candidate's interests and own details if logged in as candidate
+$my_interests = [];
+$my_details = null;
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'candidate') {
+    $int_stmt = $pdo->prepare("SELECT receiver_id FROM interests WHERE sender_id = ?");
+    $int_stmt->execute([$_SESSION['user_id']]);
+    $my_interests = $int_stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    $me_stmt = $pdo->prepare("SELECT reg_number, fullname FROM candidates WHERE id = ?");
+    $me_stmt->execute([$_SESSION['user_id']]);
+    $my_details = $me_stmt->fetch(PDO::FETCH_ASSOC);
+}
 ?>
 <?php $hide_spacer = true;
 include 'includes/header.php'; ?>
@@ -441,12 +467,26 @@ else: ?>
 
                     <!-- Actions -->
                     <div class="mt-8 pt-6 border-t border-gray-100 flex flex-col gap-3">
-                        <a href="profile.php?id=<?php echo $candidate['id']; ?>" class="w-full flex items-center justify-center gap-2 py-3.5 bg-gray-50 hover:bg-primary hover:text-white text-gray-700 font-bold rounded-2xl transition-all duration-300 text-sm group/btn shadow-sm">
+                        <a href="profile.php?id=<?php echo $candidate['id']; ?>" class="w-full flex items-center justify-center gap-2 py-3.5 bg-gray-50 hover:bg-primary-hover hover:text-white text-gray-700 font-bold rounded-2xl transition-all duration-300 text-sm group/btn shadow-sm">
                             View Detailed Profile
                             <svg class="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                         </a>
 
-
+                        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'candidate'): ?>
+                            <?php $isInterested = in_array($candidate['id'], $my_interests); ?>
+                            <button 
+                                onclick="expressInterest(this, <?php echo $candidate['id']; ?>)" 
+                                data-parent="<?php echo htmlspecialchars($candidate['parent_phone'] ?? ''); ?>"
+                                data-myphone="<?php echo htmlspecialchars($candidate['my_phone'] ?? ''); ?>"
+                                data-name="<?php echo htmlspecialchars($candidate['fullname'] ?? ''); ?>"
+                                data-reg="<?php echo htmlspecialchars($candidate['reg_number'] ?? ''); ?>"
+                                class="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold transition-all duration-300 text-sm shadow-sm <?php echo $isInterested ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white'; ?>">
+                                <svg class="w-4 h-4 <?php echo $isInterested ? 'fill-current' : ''; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                                <span class="btn-text"><?php echo $isInterested ? 'Interested' : 'Express Interest'; ?></span>
+                            </button>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -553,11 +593,129 @@ endif; ?>
         }
     }
 
+    // Current user's registration details
+    const myRegNo = '<?php echo $my_details['reg_number'] ?? ''; ?>';
+    const myName = '<?php echo addslashes($my_details['fullname'] ?? ''); ?>';
+
+    function expressInterest(btn, receiverId) {
+        const span = btn.querySelector('.btn-text');
+        const icon = btn.querySelector('svg');
+        const isCurrentlyInterested = btn.classList.contains('bg-red-500');
+        
+        const parentPhone = btn.getAttribute('data-parent');
+        const receiverName = btn.getAttribute('data-name');
+        const receiverReg = btn.getAttribute('data-reg');
+
+        if (!isCurrentlyInterested) {
+            // Show Contact Modal First
+            const modal = document.getElementById('contactModal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            // Set up the confirm button
+            document.getElementById('modalConfirmBtn').onclick = function() {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                performInterestAction(btn, receiverId, span, icon, parentPhone, receiverName, receiverReg);
+            };
+            return;
+        }
+
+        // If removing interest, just do it directly
+        performInterestAction(btn, receiverId, span, icon);
+    }
+
+    function performInterestAction(btn, receiverId, span, icon, parentPhone = '', receiverName = '', receiverReg = '') {
+        const originalText = span.textContent;
+        btn.disabled = true;
+        span.textContent = 'Processing...';
+
+        const formData = new FormData();
+        formData.append('receiver_id', receiverId);
+
+        fetch('express_interest.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.action === 'added') {
+                    btn.className = 'w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold transition-all duration-300 text-sm shadow-sm bg-red-500 text-white hover:bg-red-600';
+                    span.textContent = 'Interested';
+                    icon.classList.add('fill-current');
+
+                    // AUTOMATIC WHATSAPP REDIRECT
+                    if (parentPhone) {
+                        const cleanPhone = parentPhone.replace(/\D/g, '');
+                        const message = encodeURIComponent(`Hello, I am interested in profile #${receiverReg} (${receiverName}). My registration number is #${myRegNo} (${myName}).`);
+                        window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
+                    }
+                } else {
+                    btn.className = 'w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold transition-all duration-300 text-sm shadow-sm bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white';
+                    span.textContent = 'Express Interest';
+                    icon.classList.remove('fill-current');
+                }
+            } else {
+                alert(data.message);
+                span.textContent = originalText;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Something went wrong. Please try again.');
+            span.textContent = originalText;
+        })
+        .finally(() => {
+            btn.disabled = false;
+        });
+    }
+
+    function closeContactModal() {
+        document.getElementById('contactModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
     // Close modal on background click
     window.onclick = function(event) {
         const modal = document.getElementById('review-modal');
         if (event.target == modal) closeReviewModal();
     }
 </script>
+
+<!-- Contact Information Modal -->
+<div id="contactModal" class="fixed inset-0 z-[120] hidden">
+    <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onclick="closeContactModal()"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md px-4">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100 animate-zoom-in relative">
+            <button onclick="closeContactModal()" class="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all z-10">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <div class="p-8 md:p-10">
+                <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 text-primary">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                </div>
+                <h3 class="text-2xl font-black text-gray-900 text-center mb-2">Contact Information</h3>
+                <p class="text-xs text-gray-500 font-bold text-center mb-8 uppercase tracking-widest">සම්බන්ධතා තොරතුරු</p>
+                
+                <div class="space-y-6">
+                    <div class="p-6 bg-blue-50/50 rounded-3xl border border-blue-100">
+                        <p class="text-[13px] text-primary font-bold leading-relaxed text-center">
+                            Note: All the contact details regarding via the parent phone number.
+                            <br>
+                            <span class="text-[11px] opacity-80 mt-2 block">මෙම සියලු සම්බන්ධතා තොරතුරු දෙමාපියන්ගේ දුරකථන අංකය හරහා සිදු වේ.</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button id="modalConfirmBtn" class="w-full py-4 bg-primary text-white font-bold rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
+                        OK, Express Interest
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <?php include 'includes/footer.php'; ?>

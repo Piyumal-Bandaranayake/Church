@@ -49,9 +49,13 @@ include 'includes/header.php'; ?>
                         <h3 class="text-2xl font-black text-primary leading-tight tracking-tight">Online Group Prayers</h3>
                     </div>
                     <p class="text-slate-500 leading-relaxed font-medium">
-                        Join our vibrant community in unified prayer sessions held online. Come together with fellow believers from across Sri Lanka, lifting our voices in worship, intercession, and praise — all from the comfort of your home.
+                        Join weekly online prayer sessions with believers across Sri Lanka — worship and pray together from home.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed font-medium text-sm mt-2">
+                        ශ්‍රී ලංකාව පුරා විශ්වාසවන්තයන් සමඟ සතිපතා මාර්ගගත යාච්ඤා සැසිවලට සම්බන්ධ වන්න — නිවසේ සිටම ආරාධනා කර යාච්ඤා කරන්න.
                     </p>
                     <div class="mt-6 flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-black rounded-full">🆓 Free / නොමිලේ</span>
                         <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full">Zoom / Google Meet</span>
                         <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full">Weekly Sessions</span>
                         <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full">All Welcome</span>
@@ -95,9 +99,13 @@ include 'includes/header.php'; ?>
                         <h3 class="text-2xl font-black text-primary leading-tight tracking-tight">Online Individual Prayers</h3>
                     </div>
                     <p class="text-slate-500 leading-relaxed font-medium">
-                        Need personal prayer and spiritual guidance? Connect one-on-one with our prayer ministers online. Share your burdens, receive intercession, and experience the grace of God in an intimate, confidential setting.
+                        Need personal prayer? Connect privately with our prayer ministers online for intercession and spiritual guidance.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed font-medium text-sm mt-2">
+                        පෞද්ගලික යාච්ඤා අවශ්‍යද? අපගේ යාච්ඤා සේවකයින් සමඟ මාර්ගගතව රහසිගතව සම්බන්ධ වන්න.
                     </p>
                     <div class="mt-6 flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-black rounded-full">🆓 Free / නොමිලේ</span>
                         <span class="px-3 py-1 bg-purple-50 text-purple-700 text-xs font-bold rounded-full">One-on-One</span>
                         <span class="px-3 py-1 bg-purple-50 text-purple-700 text-xs font-bold rounded-full">Confidential</span>
                         <span class="px-3 py-1 bg-purple-50 text-purple-700 text-xs font-bold rounded-full">By Appointment</span>
@@ -137,9 +145,13 @@ include 'includes/header.php'; ?>
                         <h3 class="text-2xl font-black text-primary leading-tight tracking-tight">Home Visits</h3>
                     </div>
                     <p class="text-slate-500 leading-relaxed font-medium">
-                        Our dedicated ministers come to you. Whether for prayer, counselling, house blessings, or spiritual support during difficult seasons — we bring the ministry directly to your doorstep with love and care.
+                        Our ministers visit your home for prayer, counselling, and house blessings — bringing ministry to your doorstep.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed font-medium text-sm mt-2">
+                        අපගේ සේවකයින් යාච්ඤා, උපදේශනය සහ නිවාස ආශිර්වාද සඳහා ඔබේ නිවසට පැමිණෙයි.
                     </p>
                     <div class="mt-6 flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-black rounded-full">🆓 Free / නොමිලේ</span>
                         <span class="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full">House Blessings</span>
                         <span class="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full">Counselling</span>
                         <span class="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full">Island-Wide</span>
@@ -179,9 +191,13 @@ include 'includes/header.php'; ?>
                         <h3 class="text-2xl font-black text-primary leading-tight tracking-tight">Classes / Courses</h3>
                     </div>
                     <p class="text-slate-500 leading-relaxed font-medium">
-                        Grow deeper in your faith through our structured Bible classes, Christian living courses, and discipleship programmes. Designed for all ages and stages of faith — from new believers to mature Christians seeking spiritual growth.
+                        Grow in faith through Bible classes, discipleship courses, and Christian living programmes — for all ages.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed font-medium text-sm mt-2">
+                        බයිබල් පන්ති, ශිෂ්‍යත්ව පාඨමාලා සහ කිතුනු ජීවන වැඩසටහන් තුළින් ඇදහිල්ලෙන් වර්ධනය වන්න — සියලු වයස් කාණ්ඩ සඳහා.
                     </p>
                     <div class="mt-6 flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-black rounded-full">🆓 Free / නොමිලේ</span>
                         <span class="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-full">Bible Study</span>
                         <span class="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-full">Discipleship</span>
                         <span class="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-full">All Ages</span>

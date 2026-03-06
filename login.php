@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION['username'] = $user['fullname'];
                     $_SESSION['role'] = 'candidate';
                     $_SESSION['denomination'] = $user['denomination'];
-                    header("Location: profile.php");
+                    header("Location: my_profile.php");
                     exit();
                 }
             }
@@ -84,8 +84,25 @@ endif; ?>
                 <div class="mb-6 p-3 bg-green-50 border border-green-100 text-green-700 rounded-lg text-sm font-medium">
                     Password updated successfully.
                 </div>
-            <?php
-endif; ?>
+            <?php endif; ?>
+
+            <?php if (isset($_GET['registered']) && $_GET['registered'] == 'true'): ?>
+                <div class="mb-6 p-5 bg-green-50 border-2 border-green-200 rounded-2xl text-center">
+                    <div class="flex justify-center mb-3">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                    </div>
+                    <p class="text-green-700 font-bold text-sm">Registration Successful! (ලියාපදිංචිය සාර්ථකයි!)</p>
+                    <?php if (isset($_GET['reg'])): ?>
+                        <div class="mt-3 bg-white rounded-xl p-4 border border-green-100">
+                            <p class="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">Your Registration Number (ඔබගේ ලියාපදිංචි අංකය)</p>
+                            <p class="text-3xl font-black text-primary tracking-wider"><?php echo htmlspecialchars($_GET['reg']); ?></p>
+                        </div>
+                    <?php endif; ?>
+                    <p class="mt-3 text-xs text-gray-500 font-medium">Your profile is under review. You can login after approval.<br>(ඔබගේ පෝරමය සමාලෝචනය යටතේ පවතී. අනුමැතියෙන් පසු පුරනය වන්න.)</p>
+                </div>
+            <?php endif; ?>
 
             <form class="space-y-6" action="" method="POST">
                 <div class="reveal reveal-up delay-300">

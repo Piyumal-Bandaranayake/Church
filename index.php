@@ -17,7 +17,7 @@ if (empty($user_denomination) && isset($_SESSION['role']) && $_SESSION['role'] =
     $user_denomination = $user_stmt->fetchColumn();
     $_SESSION['denomination'] = $user_denomination;
 }
-$display_denomination = !empty($user_denomination) ? strtoupper($user_denomination) : 'CATHOLIC';
+$display_denomination = !empty($user_denomination) ? strtoupper($user_denomination) : 'CHRISTIAN';
 ?>
 
 

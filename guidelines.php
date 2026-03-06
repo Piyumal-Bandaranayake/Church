@@ -30,7 +30,7 @@ include 'includes/header.php';
                         </p>
                         <div class="w-full h-px bg-blue-100"></div>
                         <p class="text-[13px] text-gray-700 leading-relaxed font-semibold">
-                            නිවැරදි තොරතුරු සපයා ගිණුමක් සාදන්න. අපගේ පරිපාලකයින් අනුමත කරන තෙක් පැතිකඩ <span class="text-blue-600">"සමාලෝචනය"</span> යටතේ පවතී.
+                            නිවැරදි තොරතුරු සපයා ගිණුමක් සාදන්න. අපගේ පරිපාලකයින් අනුමත කරන තෙක් පෝරමය <span class="text-blue-600">"සමාලෝචනය"</span> යටතේ පවතී.
                         </p>
                     </div>
                 </div>
@@ -50,7 +50,7 @@ include 'includes/header.php';
                         </p>
                         <div class="w-full h-px bg-green-100"></div>
                         <p class="text-[13px] text-gray-700 leading-relaxed font-semibold">
-                            තහවුරු කළ පැතිකඩ පරීක්ෂා කරන්න. ඔබේ ඇදහිල්ලට ගැලපෙන කෙනෙකු සොයන්න අපගේ <span class="text-green-600">සෙවුම් පෙරහන්</span> භාවිත කරන්න.
+                            තහවුරු කළ පෝරමය පරීක්ෂා කරන්න. ඔබේ ඇදහිල්ලට ගැලපෙන කෙනෙකු සොයන්න අපගේ <span class="text-green-600">සෙවුම් පෙරහන්</span> භාවිත කරන්න.
                         </p>
                     </div>
                 </div>
@@ -90,7 +90,7 @@ include 'includes/header.php';
                         </p>
                         <div class="w-full h-px bg-orange-100"></div>
                         <p class="text-[13px] text-gray-700 leading-relaxed font-semibold">
-                            සහකරු සොයා ගත්තේ නම් දැනුම් දෙන්න. පැතිකඩ <span class="text-orange-600">"සහකරු හමු විය"</span> කර කතාව අන් අයට බෙදා ගැනීමට හැකිය.
+                            සහකරු සොයා ගත්තේ නම් දැනුම් දෙන්න. පෝරමය <span class="text-orange-600">"සහකරු හමු විය"</span> කර කතාව අන් අයට බෙදා ගැනීමට හැකිය.
                         </p>
                     </div>
                 </div>
