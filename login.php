@@ -22,6 +22,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($user['status'] !== 'approved') {
                     $error = "Your profile is in review.";
                 }
+                elseif ($user['is_disabled'] == 1) {
+                    $error = "Your profile has been disabled. Please contact the administrator for assistance.";
+                }
                 else {
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['fullname'];

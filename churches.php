@@ -26,181 +26,157 @@ include 'includes/header.php'; ?>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
 
             <!-- Card 1: Online Group Prayers -->
-            <div class="group bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 overflow-hidden hover:-translate-y-2 transition-all duration-500 reveal reveal-up">
-                <div class="relative h-64 overflow-hidden">
+            <div class="group bg-white rounded-[3rem] shadow-2xl shadow-blue-900/5 border border-slate-100 overflow-hidden hover:-translate-y-2 transition-all duration-500 reveal reveal-up">
+                <div class="relative h-72 overflow-hidden">
                     <img src="assets/images/ministry_group_prayer.png"
                          alt="Online Group Prayers"
                          class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#0a2540]/80 via-[#0a2540]/20 to-transparent"></div>
-                    <div class="absolute bottom-5 left-6">
-                        <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-500/90 backdrop-blur-sm text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
-                            <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0a2540]/90 via-[#0a2540]/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-8">
+                        <span class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-xl">
+                            <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
                             Live Sessions
                         </span>
                     </div>
                 </div>
                 <div class="p-10">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 shadow-inner">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                             </svg>
                         </div>
-                        <h3 class="text-2xl font-black text-primary leading-tight tracking-tight">Online Group Prayers</h3>
+                        <h3 class="text-3xl font-black text-primary leading-none tracking-tighter">Online Group<br>Prayers</h3>
                     </div>
-                    <p class="text-slate-500 leading-relaxed font-medium">
-                        Join weekly online prayer sessions with believers across Sri Lanka — worship and pray together from home.
-                    </p>
-                    <p class="text-slate-400 leading-relaxed font-medium text-sm mt-2">
-                        ශ්‍රී ලංකාව පුරා විශ්වාසවන්තයන් සමඟ සතිපතා මාර්ගගත යාච්ඤා සැසිවලට සම්බන්ධ වන්න — නිවසේ සිටම ආරාධනා කර යාච්ඤා කරන්න.
-                    </p>
-                    <div class="mt-6 flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-black rounded-full">🆓 Free / නොමිලේ</span>
-                        <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full">Zoom / Google Meet</span>
-                        <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full">Weekly Sessions</span>
-                        <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full">All Welcome</span>
+                    <div class="space-y-4">
+                        <p class="text-slate-500 leading-relaxed font-semibold text-base">
+                            Join weekly online prayer sessions with believers across Sri Lanka — worship and pray together from home.
+                        </p>
+                        <p class="text-slate-400 leading-relaxed font-medium text-sm">
+                            ශ්‍රී ලංකාව පුරා විශ්වාසවන්තයන් සමඟ සතිපතා මාර්ගගත යාච්ඤා සැසිවලට සම්බන්ධ වන්න.
+                        </p>
+                    </div>
+                    <div class="mt-8 flex flex-wrap gap-2">
+                        <span class="px-4 py-1.5 bg-green-50 text-green-700 text-[10px] font-black rounded-full uppercase tracking-wider">🆓 Free</span>
+                        <span class="px-4 py-1.5 bg-blue-50 text-blue-700 text-[10px] font-black rounded-full uppercase tracking-wider">Zoom</span>
+                        <span class="px-4 py-1.5 bg-blue-50 text-blue-700 text-[10px] font-black rounded-full uppercase tracking-wider">Weekly</span>
                     </div>
                 </div>
             </div>
 
             <!-- Card 2: Online Individual Prayers -->
-            <div class="group bg-white rounded-[2.5rem] shadow-xl shadow-purple-900/5 border border-slate-100 overflow-hidden hover:-translate-y-2 transition-all duration-500 reveal reveal-up delay-100">
-                <div class="relative h-64 overflow-hidden bg-gradient-to-br from-[#1a0a40] via-[#2d1a60] to-[#0a1540]">
-                    <!-- Decorative background for placeholder -->
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="w-40 h-40 rounded-full bg-purple-500/20 blur-2xl"></div>
-                        <div class="absolute w-24 h-24 rounded-full bg-indigo-400/30 blur-xl"></div>
-                    </div>
-                    <!-- Icon illustration -->
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="text-center">
-                            <div class="w-20 h-20 mx-auto bg-white/10 backdrop-blur-sm rounded-3xl flex items-center justify-center border border-white/20 shadow-2xl">
-                                <svg class="w-10 h-10 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#1a0a40]/80 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-5 left-6">
-                        <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-purple-500/90 backdrop-blur-sm text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
-                            <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-                            Personal & Private
+            <div class="group bg-white rounded-[3rem] shadow-2xl shadow-purple-900/5 border border-slate-100 overflow-hidden hover:-translate-y-2 transition-all duration-500 reveal reveal-up delay-100">
+                <div class="relative h-72 overflow-hidden">
+                    <img src="assets/images/online.jpg"
+                         alt="Online Individual Prayers"
+                         class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#1a0a40]/90 via-[#1a0a40]/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-8">
+                        <span class="inline-flex items-center gap-2 px-4 py-2 bg-purple-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-xl">
+                            <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                            Private Intercession
                         </span>
                     </div>
                 </div>
                 <div class="p-10">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 flex-shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 flex-shrink-0 shadow-inner">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
                         </div>
-                        <h3 class="text-2xl font-black text-primary leading-tight tracking-tight">Online Individual Prayers</h3>
+                        <h3 class="text-3xl font-black text-primary leading-none tracking-tighter">Online Private<br>Prayers</h3>
                     </div>
-                    <p class="text-slate-500 leading-relaxed font-medium">
-                        Need personal prayer? Connect privately with our prayer ministers online for intercession and spiritual guidance.
-                    </p>
-                    <p class="text-slate-400 leading-relaxed font-medium text-sm mt-2">
-                        පෞද්ගලික යාච්ඤා අවශ්‍යද? අපගේ යාච්ඤා සේවකයින් සමඟ මාර්ගගතව රහසිගතව සම්බන්ධ වන්න.
-                    </p>
-                    <div class="mt-6 flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-black rounded-full">🆓 Free / නොමිලේ</span>
-                        <span class="px-3 py-1 bg-purple-50 text-purple-700 text-xs font-bold rounded-full">One-on-One</span>
-                        <span class="px-3 py-1 bg-purple-50 text-purple-700 text-xs font-bold rounded-full">Confidential</span>
-                        <span class="px-3 py-1 bg-purple-50 text-purple-700 text-xs font-bold rounded-full">By Appointment</span>
+                    <div class="space-y-4">
+                        <p class="text-slate-500 leading-relaxed font-semibold text-base">
+                            Need personal prayer? Connect privately with our prayer ministers online for intercession and spiritual guidance.
+                        </p>
+                        <p class="text-slate-400 leading-relaxed font-medium text-sm">
+                            පෞද්ගලික යාච්ඤා අවශ්‍යද? අපගේ යාච්ඤා සේවකයින් සමඟ මාර්ගගතව සම්බන්ධ වන්න.
+                        </p>
+                    </div>
+                    <div class="mt-8 flex flex-wrap gap-2">
+                        <span class="px-4 py-1.5 bg-green-50 text-green-700 text-[10px] font-black rounded-full uppercase tracking-wider">🆓 Free</span>
+                        <span class="px-4 py-1.5 bg-purple-50 text-purple-700 text-[10px] font-black rounded-full uppercase tracking-wider">One-on-One</span>
+                        <span class="px-4 py-1.5 bg-purple-50 text-purple-700 text-[10px] font-black rounded-full uppercase tracking-wider">Private</span>
                     </div>
                 </div>
             </div>
 
             <!-- Card 3: Home Visits -->
-            <div class="group bg-white rounded-[2.5rem] shadow-xl shadow-emerald-900/5 border border-slate-100 overflow-hidden hover:-translate-y-2 transition-all duration-500 reveal reveal-up delay-200">
-                <div class="relative h-64 overflow-hidden bg-gradient-to-br from-[#0a2a1a] via-[#1a4030] to-[#0a2010]">
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="w-40 h-40 rounded-full bg-emerald-500/20 blur-2xl"></div>
-                        <div class="absolute w-24 h-24 rounded-full bg-green-400/30 blur-xl"></div>
-                    </div>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="w-20 h-20 mx-auto bg-white/10 backdrop-blur-sm rounded-3xl flex items-center justify-center border border-white/20 shadow-2xl">
-                            <svg class="w-10 h-10 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#0a2a1a]/80 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-5 left-6">
-                        <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/90 backdrop-blur-sm text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
-                            <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-                            In-Person
+            <div class="group bg-white rounded-[3rem] shadow-2xl shadow-emerald-900/5 border border-slate-100 overflow-hidden hover:-translate-y-2 transition-all duration-500 reveal reveal-up delay-200">
+                <div class="relative h-72 overflow-hidden">
+                    <img src="assets/images/housevisit.jpg"
+                         alt="Home Visits"
+                         class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#064e3b]/90 via-[#064e3b]/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-8">
+                        <span class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-xl">
+                            <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                            At Your Doorstep
                         </span>
                     </div>
                 </div>
                 <div class="p-10">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0 shadow-inner">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                             </svg>
                         </div>
-                        <h3 class="text-2xl font-black text-primary leading-tight tracking-tight">Home Visits</h3>
+                        <h3 class="text-3xl font-black text-primary leading-none tracking-tighter">In-Person Home<br>Visits</h3>
                     </div>
-                    <p class="text-slate-500 leading-relaxed font-medium">
-                        Our ministers visit your home for prayer, counselling, and house blessings — bringing ministry to your doorstep.
-                    </p>
-                    <p class="text-slate-400 leading-relaxed font-medium text-sm mt-2">
-                        අපගේ සේවකයින් යාච්ඤා, උපදේශනය සහ නිවාස ආශිර්වාද සඳහා ඔබේ නිවසට පැමිණෙයි.
-                    </p>
-                    <div class="mt-6 flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-black rounded-full">🆓 Free / නොමිලේ</span>
-                        <span class="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full">House Blessings</span>
-                        <span class="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full">Counselling</span>
-                        <span class="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full">Island-Wide</span>
+                    <div class="space-y-4">
+                        <p class="text-slate-500 leading-relaxed font-semibold text-base">
+                            Our ministers visit your home for prayer, counselling, and house blessings — bringing ministry to your doorstep.
+                        </p>
+                        <p class="text-slate-400 leading-relaxed font-medium text-sm">
+                            අපගේ සේවකයින් යාච්ඤා සහ නිවාස ආශිර්වාද සඳහා ඔබේ නිවසට පැමිණෙයි.
+                        </p>
+                    </div>
+                    <div class="mt-8 flex flex-wrap gap-2">
+                        <span class="px-4 py-1.5 bg-green-50 text-green-700 text-[10px] font-black rounded-full uppercase tracking-wider">🆓 Free</span>
+                        <span class="px-4 py-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-black rounded-full uppercase tracking-wider">Personal</span>
+                        <span class="px-4 py-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-black rounded-full uppercase tracking-wider">Blessing</span>
                     </div>
                 </div>
             </div>
 
             <!-- Card 4: Classes / Courses -->
-            <div class="group bg-white rounded-[2.5rem] shadow-xl shadow-amber-900/5 border border-slate-100 overflow-hidden hover:-translate-y-2 transition-all duration-500 reveal reveal-up delay-300">
-                <div class="relative h-64 overflow-hidden bg-gradient-to-br from-[#2a1a00] via-[#3d2a00] to-[#1a1000]">
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="w-40 h-40 rounded-full bg-amber-500/20 blur-2xl"></div>
-                        <div class="absolute w-24 h-24 rounded-full bg-yellow-400/30 blur-xl"></div>
-                    </div>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="w-20 h-20 mx-auto bg-white/10 backdrop-blur-sm rounded-3xl flex items-center justify-center border border-white/20 shadow-2xl">
-                            <svg class="w-10 h-10 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#2a1a00]/80 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-5 left-6">
-                        <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-500/90 backdrop-blur-sm text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
-                            <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-                            Online & In-Person
+            <div class="group bg-white rounded-[3rem] shadow-2xl shadow-amber-900/5 border border-slate-100 overflow-hidden hover:-translate-y-2 transition-all duration-500 reveal reveal-up delay-300">
+                <div class="relative h-72 overflow-hidden">
+                    <img src="assets/images/bible.jpg"
+                         alt="Classes / Courses"
+                         class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#92400e]/90 via-[#92400e]/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-8">
+                        <span class="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-xl">
+                            <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                            Biblical Wisdom
                         </span>
                     </div>
                 </div>
                 <div class="p-10">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 flex-shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 flex-shrink-0 shadow-inner">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                             </svg>
                         </div>
-                        <h3 class="text-2xl font-black text-primary leading-tight tracking-tight">Classes / Courses</h3>
+                        <h3 class="text-3xl font-black text-primary leading-none tracking-tighter">Bible Classes &<br>Courses</h3>
                     </div>
-                    <p class="text-slate-500 leading-relaxed font-medium">
-                        Grow in faith through Bible classes, discipleship courses, and Christian living programmes — for all ages.
-                    </p>
-                    <p class="text-slate-400 leading-relaxed font-medium text-sm mt-2">
-                        බයිබල් පන්ති, ශිෂ්‍යත්ව පාඨමාලා සහ කිතුනු ජීවන වැඩසටහන් තුළින් ඇදහිල්ලෙන් වර්ධනය වන්න — සියලු වයස් කාණ්ඩ සඳහා.
-                    </p>
-                    <div class="mt-6 flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-black rounded-full">🆓 Free / නොමිලේ</span>
-                        <span class="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-full">Bible Study</span>
-                        <span class="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-full">Discipleship</span>
-                        <span class="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-full">All Ages</span>
+                    <div class="space-y-4">
+                        <p class="text-slate-500 leading-relaxed font-semibold text-base">
+                            Grow in faith through Bible classes, discipleship courses, and Christian living programmes — for all ages.
+                        </p>
+                        <p class="text-slate-400 leading-relaxed font-medium text-sm">
+                            බයිබල් පන්ති සහ කිතුනු ජීවන වැඩසටහන් තුළින් ඇදහිල්ලෙන් වර්ධනය වන්න.
+                        </p>
+                    </div>
+                    <div class="mt-8 flex flex-wrap gap-2">
+                        <span class="px-4 py-1.5 bg-green-50 text-green-700 text-[10px] font-black rounded-full uppercase tracking-wider">🆓 Free</span>
+                        <span class="px-4 py-1.5 bg-amber-50 text-amber-700 text-[10px] font-black rounded-full uppercase tracking-wider">Bible Study</span>
+                        <span class="px-4 py-1.5 bg-amber-50 text-amber-700 text-[10px] font-black rounded-full uppercase tracking-wider">All Ages</span>
                     </div>
                 </div>
             </div>
