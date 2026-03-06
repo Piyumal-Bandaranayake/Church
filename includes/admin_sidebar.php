@@ -5,6 +5,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $catholic_pending_count = 0;
 $christian_pending_count = 0;
 $partner_found_count = 0;
+$disable_req_sidebar_count = 0;
 
 if (isset($pdo)) {
     $stmt_catholic = $pdo->prepare("SELECT COUNT(*) FROM candidates WHERE status = 'pending' AND denomination = 'Catholic'");
@@ -19,8 +20,13 @@ if (isset($pdo)) {
         $stmt_pf = $pdo->prepare("SELECT COUNT(*) FROM partner_found_reports");
         $stmt_pf->execute();
         $partner_found_count = $stmt_pf->fetchColumn();
+
+        $stmt_dr = $pdo->prepare("SELECT COUNT(*) FROM candidates WHERE disable_requested = 1");
+        $stmt_dr->execute();
+        $disable_req_sidebar_count = $stmt_dr->fetchColumn();
     } catch(PDOException $e) {
         $partner_found_count = 0;
+        $disable_req_sidebar_count = 0;
     }
 }
 ?>
@@ -110,6 +116,17 @@ if (isset($pdo)) {
                   </div>
                   <?php if ($partner_found_count > 0): ?>
                       <span class="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold text-white bg-green-500 rounded-full shrink-0 shadow-sm shadow-green-500/50"><?php echo $partner_found_count; ?> NEW</span>
+                  <?php endif; ?>
+               </a>
+            </li>
+            <li>
+               <a href="admin_disable_requests.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm w-full justify-between <?php echo $current_page == 'admin_disable_requests.php' ? 'bg-white/10 text-white font-bold' : ''; ?>">
+                  <div class="flex items-center">
+                      <svg class="w-5 h-5 text-white/40 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                      <span class="ms-3 whitespace-nowrap">Disable Requests</span>
+                  </div>
+                  <?php if ($disable_req_sidebar_count > 0): ?>
+                      <span class="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold text-white bg-amber-500 rounded-full shrink-0 shadow-sm shadow-amber-500/50"><?php echo $disable_req_sidebar_count; ?></span>
                   <?php endif; ?>
                </a>
             </li>
