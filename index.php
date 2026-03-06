@@ -331,7 +331,7 @@ endif; ?>
             <div class="lg:w-1/2 relative reveal reveal-left">
                 <div class="absolute -top-4 -left-4 w-24 h-24 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
                 <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-yellow-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
-                <img src="assets/images/church.jpg" alt="Church Gathering" class="rounded-2xl shadow-2xl w-full object-cover h-[500px] relative z-10 hover:scale-[1.02] transition-transform duration-500">
+                <img src="assets/images/outdore.jpg" alt="Grace Community Church" class="rounded-[2.5rem] shadow-2xl w-full object-cover h-[500px] relative z-10 hover:scale-[1.02] transition-transform duration-500">
             </div>
             
             <div class="lg:w-1/2 reveal reveal-right delay-200">

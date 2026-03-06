@@ -30,11 +30,11 @@ if (empty($user_denomination) && isset($_SESSION['role']) && $_SESSION['role'] =
 
 $id = $_GET['id'];
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    $stmt = $pdo->prepare("SELECT * FROM candidates WHERE id = ? AND status = 'approved'");
+    $stmt = $pdo->prepare("SELECT * FROM candidates WHERE id = ?");
     $stmt->execute([$id]);
 } else {
-    $stmt = $pdo->prepare("SELECT * FROM candidates WHERE id = ? AND status = 'approved' AND denomination = ?");
-    $stmt->execute([$id, $user_denomination]);
+    $stmt = $pdo->prepare("SELECT * FROM candidates WHERE id = ? AND status = 'approved' AND denomination = ? AND (is_disabled = 0 OR id = ?)");
+    $stmt->execute([$id, $user_denomination, $_SESSION['user_id']]);
 }
 $candidate = $stmt->fetch(PDO::FETCH_ASSOC);
 
