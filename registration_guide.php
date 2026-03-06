@@ -40,7 +40,7 @@ include 'includes/header.php';
                     <div class="relative z-10 flex flex-col h-full">
                         <div class="w-16 h-16 bg-indigo-600 text-white font-black rounded-2xl flex items-center justify-center text-3xl shadow-lg mb-6 group-hover:rotate-6 transition-transform">2</div>
                         <h3 class="text-2xl font-black text-gray-900 mb-1">Profile Details</h3>
-                        <h4 class="text-lg font-bold text-indigo-700 mb-4">පැතිකඩ තොරතුරු</h4>
+                        <h4 class="text-lg font-bold text-indigo-700 mb-4">පෝරමය තොරතුරු</h4>
                         <div class="flex-grow space-y-4">
                             <p class="text-gray-700 leading-relaxed">
                                 Upload a clear photo and fill in personal details. Honesty is crucial for finding the right match. Your profile will be marked as "In Review".

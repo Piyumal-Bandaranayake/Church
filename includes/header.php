@@ -181,7 +181,12 @@ function isActiveMobile($page_name, $current_page)
                     <a href="churches.php" class="nav-link <?php echo isActive('churches.php', $current_page); ?>">Ministry</a>
                     <a href="contact.php" class="nav-link <?php echo isActive('contact.php', $current_page); ?>">Contact</a>
                     <?php if (isset($_SESSION['user_id'])): ?>
-                    <a href="candidates.php" class="<?php echo isActive('candidates.php', $current_page); ?>">Candidates</a>
+                    <a href="candidates.php" class="nav-link <?php echo isActive('candidates.php', $current_page); ?>">Candidates</a>
+                    <?php $profPage = ($_SESSION['role'] === 'admin') ? 'admin_dashboard.php' : 'my_profile.php'; ?>
+                    <a href="<?php echo $profPage; ?>" class="nav-link <?php echo isActive($profPage, $current_page); ?>">My Profile</a>
+                    <?php if ($_SESSION['role'] === 'candidate'): ?>
+                        <a href="my_interests.php" class="nav-link <?php echo isActive('my_interests.php', $current_page); ?>">Interests</a>
+                    <?php endif; ?>
                     <?php
 endif; ?>
                     
@@ -189,7 +194,7 @@ endif; ?>
 
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <?php
-    $dashboardLink = ($_SESSION['role'] === 'admin') ? 'admin_dashboard.php' : 'candidates.php';
+    $dashboardLink = ($_SESSION['role'] === 'admin') ? 'admin_dashboard.php' : 'my_profile.php';
 ?>
                         <div class="relative items-center flex" id="profile-dropdown-container">
                             <button onclick="toggleProfileDropdown()" class="flex items-center gap-3 px-3 py-1.5 rounded-full text-white hover:bg-white/10 transition-all border border-white/10 backdrop-blur-sm group">
@@ -204,30 +209,11 @@ endif; ?>
                             </button>
 
                             <!-- Dropdown Menu -->
-                            <div id="profile-dropdown" class="absolute right-0 top-full mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 hidden animate-slide-up origin-top-right overflow-hidden">
+                            <div id="profile-dropdown" class="absolute right-0 top-full mt-3 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 hidden animate-slide-up origin-top-right overflow-hidden">
                                 <div class="px-4 py-3 border-b border-gray-50 mb-1">
-                                    <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Account Settings</p>
+                                    <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Account</p>
                                     <p class="text-sm font-bold text-gray-800 truncate"><?php echo htmlspecialchars($_SESSION['username']); ?></p>
                                 </div>
-                                
-                                <a href="<?php echo $dashboardLink; ?>" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-600 hover:bg-blue-50 hover:text-primary transition-all">
-                                    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-primary">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                    </div>
-                                    My Dashboard
-                                </a>
-
-                                <?php if ($_SESSION['role'] !== 'admin'): ?>
-                                <a href="profile.php?id=<?php echo $_SESSION['user_id']; ?>" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-600 hover:bg-blue-50 hover:text-primary transition-all">
-                                    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-primary">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
-                                    </div>
-                                    View Profile
-                                </a>
-                                <?php
-    endif; ?>
-
-                                <div class="h-px bg-gray-50 my-1"></div>
                                 
                                 <a href="logout.php" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-all">
                                     <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
@@ -273,7 +259,7 @@ endif; ?>
 endif; ?>
                 <div class="border-t border-gray-100 my-2"></div>
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <?php $dashboardLink = ($_SESSION['role'] === 'admin') ? 'admin_dashboard.php' : 'candidates.php'; ?>
+                    <?php $dashboardLink = ($_SESSION['role'] === 'admin') ? 'admin_dashboard.php' : 'my_profile.php'; ?>
                     <a href="<?php echo $dashboardLink; ?>" class="block px-3 py-2 rounded-md text-base font-medium text-primary bg-blue-50">
                         <span class="mr-2">👤</span> My Profile (<?php echo htmlspecialchars($_SESSION['username']); ?>)
                     </a>

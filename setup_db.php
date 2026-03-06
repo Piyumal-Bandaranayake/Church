@@ -37,6 +37,8 @@ try {
         my_phone VARCHAR(20) NOT NULL,
         photo_path VARCHAR(255),
         payment_slip_path VARCHAR(255),
+        package VARCHAR(20) DEFAULT '3_months',
+        reg_number VARCHAR(20) DEFAULT NULL,
         status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );";
@@ -49,8 +51,19 @@ try {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );";
 
+    $sql .= "CREATE TABLE IF NOT EXISTS interests (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        sender_id INT NOT NULL,
+        receiver_id INT NOT NULL,
+        status ENUM('pending', 'accepted', 'rejected') DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (sender_id) REFERENCES candidates(id) ON DELETE CASCADE,
+        FOREIGN KEY (receiver_id) REFERENCES candidates(id) ON DELETE CASCADE,
+        UNIQUE KEY (sender_id, receiver_id)
+    );";
+
     $pdo->exec($sql);
-    echo "Table 'candidates' checked/created successfully.<br>";
+    echo "Tables 'candidates', 'churches', and 'interests' checked/created successfully.<br>";
 
     // Migration logic for existing tables
     $columns_to_add = [
@@ -60,7 +73,9 @@ try {
         'christianization_year' => "INT DEFAULT NULL AFTER nic_number",
         'sacraments_received' => "TEXT AFTER christianization_year",
         'children_details' => "TEXT AFTER children",
-        'payment_slip_path' => "VARCHAR(255) AFTER photo_path"
+        'payment_slip_path' => "VARCHAR(255) AFTER photo_path",
+        'package' => "VARCHAR(20) DEFAULT '3_months' AFTER payment_slip_path",
+        'reg_number' => "VARCHAR(20) DEFAULT NULL AFTER package"
     ];
 
     foreach ($columns_to_add as $column => $definition) {

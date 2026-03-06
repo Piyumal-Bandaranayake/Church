@@ -59,12 +59,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $children = isset($_POST['children']) ? $_POST['children'] : 'No';
     $children_details = trim($_POST['children_details'] ?? '');
     $illness = trim($_POST['illness']);
+    if ($illness === 'Other' && !empty($_POST['other_illness'])) {
+        $illness = trim($_POST['other_illness']);
+    }
     $habits = isset($_POST['habit']) ? implode(',', $_POST['habit']) : 'None';
     $pastor_name = trim($_POST['pastor_name']);
     $pastor_phone = trim($_POST['pastor_phone']);
     $parent_phone = trim($_POST['parent_phone']);
     $my_phone = trim($_POST['my_phone']);
     $church = $_POST['church'];
+    $package = $_POST['package'] ?? '3_months';
 
     // Validation logic
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -81,6 +85,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     elseif (!preg_match('/^([0-9]{9}[vVxX]|[0-9]{12})$/', $nic_number)) {
         $error = "Please enter a valid NIC Number (9 digits + V/X or 12 digits).";
+    }
+    // NIC vs DOB & Gender cross-validation
+    elseif (!empty($dob) && !empty($sex)) {
+        $nic_year = 0;
+        $nic_days = 0;
+
+        if (strlen($nic_number) == 12) {
+            // New NIC: YYYYDDD#####
+            $nic_year = intval(substr($nic_number, 0, 4));
+            $nic_days = intval(substr($nic_number, 4, 3));
+        } else {
+            // Old NIC: YYDDD####V/X
+            $nic_year = 1900 + intval(substr($nic_number, 0, 2));
+            $nic_days = intval(substr($nic_number, 2, 3));
+        }
+
+        // Determine gender from day count
+        $nic_gender = 'Male';
+        if ($nic_days > 500) {
+            $nic_gender = 'Female';
+            $nic_days -= 500;
+        }
+
+        // Convert day-of-year to month-day
+        $nic_date = DateTime::createFromFormat('Y-z', $nic_year . '-' . ($nic_days - 1));
+        $entered_dob = new DateTime($dob);
+
+        if (!$nic_date) {
+            $error = "NIC number contains an invalid date. Please check your NIC.";
+        } elseif ($nic_date->format('Y-m-d') !== $entered_dob->format('Y-m-d')) {
+            $error = "Your Date of Birth does not match your NIC Number. NIC indicates: " . $nic_date->format('Y-m-d') . " (ඔබගේ උපන්දිනය NIC අංකයට නොගැලපේ)";
+        } elseif ($nic_gender !== $sex) {
+            $error = "Your Gender does not match your NIC Number. NIC indicates: " . $nic_gender . " (ඔබගේ ස්ත්‍රී පුරුෂ භාවය NIC අංකයට නොගැලපේ)";
+        }
     }
     elseif ($age < 18 || $age > 80) {
         $error = "Age must be between 18 and 80.";
@@ -185,11 +223,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($error)) {
         $password = password_hash($password_raw, PASSWORD_DEFAULT);
         try {
-            $sql = "INSERT INTO candidates (email, password, denomination, catholic_by_birth, nic_number, christianization_year, sacraments_received, fullname, sex, dob, age, nationality, language, address, hometown, district, province, height, occupation, edu_qual, add_qual, marital_status, children, children_details, illness, habits, church, pastor_name, pastor_phone, parent_phone, my_phone, photo_path, payment_slip_path, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
+            $sql = "INSERT INTO candidates (email, password, denomination, catholic_by_birth, nic_number, christianization_year, sacraments_received, fullname, sex, dob, age, nationality, language, address, hometown, district, province, height, occupation, edu_qual, add_qual, marital_status, children, children_details, illness, habits, church, pastor_name, pastor_phone, parent_phone, my_phone, photo_path, payment_slip_path, package, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$email, $password, $denomination, $catholic_by_birth, $nic_number, $christianization_year, $sacraments, $fullname, $sex, $dob, $age, $nationality, $language, $address, $hometown, $district, $province, $height, $occupation, $edu_qual, $add_qual, $marital_status, $children, $children_details, $illness, $habits, $church, $pastor_name, $pastor_phone, $parent_phone, $my_phone, $photo_path, $payment_slip_path]);
+            $stmt->execute([$email, $password, $denomination, $catholic_by_birth, $nic_number, $christianization_year, $sacraments, $fullname, $sex, $dob, $age, $nationality, $language, $address, $hometown, $district, $province, $height, $occupation, $edu_qual, $add_qual, $marital_status, $children, $children_details, $illness, $habits, $church, $pastor_name, $pastor_phone, $parent_phone, $my_phone, $photo_path, $payment_slip_path, $package]);
 
-            header("Location: login.php?registered=true");
+            // Generate Registration Number: YYMMDDC
+            $new_id = $pdo->lastInsertId();
+            $date_prefix = date('ymd'); // e.g., 260306
+            $count_stmt = $pdo->prepare("SELECT COUNT(*) FROM candidates WHERE DATE(created_at) = CURDATE() AND id <= ?");
+            $count_stmt->execute([$new_id]);
+            $daily_count = $count_stmt->fetchColumn();
+            $reg_number = $date_prefix . $daily_count; // e.g., 2603061
+
+            // Update the record with the registration number
+            $update_stmt = $pdo->prepare("UPDATE candidates SET reg_number = ? WHERE id = ?");
+            $update_stmt->execute([$reg_number, $new_id]);
+
+            header("Location: login.php?registered=true&reg=" . urlencode($reg_number));
             exit();
         }
         catch (PDOException $e) {
@@ -306,7 +356,8 @@ endif; ?>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">NIC Number (හැඳුනුම්පත් අංකය)</label>
-                            <input type="text" name="nic_number" required placeholder="Ex: 199012345678 or 901234567V" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent uppercase">
+                            <input type="text" name="nic_number" id="nic_input" required placeholder="Ex: 199012345678 or 901234567V" oninput="validateNIC()" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent uppercase">
+                            <div id="nic_feedback" class="mt-2 text-xs font-bold hidden"></div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Sex (ස්ත්‍රී පුරුෂ භාවය)</label>
@@ -516,9 +567,9 @@ endif; ?>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Marital Status (විවාහක තත්ත්වය)</label>
                             <select name="marital_status" onchange="toggleChildren(this.value)" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
-                                <option value="Unmarried">Unmarried</option>
-                                <option value="Divorced">Divorced</option>
-                                <option value="Widowed">Widowed</option>
+                                <option value="Unmarried">Unmarried (අවිවාහක)</option>
+                                <option value="Divorced">Divorced (දික්කසාද)</option>
+                                <option value="Widowed">Widowed (වැන්දඹු)</option>
                             </select>
                         </div>
                         <div id="children_field" class="hidden">
@@ -534,29 +585,49 @@ endif; ?>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Long-term Illness / Chronic Diseases (දීර්ඝ කාලීනව ප්‍රතිකාර ගන්නා වූ රෝගයකින් පෙළෙන්නේද)</label>
-                            <textarea name="illness" rows="2" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Describe if any, otherwise leave blank or type 'None'"></textarea>
+                            <select name="illness" id="illness_select" onchange="toggleOtherIllness(this.value)" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="None">None (නැත)</option>
+                                <option value="Diabetes">Diabetes (දියවැඩියාව)</option>
+                                <option value="High Blood Pressure">High Blood Pressure (අධි රුධිර පීඩනය)</option>
+                                <option value="Heart Disease">Heart Disease (හෘද රෝග)</option>
+                                <option value="Asthma">Asthma (ඇදුම)</option>
+                                <option value="Kidney Disease">Kidney Disease (වකුගඩු රෝග)</option>
+                                <option value="Cancer">Cancer (පිළිකා)</option>
+                                <option value="Thyroid Disorder">Thyroid Disorder (තයිරොයිඩ් ආබාධ)</option>
+                                <option value="Epilepsy">Epilepsy (අපස්මාරය)</option>
+                                <option value="Arthritis">Arthritis (ආතරයිටිස් / සන්ධි වේදනාව)</option>
+                                <option value="Mental Health Condition">Mental Health Condition (මානසික සෞඛ්‍ය තත්ත්වය)</option>
+                                <option value="Liver Disease">Liver Disease (අක්මා රෝග)</option>
+                                <option value="Cholesterol">High Cholesterol (අධික කොලෙස්ටරෝල්)</option>
+                                <option value="Anemia">Anemia (රක්තහීනතාවය)</option>
+                                <option value="Skin Disease">Skin Disease (සම රෝග)</option>
+                                <option value="Other">Other (වෙනත්)</option>
+                            </select>
+                            <div id="other_illness_div" class="hidden mt-3 animate-fade-in">
+                                <input type="text" name="other_illness" id="other_illness_input" placeholder="Please describe your condition (රෝගය විස්තර කරන්න)" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
                         </div>
                          <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Habits (Betel chewing / Smoking / Alcohol / Drugs)(බුලත්විට/ දුම්පානය /මත්පැන්/ මත්ද්‍රව්‍ය භාවිතය)</label>
                             <div class="flex gap-4 flex-wrap">
                                 <label class="flex items-center space-x-2">
-                                    <input type="checkbox" name="habit[]" value="betel" class="rounded text-primary focus:ring-primary">
+                                    <input type="checkbox" name="habit[]" value="betel" class="rounded text-primary focus:ring-primary habit-item" onchange="toggleHabits(this)">
                                     <span>Betel Chewing(බුලත්විට)</span>
                                 </label>
                                 <label class="flex items-center space-x-2">
-                                    <input type="checkbox" name="habit[]" value="smoking" class="rounded text-primary focus:ring-primary">
+                                    <input type="checkbox" name="habit[]" value="smoking" class="rounded text-primary focus:ring-primary habit-item" onchange="toggleHabits(this)">
                                     <span>Smoking(දුම්පානය)</span>
                                 </label>
                                 <label class="flex items-center space-x-2">
-                                    <input type="checkbox" name="habit[]" value="alcohol" class="rounded text-primary focus:ring-primary">
+                                    <input type="checkbox" name="habit[]" value="alcohol" class="rounded text-primary focus:ring-primary habit-item" onchange="toggleHabits(this)">
                                     <span>Alcohol(මත්පැන්)</span>
                                 </label>
                                 <label class="flex items-center space-x-2">
-                                    <input type="checkbox" name="habit[]" value="drugs" class="rounded text-primary focus:ring-primary">
+                                    <input type="checkbox" name="habit[]" value="drugs" class="rounded text-primary focus:ring-primary habit-item" onchange="toggleHabits(this)">
                                     <span>Drugs(මත්ද්‍රව්‍ය)</span>
                                 </label>
                                 <label class="flex items-center space-x-2">
-                                    <input type="checkbox" name="habit[]" value="none" class="rounded text-primary focus:ring-primary">
+                                    <input type="checkbox" name="habit[]" value="none" id="habit_none" class="rounded text-primary focus:ring-primary" onchange="toggleHabits(this)">
                                     <span>None(නැත)</span>
                                 </label>
                             </div>
@@ -632,6 +703,20 @@ endif; ?>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Your WhatsApp (ඔබගේ වට්ස්ඇප් අංකය)</label>
                             <input type="tel" name="my_phone" required pattern="[0-9+]{9,15}" title="Please enter a valid phone number (9-15 digits)" placeholder="07XXXXXXXX" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
+
+                        <!-- Important Note -->
+                        <div class="md:col-span-2 mt-2">
+                            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+                                <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-amber-800">Important Notice</p>
+                                    <p class="text-xs text-amber-700 mt-1 leading-relaxed">All communication regarding your registration — including approvals, updates, and match notifications — will be conducted through the <strong>Parent's WhatsApp number</strong> provided above. Please ensure it is correct and active.</p>
+                                    <p class="text-xs text-amber-600 mt-2 leading-relaxed font-medium">ඔබගේ ලියාපදිංචිය සම්බන්ධ සියලුම සන්නිවේදනයන් — අනුමැතිය, යාවත්කාලීන කිරීම් සහ ගැලපීම් දැනුම්දීම් ඇතුළුව — ඉහත සපයා ඇති <strong>දෙමාපියන්ගේ වට්ස්ඇප් අංකය</strong> හරහා සිදු කෙරේ. කරුණාකර එය නිවැරදි සහ ක්‍රියාකාරී බව තහවුරු කරන්න.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -665,9 +750,51 @@ endif; ?>
                             </div>
                         </div>
 
-                        <!-- Payment Slip Section -->
+                        <!-- Package Selection -->
                         <div class="md:col-span-2 mt-8 space-y-6">
-                            <!-- Static Payment details -->
+                            <div class="bg-gradient-to-br from-blue-50 to-indigo-50/50 p-6 rounded-2xl border border-blue-200">
+                                <h3 class="text-md font-black text-primary uppercase tracking-widest mb-2 flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                                    Select Package (පැකේජය තෝරන්න)
+                                </h3>
+                                <p class="text-xs text-gray-500 mb-5">Choose how long your profile stays visible. (ඔබගේ පෝරමය දිස්වන කාලසීමාව තෝරන්න.)</p>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <!-- 3 Months -->
+                                    <label class="relative cursor-pointer group">
+                                        <input type="radio" name="package" value="3_months" class="sr-only peer" checked onchange="updateFee()">
+                                        <div class="p-5 rounded-2xl border-2 border-gray-200 bg-white text-center transition-all duration-300 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:shadow-lg peer-checked:shadow-blue-500/10 hover:border-blue-300 hover:shadow-md">
+                                            <div class="text-3xl font-black text-gray-800 peer-checked:text-blue-600">3</div>
+                                            <div class="text-xs font-black uppercase tracking-widest text-gray-400 mt-1">Months (මාස)</div>
+                                            <div class="mt-3 text-xl font-black text-blue-600">Rs. 1,000</div>
+                                            <div class="text-[10px] text-gray-400 font-bold mt-1">රු. 1,000</div>
+                                        </div>
+                                    </label>
+                                    <!-- 6 Months -->
+                                    <label class="relative cursor-pointer group">
+                                        <input type="radio" name="package" value="6_months" class="sr-only peer" onchange="updateFee()">
+                                        <div class="p-5 rounded-2xl border-2 border-gray-200 bg-white text-center transition-all duration-300 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:shadow-lg peer-checked:shadow-indigo-500/10 hover:border-indigo-300 hover:shadow-md relative overflow-hidden">
+                                            <div class="absolute -top-0 -right-0 bg-indigo-500 text-white text-[8px] font-black uppercase px-3 py-0.5 rounded-bl-lg tracking-wider">Popular</div>
+                                            <div class="text-3xl font-black text-gray-800">6</div>
+                                            <div class="text-xs font-black uppercase tracking-widest text-gray-400 mt-1">Months (මාස)</div>
+                                            <div class="mt-3 text-xl font-black text-indigo-600">Rs. 1,500</div>
+                                            <div class="text-[10px] text-gray-400 font-bold mt-1">රු. 1,500</div>
+                                        </div>
+                                    </label>
+                                    <!-- Unlimited -->
+                                    <label class="relative cursor-pointer group">
+                                        <input type="radio" name="package" value="unlimited" class="sr-only peer" onchange="updateFee()">
+                                        <div class="p-5 rounded-2xl border-2 border-gray-200 bg-white text-center transition-all duration-300 peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:shadow-lg peer-checked:shadow-amber-500/10 hover:border-amber-300 hover:shadow-md">
+                                            <div class="text-3xl font-black text-gray-800">∞</div>
+                                            <div class="text-xs font-black uppercase tracking-widest text-gray-400 mt-1">Unlimited (අසීමිත)</div>
+                                            <div class="mt-3 text-xl font-black text-amber-600">Rs. 2,500</div>
+                                            <div class="text-[10px] text-gray-400 font-bold mt-1">රු. 2,500</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Payment details -->
                             <div class="bg-blue-50/50 p-6 rounded-2xl border-2 border-dashed border-blue-200">
                                 <h3 class="text-md font-black text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
@@ -690,8 +817,9 @@ endif; ?>
                                         <p class="text-gray-500 font-bold uppercase text-[10px]">Account Holder (ගිණුමේ නම)</p>
                                         <p class="text-gray-900 font-black">Church Admin Office</p>
                                     </div>
-                                    <div class="sm:col-span-2 pt-2 border-t border-blue-100">
-                                        <p class="text-primary font-bold">Registration Fee: Rs. 1,000.00</p>
+                                    <div class="sm:col-span-2 pt-3 border-t border-blue-100">
+                                        <p class="text-primary font-black text-lg" id="fee-display">Registration Fee: Rs. 1,000.00</p>
+                                        <p class="text-gray-400 text-[10px] font-bold mt-1" id="fee-sinhala">ලියාපදිංචි ගාස්තුව: රු. 1,000.00</p>
                                     </div>
                                 </div>
                                 <p class="mt-4 text-[11px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
@@ -732,7 +860,7 @@ endif; ?>
 
                 <div class="pt-6 border-t border-gray-200">
                     <!-- Terms and Conditions Agreement -->
-                    <div class="mb-6 bg-blue-50/50 p-6 rounded-2xl border border-blue-100/50">
+                    <div class="mb-4 bg-blue-50/50 p-6 rounded-2xl border border-blue-100/50">
                         <label class="flex items-start gap-4 cursor-pointer group">
                             <div class="mt-1">
                                 <input type="checkbox" name="terms_agreement" required class="w-6 h-6 rounded-lg border-gray-300 text-primary focus:ring-primary transition-all">
@@ -741,6 +869,20 @@ endif; ?>
                                 <span class="block text-gray-900 font-bold mb-1">Agreement (ගිවිසුම)</span>
                                 I have read, understood, and agree to the <a href="terms.php" target="_blank" class="text-primary font-black hover:underline decoration-2 underline-offset-4">Terms and Conditions, Privacy Policy</a>, and other guidelines of this platform.
                                 <p class="mt-1 text-[11px] text-gray-400 font-bold uppercase tracking-widest">මම මෙහි ඇති නියමයන් සහ කොන්දේසි කියවා ඒවාට එකඟ වෙමි.</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Truthfulness Declaration -->
+                    <div class="mb-6 bg-red-50/50 p-6 rounded-2xl border border-red-100/50">
+                        <label class="flex items-start gap-4 cursor-pointer group">
+                            <div class="mt-1">
+                                <input type="checkbox" name="truth_declaration" required class="w-6 h-6 rounded-lg border-red-300 text-red-600 focus:ring-red-500 transition-all">
+                            </div>
+                            <div class="text-sm text-gray-600 leading-relaxed font-medium">
+                                <span class="block text-gray-900 font-bold mb-1">Declaration of Truthfulness (සත්‍යතා ප්‍රකාශය)</span>
+                                I hereby declare that all information provided in this registration form is <strong>true, accurate, and complete</strong> to the best of my knowledge. I take <strong>full responsibility</strong> for the accuracy of these details and understand that providing false information may result in the rejection or removal of my profile.
+                                <p class="mt-2 text-[11px] text-gray-400 font-bold uppercase tracking-widest leading-relaxed">මෙම ලියාපදිංචි පෝරමයේ සපයා ඇති සියලු තොරතුරු මාගේ දැනුමට අනුව <strong>සත්‍ය, නිවැරදි සහ සම්පූර්ණ</strong> බව මම මින් ප්‍රකාශ කරමි. මෙම විස්තරවල නිරවද්‍යතාවය සඳහා <strong>මම පූර්ණ වගකීම භාර ගනිමි</strong>. අසත්‍ය තොරතුරු සැපයීම මාගේ පෝරමය ප්‍රතික්ෂේප කිරීමට හෝ ඉවත් කිරීමට හේතු විය හැකි බව මම අවබෝධ කරගනිමි.</p>
                             </div>
                         </label>
                     </div>
@@ -759,6 +901,131 @@ endif; ?>
 </div>
 
 <script>
+function validateNIC() {
+    const nic = document.getElementById('nic_input').value.trim().toUpperCase();
+    const feedback = document.getElementById('nic_feedback');
+    const dobField = document.querySelector('input[name="dob"]');
+    const ageField = document.querySelector('input[name="age"]');
+    const sexField = document.querySelector('select[name="sex"]');
+
+    // Reset
+    feedback.classList.add('hidden');
+    feedback.className = 'mt-2 text-xs font-bold hidden';
+
+    let nicYear, nicDays;
+
+    // Check format
+    if (/^[0-9]{12}$/.test(nic)) {
+        // New NIC: YYYYDDD#####
+        nicYear = parseInt(nic.substring(0, 4));
+        nicDays = parseInt(nic.substring(4, 7));
+    } else if (/^[0-9]{9}[VX]$/i.test(nic)) {
+        // Old NIC: YYDDD####V/X
+        nicYear = 1900 + parseInt(nic.substring(0, 2));
+        nicDays = parseInt(nic.substring(2, 5));
+    } else {
+        if (nic.length > 0) {
+            feedback.textContent = '⚠ Invalid NIC format';
+            feedback.className = 'mt-2 text-xs font-bold text-orange-500';
+            feedback.classList.remove('hidden');
+        }
+        return;
+    }
+
+    // Determine gender
+    let gender = 'Male';
+    if (nicDays > 500) {
+        gender = 'Female';
+        nicDays -= 500;
+    }
+
+    // Validate day range
+    if (nicDays < 1 || nicDays > 366) {
+        feedback.textContent = '❌ NIC contains an invalid date (අවලංගු දිනයක්)';
+        feedback.className = 'mt-2 text-xs font-bold text-red-500';
+        feedback.classList.remove('hidden');
+        return;
+    }
+
+    // Convert day-of-year to date
+    const dateObj = new Date(nicYear, 0); // Jan 1 of that year
+    dateObj.setDate(nicDays);
+
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const nicDOB = nicYear + '-' + month + '-' + day;
+
+    // Auto-fill DOB, Age, and Sex
+    if (dobField) dobField.value = nicDOB;
+    if (sexField) sexField.value = gender;
+    if (ageField) {
+        const today = new Date();
+        let calcAge = today.getFullYear() - nicYear;
+        const monthDiff = today.getMonth() - dateObj.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dateObj.getDate())) {
+            calcAge--;
+        }
+        ageField.value = calcAge;
+    }
+
+    // Show success feedback
+    const genderSi = gender === 'Male' ? 'පුරුෂ' : 'ස්ත්‍රී';
+    feedback.innerHTML = '✅ NIC verified — DOB: <strong>' + nicDOB + '</strong> | Gender: <strong>' + gender + ' (' + genderSi + ')</strong>';
+    feedback.className = 'mt-2 text-xs font-bold text-green-600 bg-green-50 px-3 py-2 rounded-lg border border-green-200';
+    feedback.classList.remove('hidden');
+}
+function updateFee() {
+    const selected = document.querySelector('input[name="package"]:checked');
+    const feeDisplay = document.getElementById('fee-display');
+    const feeSinhala = document.getElementById('fee-sinhala');
+    if (!selected || !feeDisplay) return;
+
+    const fees = {
+        '3_months':  { en: 'Registration Fee: Rs. 1,000.00', si: 'ලියාපදිංචි ගාස්තුව: රු. 1,000.00' },
+        '6_months':  { en: 'Registration Fee: Rs. 1,500.00', si: 'ලියාපදිංචි ගාස්තුව: රු. 1,500.00' },
+        'unlimited': { en: 'Registration Fee: Rs. 2,500.00', si: 'ලියාපදිංචි ගාස්තුව: රු. 2,500.00' }
+    };
+
+    const fee = fees[selected.value] || fees['3_months'];
+    feeDisplay.textContent = fee.en;
+    if (feeSinhala) feeSinhala.textContent = fee.si;
+}
+
+function toggleOtherIllness(val) {
+    const div = document.getElementById('other_illness_div');
+    if (val === 'Other') {
+        div.classList.remove('hidden');
+    } else {
+        div.classList.add('hidden');
+    }
+}
+
+function toggleHabits(el) {
+    const noneBox = document.getElementById('habit_none');
+    const habitBoxes = document.querySelectorAll('.habit-item');
+
+    if (el === noneBox && noneBox.checked) {
+        // "None" was checked → uncheck & disable all others
+        habitBoxes.forEach(cb => { cb.checked = false; cb.disabled = true; cb.parentElement.classList.add('opacity-40'); });
+    } else if (el !== noneBox && el.checked) {
+        // A habit was checked → uncheck & disable "None"
+        noneBox.checked = false;
+        noneBox.disabled = true;
+        noneBox.parentElement.classList.add('opacity-40');
+    } else {
+        // Something was unchecked — check if any habit is still selected
+        const anyHabitChecked = [...habitBoxes].some(cb => cb.checked);
+        if (!anyHabitChecked) {
+            // No habits selected → re-enable "None"
+            noneBox.disabled = false;
+            noneBox.parentElement.classList.remove('opacity-40');
+        }
+        if (!noneBox.checked) {
+            // "None" not checked → re-enable all habits
+            habitBoxes.forEach(cb => { cb.disabled = false; cb.parentElement.classList.remove('opacity-40'); });
+        }
+    }
+}
 function toggleChildren(status) {
     const childrenField = document.getElementById('children_field');
     const detailsField = document.getElementById('children_details_field');
