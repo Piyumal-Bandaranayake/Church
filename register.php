@@ -828,10 +828,7 @@ endif; ?>
                                         <p class="text-gray-500 font-bold uppercase text-[10px]">Account Holder (ගිණුමේ නම)</p>
                                         <p class="text-gray-900 font-black">DSNJ GALLAGE</p>
                                     </div>
-                                    <div class="sm:col-span-2 pt-3 border-t border-blue-100">
-                                        <p class="text-primary font-black text-lg" id="fee-display">Registration Fee: Rs. 500.00</p>
-                                        <p class="text-gray-400 text-[10px] font-bold mt-1" id="fee-sinhala">ලියාපදිංචි ගාස්තුව: රු. 500.00</p>
-                                    </div>
+
                                 </div>
                                 <p class="mt-4 text-[11px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
                                     Note: This payment is for office verification purposes only. (සටහන: මෙම ගෙවීම කාර්යාලීය ප්‍රයෝජනය සඳහා පමණි.)
