@@ -759,10 +759,21 @@ endif; ?>
                                 </h3>
                                 <p class="text-xs text-gray-500 mb-5">Choose how long your profile stays visible. (ඔබගේ පෝරමය දිස්වන කාලසීමාව තෝරන්න.)</p>
 
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <!-- 1 Month (First Visit Offer) -->
+                                    <label class="relative cursor-pointer group">
+                                        <input type="radio" name="package" value="first_visit" class="sr-only peer" checked onchange="updateFee()">
+                                        <div class="p-5 rounded-2xl border-2 border-gray-200 bg-white text-center transition-all duration-300 peer-checked:border-red-500 peer-checked:bg-red-50 peer-checked:shadow-lg peer-checked:shadow-red-500/10 hover:border-red-300 hover:shadow-md relative overflow-hidden">
+                                            <div class="absolute -top-0 -right-0 bg-red-500 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-bl-lg tracking-wider">First Visit Offer</div>
+                                            <div class="text-3xl font-black text-gray-800 peer-checked:text-red-600">1st</div>
+                                            <div class="text-xs font-black uppercase tracking-widest text-gray-400 mt-1">Visit (පළමු)</div>
+                                            <div class="mt-3 text-xl font-black text-red-600">Rs. 500</div>
+                                            <div class="text-[10px] text-gray-400 font-bold mt-1">රු. 500</div>
+                                        </div>
+                                    </label>
                                     <!-- 3 Months -->
                                     <label class="relative cursor-pointer group">
-                                        <input type="radio" name="package" value="3_months" class="sr-only peer" checked onchange="updateFee()">
+                                        <input type="radio" name="package" value="3_months" class="sr-only peer" onchange="updateFee()">
                                         <div class="p-5 rounded-2xl border-2 border-gray-200 bg-white text-center transition-all duration-300 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:shadow-lg peer-checked:shadow-blue-500/10 hover:border-blue-300 hover:shadow-md">
                                             <div class="text-3xl font-black text-gray-800 peer-checked:text-blue-600">3</div>
                                             <div class="text-xs font-black uppercase tracking-widest text-gray-400 mt-1">Months (මාස)</div>
@@ -803,23 +814,23 @@ endif; ?>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                     <div class="space-y-1">
                                         <p class="text-gray-500 font-bold uppercase text-[10px]">Bank Name (බැංකුව)</p>
-                                        <p class="text-gray-900 font-black">National Savings Bank (NSB)</p>
+                                        <p class="text-gray-900 font-black">Commercial Bank</p>
                                     </div>
                                     <div class="space-y-1">
                                         <p class="text-gray-500 font-bold uppercase text-[10px]">Branch (ශාඛාව)</p>
-                                        <p class="text-gray-900 font-black">Matale</p>
+                                        <p class="text-gray-900 font-black">katukurunda</p>
                                     </div>
                                     <div class="space-y-1">
                                         <p class="text-gray-500 font-bold uppercase text-[10px]">Account Number (ගිණුම් අංකය)</p>
-                                        <p class="text-gray-900 font-black">101230101234</p>
+                                        <p class="text-gray-900 font-black">8027586422</p>
                                     </div>
                                     <div class="space-y-1">
                                         <p class="text-gray-500 font-bold uppercase text-[10px]">Account Holder (ගිණුමේ නම)</p>
-                                        <p class="text-gray-900 font-black">Church Admin Office</p>
+                                        <p class="text-gray-900 font-black">DSNJ GALLAGE</p>
                                     </div>
                                     <div class="sm:col-span-2 pt-3 border-t border-blue-100">
-                                        <p class="text-primary font-black text-lg" id="fee-display">Registration Fee: Rs. 1,000.00</p>
-                                        <p class="text-gray-400 text-[10px] font-bold mt-1" id="fee-sinhala">ලියාපදිංචි ගාස්තුව: රු. 1,000.00</p>
+                                        <p class="text-primary font-black text-lg" id="fee-display">Registration Fee: Rs. 500.00</p>
+                                        <p class="text-gray-400 text-[10px] font-bold mt-1" id="fee-sinhala">ලියාපදිංචි ගාස්තුව: රු. 500.00</p>
                                     </div>
                                 </div>
                                 <p class="mt-4 text-[11px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
@@ -981,12 +992,13 @@ function updateFee() {
     if (!selected || !feeDisplay) return;
 
     const fees = {
+        'first_visit': { en: 'Registration Fee: Rs. 500.00', si: 'ලියාපදිංචි ගාස්තුව: රු. 500.00' },
         '3_months':  { en: 'Registration Fee: Rs. 1,000.00', si: 'ලියාපදිංචි ගාස්තුව: රු. 1,000.00' },
         '6_months':  { en: 'Registration Fee: Rs. 1,500.00', si: 'ලියාපදිංචි ගාස්තුව: රු. 1,500.00' },
         'unlimited': { en: 'Registration Fee: Rs. 2,500.00', si: 'ලියාපදිංචි ගාස්තුව: රු. 2,500.00' }
     };
 
-    const fee = fees[selected.value] || fees['3_months'];
+    const fee = fees[selected.value] || fees['first_visit'];
     feeDisplay.textContent = fee.en;
     if (feeSinhala) feeSinhala.textContent = fee.si;
 }
