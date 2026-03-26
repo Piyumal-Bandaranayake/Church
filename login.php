@@ -105,6 +105,57 @@ endif; ?>
                     <?php endif; ?>
                     <p class="mt-3 text-xs text-gray-500 font-medium">Your profile is under review. You can login after approval.<br>(ඔබගේ පෝරමය සමාලෝචනය යටතේ පවතී. අනුමැතියෙන් පසු පුරනය වන්න.)</p>
                 </div>
+
+                <!-- Registration Success Popup Script -->
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            title: 'Registration Successful! 🎉<br><span class="text-base font-bold text-gray-500 block mt-2">ලියාපදිංචිය සාර්ථකයි!</span>',
+                            html: `
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left text-sm mt-6">
+                                    <div class="bg-blue-50/80 p-5 rounded-2xl border border-blue-100 flex flex-col h-full">
+                                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mb-3 text-blue-600">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                        </div>
+                                        <h4 class="font-bold text-blue-900 mb-2 text-base">What we will do immediately<br><span class="text-[11px] block text-blue-700/80 mt-1 uppercase tracking-wider">අප විසින් වහාම සිදු කරන දේ</span></h4>
+                                        <p class="text-blue-800 leading-relaxed font-medium flex-grow">Our team will begin reviewing your submitted profile and details. Once everything is verified and approved, we will notify you immediately via WhatsApp.<br><span class="block mt-3 text-xs font-bold opacity-70 text-blue-900 leading-relaxed border-t border-blue-200/50 pt-2">අපගේ කණ්ඩායම ඔබගේ තොරතුරු පරීක්ෂා කිරීම ආරම්භ කරනු ඇත. අනුමත වූ වහාම, අපි ඔබට වට්ස්ඇප් හරහා දැනුම් දෙන්නෙමු.</span></p>
+                                    </div>
+                                    
+                                    <div class="bg-amber-50/80 p-5 rounded-2xl border border-amber-100 flex flex-col h-full">
+                                        <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center mb-3 text-amber-600">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        </div>
+                                        <h4 class="font-bold text-amber-900 mb-2 text-base">What you have to do<br><span class="text-[11px] block text-amber-700/80 mt-1 uppercase tracking-wider">ඔබ විසින් කළ යුතු දේ</span></h4>
+                                        <p class="text-amber-800 leading-relaxed font-medium flex-grow">Please wait patiently for our approval process to complete. Ensure that the WhatsApp number you provided remains active so you don't miss any important updates.<br><span class="block mt-3 text-xs font-bold opacity-70 text-amber-900 leading-relaxed border-t border-amber-200/50 pt-2">අනුමත කිරීමේ ක්‍රියාවලිය අවසන් වන තෙක් කරුණාකර රැදී සිටින්න. ඔබ ලබාදුන් වට්ස්ඇප් අංකය සක්‍රියව පවතින බව තහවුරු කරගන්න.</span></p>
+                                    </div>
+                                    
+                                    <div class="bg-green-50/80 p-5 rounded-2xl border border-green-100 flex flex-col h-full">
+                                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mb-3 text-green-600">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        </div>
+                                        <h4 class="font-bold text-green-900 mb-2 text-base">Benefits you will receive<br><span class="text-[11px] block text-green-700/80 mt-1 uppercase tracking-wider">ඔබට ලැබෙන ප්‍රතිලාභ</span></h4>
+                                        <p class="text-green-800 leading-relaxed font-medium flex-grow">Upon approval, you'll gain full access to view compatible profiles, securely express your interest, and begin connecting with potential life partners within our trusted community.<br><span class="block mt-3 text-xs font-bold opacity-70 text-green-900 leading-relaxed border-t border-green-200/50 pt-2">අනුමත වූ පසු, ඔබට ගැළපෙන අයගේ තොරතුරු බැලීමට, ආරක්ෂිතව ඔබේ කැමැත්ත ප්‍රකාශ කිරීමට සහ අනාගත සහකරු/සහකාරිය සමඟ සම්බන්ධ වීමට ඔබට අවස්ථාව හිමිවනු ඇත.</span></p>
+                                    </div>
+                                </div>
+                            `,
+                            icon: 'success',
+                            confirmButtonText: 'Understood & Continue (ඉදිරියට යන්න)',
+                            confirmButtonColor: '#0a2540',
+                            customClass: {
+                                popup: 'rounded-3xl',
+                                confirmButton: 'rounded-xl px-8 py-3.5 font-bold shadow-lg hover:shadow-xl transition-all',
+                                title: 'text-2xl font-black text-gray-900',
+                            },
+                            width: '64rem', // Make the modal wider to fit the 3 columns
+                            padding: '2rem',
+                            backdrop: `
+                                rgba(10, 37, 64, 0.4)
+                                backdrop-filter: blur(4px)
+                            `
+                        });
+                    });
+                </script>
             <?php endif; ?>
 
             <form class="space-y-6" action="" method="POST">
