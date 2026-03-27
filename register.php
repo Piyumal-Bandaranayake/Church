@@ -242,7 +242,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <!-- Header -->
-        <div class="text-center mb-10 reveal reveal-up">
+        <div class="text-center mb-10 overflow-hidden">
             <h1 class="text-3xl font-bold text-gray-900"><?php echo $denomination; ?> Registration</h1>
             <p class="mt-2 text-gray-600">Please fill in your details accurately. Your profile will be reviewed by our
                 team before approval.</p>
@@ -255,7 +255,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php
         endif; ?>
 
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden reveal reveal-scale delay-200">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
             <!-- Form -->
             <form class="p-8 space-y-8" action="" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="denomination" value="<?php echo $denomination; ?>">
@@ -325,7 +325,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <!-- Catholic Specific Section -->
                 <?php if ($denomination === 'Catholic'): ?>
-                    <div class="reveal reveal-up bg-blue-50/30 p-6 rounded-2xl border border-blue-100">
+                    <div class="bg-blue-50/30 p-6 rounded-2xl border border-blue-100">
                         <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b flex items-center gap-2">
                             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -362,7 +362,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php endif; ?>
 
                 <!-- Personal Details -->
-                <div class="reveal reveal-up">
+                <div>
                     <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Personal Details</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
@@ -444,7 +444,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
 
                 <!-- Location -->
-                <div class="reveal reveal-up">
+                <div>
                     <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Location</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">

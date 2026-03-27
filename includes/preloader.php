@@ -60,9 +60,9 @@
 
     // Hide on window load
     window.addEventListener('load', function() {
-        setTimeout(hidePreloader, 500); // Small buffer for smooth transition
+        setTimeout(hidePreloader, 100); // Reduced buffer for faster appearance
     });
 
-    // Safety timeout: Hide preloader after 3 seconds anyway (especially for mobile)
-    setTimeout(hidePreloader, 3000);
+    // Safety timeout: Hide preloader after 1.5 seconds anyway (especially for mobile/slow networks)
+    setTimeout(hidePreloader, 1500);
 </script>
