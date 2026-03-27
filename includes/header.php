@@ -112,7 +112,7 @@ if (session_status() === PHP_SESSION_NONE) {
         /* Scroll Reveal Utility Classes */
         .reveal {
             opacity: 0;
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
         .reveal-up { transform: translateY(40px); }
@@ -344,7 +344,7 @@ endif; ?>
             // Safety: Show all reveals after 5 seconds just in case observer is stuck
             setTimeout(() => {
                 reveals.forEach(el => el.classList.add('active'));
-            }, 5000);
+            }, 1000);
         });
     </script>
 
