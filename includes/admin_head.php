@@ -86,3 +86,4 @@ if (session_status() === PHP_SESSION_NONE) {
     </style>
 </head>
 <body class="font-sans text-gray-800 themed-background min-h-screen">
+    <?php include __DIR__ . '/preloader.php'; ?>
