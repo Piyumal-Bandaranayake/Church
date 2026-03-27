@@ -54,11 +54,14 @@ try {
     $approved_stmt = $pdo->query("SELECT COUNT(*) FROM candidates WHERE status = 'approved'");
     $approved_count = $approved_stmt->fetchColumn();
 
-    $pending_stmt = $pdo->query("SELECT COUNT(*) FROM candidates WHERE status = 'pending'");
+    $pending_stmt = $pdo->query("SELECT COUNT(*) FROM candidates WHERE status = 'pending' AND (marital_status != 'Divorced' OR marital_status IS NULL)");
     $pending_count = $pending_stmt->fetchColumn();
 
-    // Fetch Recent Pending Candidates (Top 5)
-    $stmt = $pdo->query("SELECT * FROM candidates WHERE status = 'pending' ORDER BY created_at DESC LIMIT 5");
+    $divorced_stmt = $pdo->query("SELECT COUNT(*) FROM candidates WHERE status = 'pending' AND marital_status = 'Divorced'");
+    $divorced_count = $divorced_stmt->fetchColumn();
+
+    // Fetch Recent Pending Candidates (Top 5) - Excluding Divorced
+    $stmt = $pdo->query("SELECT * FROM candidates WHERE status = 'pending' AND (marital_status != 'Divorced' OR marital_status IS NULL) ORDER BY created_at DESC LIMIT 5");
     $pending_candidates = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Fetch Review Stats
@@ -113,7 +116,7 @@ catch (PDOException $e) {
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 pb-20">
             <!-- Stats Cards Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 mb-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12">
                 <!-- Total Users -->
                 <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
                     <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all">
@@ -139,6 +142,15 @@ catch (PDOException $e) {
                     </div>
                     <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Applicants</p>
                     <h3 class="text-2xl font-black text-gray-900"><?php echo (int)$pending_count; ?></h3>
+                </a>
+
+                <!-- Divorced -->
+                <a href="divorced_catholic.php" class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-red-600 group-hover:text-white transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Divorced</p>
+                    <h3 class="text-2xl font-black text-gray-900"><?php echo (int)$divorced_count; ?></h3>
                 </a>
 
                 <!-- Testimonies -->

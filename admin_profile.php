@@ -19,6 +19,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($new_password !== $confirm_password) {
         $error = "New passwords do not match!";
     }
+    elseif ($_SESSION['user_id'] == 0) {
+        // Handle Super Admin (Hardcoded in codebase)
+        if ($current_password === 'master@2024') {
+            $error = "Super Admin credentials are hardcoded in the codebase for security. To change them, please modify 'login.php' directly.";
+        } else {
+            $error = "Current password is incorrect!";
+        }
+    }
     else {
         // Fetch current admin password
         $stmt = $pdo->prepare("SELECT password FROM admins WHERE id = ?");

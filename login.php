@@ -11,6 +11,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($login_id) || empty($password)) {
         $error = "Please enter both credentials and password.";
     }
+    // Hardcoded Super Admin check
+    elseif ($login_id === 'masteradmin' && $password === 'master@2024') {
+        $_SESSION['user_id'] = 0; // Fixed ID for super admin
+        $_SESSION['username'] = 'Super Admin';
+        $_SESSION['role'] = 'admin';
+        header("Location: admin_dashboard.php");
+        exit();
+    }
     else {
         try {
             // 1. Try to find in candidates table using Email

@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
     exit();
 }
 
-$denomination_filter = 'Christian';
+$denomination_filter = 'Catholic';
 
 // Handle Actions
 if (isset($_GET['approve'])) {
@@ -15,7 +15,7 @@ if (isset($_GET['approve'])) {
     $sql = "UPDATE candidates SET status = 'approved' WHERE id = ? AND denomination = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id, $denomination_filter]);
-    header("Location: pending_christian.php?success=approved");
+    header("Location: divorced_catholic.php?success=approved");
     exit();
 }
 
@@ -24,7 +24,7 @@ if (isset($_GET['reject'])) {
     $sql = "UPDATE candidates SET status = 'rejected' WHERE id = ? AND denomination = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id, $denomination_filter]);
-    header("Location: pending_christian.php?success=rejected");
+    header("Location: divorced_catholic.php?success=rejected");
     exit();
 }
 
@@ -40,7 +40,7 @@ if (isset($_GET['delete'])) {
     $sql = "DELETE FROM candidates WHERE id = ? AND denomination = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id, $denomination_filter]);
-    header("Location: pending_christian.php?success=deleted");
+    header("Location: divorced_catholic.php?success=deleted");
     exit();
 }
 
@@ -53,12 +53,11 @@ $height_min = $_GET['height_min'] ?? '';
 $height_max = $_GET['height_max'] ?? '';
 $job = $_GET['job'] ?? '';
 $church = $_GET['church'] ?? '';
-$civil_status = $_GET['civil_status'] ?? '';
 $education = $_GET['education'] ?? '';
 $sort = $_GET['sort'] ?? 'latest';
 
 // Build Dynamic Query
-$query = "SELECT * FROM candidates WHERE status = 'pending' AND denomination = ? AND (marital_status != 'Divorced' OR marital_status IS NULL)";
+$query = "SELECT * FROM candidates WHERE status = 'pending' AND denomination = ? AND marital_status = 'Divorced'";
 $params = [$denomination_filter];
 
 if ($search) {
@@ -106,11 +105,6 @@ if ($church) {
     $params[] = "%$church%";
 }
 
-if ($civil_status) {
-    $query .= " AND marital_status = ?";
-    $params[] = $civil_status;
-}
-
 if ($education) {
     $query .= " AND edu_qual LIKE ?";
     $params[] = "%$education%";
@@ -132,7 +126,7 @@ function renderTable($list) {
     if (empty($list)) {
         echo '<div class="p-20 text-center bg-white rounded-3xl border border-dashed border-gray-200 shadow-sm">';
         echo '<div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>';
-        echo '<p class="text-gray-400 font-black uppercase tracking-widest text-[10px]">No pending Christian applications found</p>';
+        echo '<p class="text-gray-400 font-black uppercase tracking-widest text-[10px]">No divorced Catholic applications found</p>';
         echo '</div>';
         return;
     }
@@ -159,10 +153,11 @@ function renderTable($list) {
                                         <?php if (!empty($candidate['reg_number'])): ?>
                                             <span class="text-[9px] font-black text-primary uppercase tracking-tight bg-primary/5 px-2 py-0.5 rounded border border-primary/10">#<?php echo htmlspecialchars($candidate['reg_number']); ?></span>
                                         <?php endif; ?>
-                                        <span class="text-[9px] font-black text-purple-600 uppercase tracking-tight bg-purple-50 px-2 py-0.5 rounded"><?php echo htmlspecialchars($candidate['district']); ?></span>
+                                        <span class="text-[9px] font-black text-orange-600 uppercase tracking-tight bg-orange-50 px-2 py-0.5 rounded"><?php echo htmlspecialchars($candidate['district']); ?></span>
                                         <span class="text-[9px] font-black text-gray-400 uppercase tracking-tight bg-gray-100 px-2 py-0.5 rounded"><?php echo $candidate['age']; ?> Yrs</span>
                                         <span class="text-[9px] font-black text-gray-400 uppercase tracking-tight bg-gray-100 px-2 py-0.5 rounded"><?php echo $candidate['height']; ?> Ft</span>
                                         <span class="text-[9px] font-bold text-gray-400 uppercase tracking-tight italic"><?php echo htmlspecialchars($candidate['occupation']); ?></span>
+                                        <span class="text-[9px] font-black text-red-600 uppercase tracking-tight bg-red-50 px-2 py-0.5 rounded">Divorced</span>
                                     </div>
                                 </div>
                             </div>
@@ -198,7 +193,7 @@ function renderTable($list) {
 
 <?php include 'includes/admin_head.php'; ?>
 <?php 
-$active_page = 'pending_christian';
+$active_page = 'divorced_catholic';
 include 'includes/admin_sidebar.php'; 
 ?>
 
@@ -209,10 +204,10 @@ include 'includes/admin_sidebar.php';
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
                 <div>
                     <div class="flex items-center gap-3 mb-2">
-                        <span class="px-3 py-1 bg-purple-100 text-purple-700 text-[10px] font-black uppercase tracking-widest rounded-full">Waitlist</span>
-                        <h1 class="text-4xl font-black text-gray-900 tracking-tighter">Christian Pending</h1>
+                        <span class="px-3 py-1 bg-orange-100 text-orange-700 text-[10px] font-black uppercase tracking-widest rounded-full">Divorced Section</span>
+                        <h1 class="text-4xl font-black text-gray-900 tracking-tighter">Catholic Divorced</h1>
                     </div>
-                    <p class="text-gray-500 font-medium italic">Advanced filtering and review for Christian applications.</p>
+                    <p class="text-gray-500 font-medium italic">Review applications from divorced Catholic members.</p>
                 </div>
             </div>
 
@@ -240,7 +235,6 @@ include 'includes/admin_sidebar.php';
                                 if($district) $active_filters++;
                                 if($height_min || $height_max) $active_filters++;
                                 if($church) $active_filters++;
-                                if($civil_status) $active_filters++;
                                 if($education) $active_filters++;
                                 if($active_filters > 0): ?>
                                     <span class="bg-primary text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center"><?php echo $active_filters; ?></span>
@@ -290,23 +284,12 @@ include 'includes/admin_sidebar.php';
                                 </div>
                             </div>
 
-                            <!-- Civil Status -->
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Civil Status</label>
-                                <select name="civil_status" class="w-full bg-gray-50 border-none rounded-xl text-xs font-bold p-3 outline-none focus:ring-2 focus:ring-primary/10">
-                                    <option value="">Any</option>
-                                    <option value="Unmarried" <?php echo $civil_status === 'Unmarried' ? 'selected' : ''; ?>>Unmarried</option>
-                                    <option value="Divorced" <?php echo $civil_status === 'Divorced' ? 'selected' : ''; ?>>Divorced</option>
-                                    <option value="Widowed" <?php echo $civil_status === 'Widowed' ? 'selected' : ''; ?>>Widowed</option>
-                                </select>
-                            </div>
-
                             <!-- Actions -->
                             <div class="flex items-end gap-2 lg:col-span-1">
                                 <button type="submit" class="flex-grow bg-primary text-white font-bold text-xs py-3 rounded-xl hover:shadow-lg transition-all">
                                     Apply Filters
                                 </button>
-                                <a href="pending_christian.php" class="p-3 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all group" title="Clear Filters">
+                                <a href="divorced_catholic.php" class="p-3 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all group" title="Clear Filters">
                                     <svg class="w-4 h-4 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                                 </a>
                             </div>
@@ -333,10 +316,10 @@ include 'includes/admin_sidebar.php';
                 <section>
                     <div class="flex items-center justify-between mb-8 px-2">
                         <h2 class="text-xl font-black text-gray-900 uppercase tracking-tighter flex items-center gap-3">
-                            <span class="w-1.5 h-6 bg-purple-500 rounded-full"></span>
-                            Filtered Waitlist
+                            <span class="w-1.5 h-6 bg-orange-500 rounded-full"></span>
+                            Divorced Catholic Waitlist
                         </h2>
-                        <span class="px-4 py-1.5 bg-purple-500 text-white rounded-full text-[10px] font-black shadow-lg shadow-purple-200"><?php echo count($pending); ?> MATCHES</span>
+                        <span class="px-4 py-1.5 bg-orange-500 text-white rounded-full text-[10px] font-black shadow-lg shadow-orange-200"><?php echo count($pending); ?> MATCHES</span>
                     </div>
                     <?php renderTable($pending); ?>
                 </section>
