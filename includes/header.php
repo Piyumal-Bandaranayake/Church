@@ -148,6 +148,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <body class="font-sans text-gray-800 flex flex-col min-h-screen <?php echo($current_page !== 'index.php') ? 'themed-background' : 'bg-secondary'; ?>">
+    <?php include __DIR__ . '/preloader.php'; ?>
 
     <?php
 function isActive($page_name, $current_page)
@@ -225,11 +226,11 @@ endif; ?>
                         </div>
                     <?php
 else: ?>
-                        <a href="guidelines.php" class="px-6 py-2.5 rounded-full border border-white/30 text-white font-semibold hover:bg-white hover:text-primary transition-all duration-300 transform hover:-translate-y-0.5">
-                            Login
-                        </a>
                         <a href="guidelines.php" class="px-6 py-2.5 rounded-full bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all duration-300 shadow-lg shadow-blue-600/30 transform hover:-translate-y-0.5">
                             Register
+                        </a>
+                        <a href="guidelines.php" class="px-6 py-2.5 rounded-full border border-white/30 text-white font-semibold hover:bg-white hover:text-primary transition-all duration-300 transform hover:-translate-y-0.5">
+                            Login
                         </a>
                     <?php
 endif; ?>
@@ -266,8 +267,8 @@ endif; ?>
                     <a href="logout.php" class="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50">Logout</a>
                 <?php
 else: ?>
-                    <a href="guidelines.php" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-primary">Login</a>
                     <a href="guidelines.php" class="block px-3 py-2 rounded-md text-base font-medium text-primary font-bold hover:bg-gray-50">Register</a>
+                    <a href="guidelines.php" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-primary">Login</a>
                 <?php
 endif; ?>
             </div>
@@ -317,6 +318,14 @@ endif; ?>
 
         // Initialize Scroll Reveal
         document.addEventListener('DOMContentLoaded', () => {
+            const reveals = document.querySelectorAll('.reveal');
+            
+            if (!('IntersectionObserver' in window)) {
+                // Fallback for older browsers
+                reveals.forEach(el => el.classList.add('active'));
+                return;
+            }
+
             const observerOptions = {
                 threshold: 0.1,
                 rootMargin: '0px 0px -50px 0px'
@@ -326,13 +335,16 @@ endif; ?>
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('active');
-                        // Uncomment if you want it to re-animate when scrolling back up
-                        // observer.unobserve(entry.target); 
                     }
                 });
             }, observerOptions);
 
-            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            reveals.forEach(el => observer.observe(el));
+            
+            // Safety: Show all reveals after 5 seconds just in case observer is stuck
+            setTimeout(() => {
+                reveals.forEach(el => el.classList.add('active'));
+            }, 5000);
         });
     </script>
 

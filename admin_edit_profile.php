@@ -128,6 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </script>
 </head>
 <body class="bg-gray-50">
+    <?php include 'includes/preloader.php'; ?>
 
 <?php include 'includes/admin_sidebar.php'; ?>
 
