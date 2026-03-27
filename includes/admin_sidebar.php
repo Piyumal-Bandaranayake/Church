@@ -8,13 +8,21 @@ $partner_found_count = 0;
 $disable_req_sidebar_count = 0;
 
 if (isset($pdo)) {
-    $stmt_catholic = $pdo->prepare("SELECT COUNT(*) FROM candidates WHERE status = 'pending' AND denomination = 'Catholic'");
+    $stmt_catholic = $pdo->prepare("SELECT COUNT(*) FROM candidates WHERE status = 'pending' AND denomination = 'Catholic' AND (marital_status != 'Divorced' OR marital_status IS NULL)");
     $stmt_catholic->execute();
     $catholic_pending_count = $stmt_catholic->fetchColumn();
 
-    $stmt_christian = $pdo->prepare("SELECT COUNT(*) FROM candidates WHERE status = 'pending' AND denomination = 'Christian'");
+    $stmt_christian = $pdo->prepare("SELECT COUNT(*) FROM candidates WHERE status = 'pending' AND denomination = 'Christian' AND (marital_status != 'Divorced' OR marital_status IS NULL)");
     $stmt_christian->execute();
     $christian_pending_count = $stmt_christian->fetchColumn();
+
+    $stmt_div_catholic = $pdo->prepare("SELECT COUNT(*) FROM candidates WHERE status = 'pending' AND denomination = 'Catholic' AND marital_status = 'Divorced'");
+    $stmt_div_catholic->execute();
+    $divorced_catholic_count = $stmt_div_catholic->fetchColumn();
+
+    $stmt_div_christian = $pdo->prepare("SELECT COUNT(*) FROM candidates WHERE status = 'pending' AND denomination = 'Christian' AND marital_status = 'Divorced'");
+    $stmt_div_christian->execute();
+    $divorced_christian_count = $stmt_div_christian->fetchColumn();
 
     try {
         $stmt_pf = $pdo->prepare("SELECT COUNT(*) FROM partner_found_reports");
@@ -79,6 +87,30 @@ if (isset($pdo)) {
                   </div>
                   <?php if ($christian_pending_count > 0): ?>
                      <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-purple-500 rounded-full"><?php echo $christian_pending_count; ?></span>
+                  <?php endif; ?>
+               </a>
+            </li>
+         <div class="py-2 border-t border-white/5 font-semibold">
+            <p class="px-3 text-[10px] font-bold text-white/30 uppercase tracking-widest">Divorced Applications</p>
+            <li class="mt-1">
+               <a href="divorced_catholic.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm w-full justify-between <?php echo ($current_page == 'divorced_catholic.php' || (isset($active_page) && $active_page == 'divorced_catholic')) ? 'bg-white/10 text-white font-bold' : ''; ?>">
+                  <div class="flex items-center">
+                     <svg class="w-4 h-4 text-orange-400 group-hover:text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                     <span class="ms-3">Catholic Divorced</span>
+                  </div>
+                  <?php if ($divorced_catholic_count > 0): ?>
+                     <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-orange-500 rounded-full"><?php echo $divorced_catholic_count; ?></span>
+                  <?php endif; ?>
+               </a>
+            </li>
+            <li>
+               <a href="divorced_christian.php" class="flex items-center p-3 text-white/70 rounded-lg hover:bg-white/10 group text-sm w-full justify-between <?php echo ($current_page == 'divorced_christian.php' || (isset($active_page) && $active_page == 'divorced_christian')) ? 'bg-white/10 text-white font-bold' : ''; ?>">
+                  <div class="flex items-center">
+                     <svg class="w-4 h-4 text-red-400 group-hover:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                     <span class="ms-3">Christian Divorced</span>
+                  </div>
+                  <?php if ($divorced_christian_count > 0): ?>
+                     <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-500 rounded-full"><?php echo $divorced_christian_count; ?></span>
                   <?php endif; ?>
                </a>
             </li>

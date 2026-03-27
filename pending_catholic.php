@@ -58,7 +58,7 @@ $education = $_GET['education'] ?? '';
 $sort = $_GET['sort'] ?? 'latest';
 
 // Build Dynamic Query
-$query = "SELECT * FROM candidates WHERE status = 'pending' AND denomination = ?";
+$query = "SELECT * FROM candidates WHERE status = 'pending' AND denomination = ? AND (marital_status != 'Divorced' OR marital_status IS NULL)";
 $params = [$denomination_filter];
 
 if ($search) {
