@@ -98,13 +98,54 @@ endif; ?>
                 <div class="text-center md:text-left">
                     <div class="flex flex-wrap gap-2 mb-3">
                         <div class="inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest <?php echo $candidate['status'] == 'approved' ? 'bg-green-500' : 'bg-orange-500'; ?>">
-                            <?php echo $candidate['status']; ?>
+                            <?php echo strtoupper($candidate['status']); ?>
                         </div>
                         <?php if ($candidate['is_disabled'] == 1): ?>
                             <div class="inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-red-600 animate-pulse">
                                 Account Disabled
                             </div>
                         <?php endif; ?>
+                        
+                        <!-- Profile Validity Section -->
+                        <?php
+                            $created_at = new DateTime($candidate['created_at']);
+                            $pkg = !empty($candidate['package']) ? $candidate['package'] : '3_months';
+                            $expiry = null;
+                            $days_left = null;
+                            $is_expired = false;
+
+                            if ($pkg === 'first_visit') {
+                                $expiry = (clone $created_at)->modify('+1 month');
+                            } elseif ($pkg === '3_months') {
+                                $expiry = (clone $created_at)->modify('+3 months');
+                            } elseif ($pkg === '6_months') {
+                                $expiry = (clone $created_at)->modify('+6 months');
+                            }
+
+                            if ($expiry) {
+                                $today = new DateTime();
+                                if ($today > $expiry) {
+                                    $is_expired = true;
+                                    $days_left = 0;
+                                } else {
+                                    $diff = $today->diff($expiry);
+                                    $days_left = $diff->days;
+                                }
+                            }
+                        ?>
+                        
+                        <div class="inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-white/10">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <?php 
+                                if ($pkg === 'unlimited') {
+                                    echo "Unlimited Access";
+                                } elseif ($is_expired) {
+                                    echo "Expired (" . $expiry->format('Y-m-d') . ")";
+                                } else {
+                                    echo ($days_left + 1) . " Days Remaining (" . strtoupper(str_replace('_', ' ', $pkg)) . ")";
+                                }
+                            ?>
+                        </div>
                     </div>
                     <h1 class="text-4xl font-bold"><?php echo htmlspecialchars($candidate['fullname']); ?></h1>
                     <p class="text-blue-200 text-lg mt-1"><?php echo htmlspecialchars($candidate['occupation']); ?> &middot; <?php echo htmlspecialchars($candidate['age']); ?> Years Old</p>
@@ -267,15 +308,38 @@ endif; ?>
 
                     <section>
                         <h3 class="text-sm font-bold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <span class="w-6 h-px bg-primary/20"></span> Emergency Contact
+                            <span class="w-6 h-px bg-primary/20"></span> Emergency Contacts
                         </h3>
-                        <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
-                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        <div class="space-y-3">
+                            <!-- Account Owner -->
+                            <div class="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500 text-[10px] font-black uppercase tracking-widest">Candidate's WhatsApp</span>
+                                    <p class="font-bold text-primary"><?php echo htmlspecialchars($candidate['my_phone']); ?></p>
+                                </div>
                             </div>
-                            <div>
-                                <span class="text-gray-500 text-xs">Parent's WhatsApp</span>
-                                <p class="font-bold text-gray-900"><?php echo htmlspecialchars($candidate['parent_phone']); ?></p>
+                            <!-- Parent -->
+                            <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500 text-[10px] font-black uppercase tracking-widest">Parent's WhatsApp</span>
+                                    <p class="font-bold text-gray-900"><?php echo htmlspecialchars($candidate['parent_phone']); ?></p>
+                                </div>
+                            </div>
+                            <!-- Pastor -->
+                            <div class="flex items-center gap-3 p-4 bg-purple-50 rounded-xl border border-purple-100">
+                                <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M11 2v9H2v2h9v9h2v-9h9v-2h-9V2h-2z"/></svg>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500 text-[10px] font-black uppercase tracking-widest"><?php echo $candidate['denomination'] === 'Christian' ? 'Pastor' : 'Father'; ?> WhatsApp</span>
+                                    <p class="font-bold text-purple-700"><?php echo htmlspecialchars($candidate['pastor_phone']); ?></p>
+                                </div>
                             </div>
                         </div>
                     </section>
