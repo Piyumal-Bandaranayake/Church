@@ -3,7 +3,7 @@ session_start();
 include 'includes/db.php';
 
 // Admin access only
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'superadmin'])) {
     header("Location: login.php");
     exit();
 }

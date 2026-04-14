@@ -40,6 +40,11 @@ try {
         package VARCHAR(20) DEFAULT '3_months',
         reg_number VARCHAR(20) DEFAULT NULL,
         status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+        role ENUM('admin', 'user') DEFAULT 'user',
+        partner_found TINYINT(1) DEFAULT 0,
+        partner_message TEXT DEFAULT NULL,
+        is_disabled TINYINT(1) DEFAULT 0,
+        disable_requested TINYINT(1) DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );";
 
@@ -48,6 +53,30 @@ try {
         name VARCHAR(255) NOT NULL UNIQUE,
         pastor_name VARCHAR(255) DEFAULT NULL,
         location VARCHAR(255) DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );";
+
+    $sql .= "CREATE TABLE IF NOT EXISTS reviews (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        image1 VARCHAR(255) DEFAULT NULL,
+        image2 VARCHAR(255) DEFAULT NULL,
+        image3 VARCHAR(255) DEFAULT NULL,
+        image4 VARCHAR(255) DEFAULT NULL,
+        image5 VARCHAR(255) DEFAULT NULL,
+        status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );";
+
+    $sql .= "CREATE TABLE IF NOT EXISTS partner_found_reports (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT DEFAULT NULL,
+        his_name VARCHAR(255) DEFAULT NULL,
+        partner_name VARCHAR(255) DEFAULT NULL,
+        message TEXT DEFAULT NULL,
+        mobile_number VARCHAR(50) DEFAULT NULL,
+        partner_reg_number VARCHAR(50) DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );";
 
@@ -75,7 +104,12 @@ try {
         'children_details' => "TEXT AFTER children",
         'payment_slip_path' => "VARCHAR(255) AFTER photo_path",
         'package' => "VARCHAR(20) DEFAULT '3_months' AFTER payment_slip_path",
-        'reg_number' => "VARCHAR(20) DEFAULT NULL AFTER package"
+        'reg_number' => "VARCHAR(20) DEFAULT NULL AFTER package",
+        'role' => "ENUM('admin', 'user') DEFAULT 'user' AFTER status",
+        'partner_found' => "TINYINT(1) DEFAULT 0 AFTER role",
+        'partner_message' => "TEXT DEFAULT NULL AFTER partner_found",
+        'is_disabled' => "TINYINT(1) DEFAULT 0 AFTER partner_message",
+        'disable_requested' => "TINYINT(1) DEFAULT 0 AFTER is_disabled"
     ];
 
     foreach ($columns_to_add as $column => $definition) {

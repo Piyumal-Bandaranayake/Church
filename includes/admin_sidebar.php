@@ -166,6 +166,7 @@ if (isset($pdo)) {
 
          <div class="py-2 border-t border-white/5 font-semibold">
             <p class="px-3 text-[10px] font-bold text-white/30 uppercase tracking-widest">Settings</p>
+            <?php if ($_SESSION['role'] === 'superadmin'): ?>
             <li>
                <a href="create_admin.php" class="flex items-center p-3 text-white/80 rounded-lg hover:bg-white/10 group text-base <?php echo $current_page == 'create_admin.php' ? 'bg-white/10 text-white font-bold' : ''; ?>">
                   <svg class="w-5 h-5 transition duration-75 text-white/50 group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
@@ -174,6 +175,7 @@ if (isset($pdo)) {
                   <span class="ms-3 whitespace-nowrap">Add Admin</span>
                </a>
             </li>
+            <?php endif; ?>
             <li>
                <a href="admin_profile.php" class="flex items-center p-3 text-white/80 rounded-lg hover:bg-white/10 group text-base <?php echo $current_page == 'admin_profile.php' ? 'bg-white/10 text-white font-bold' : ''; ?>">
                   <svg class="w-5 h-5 transition duration-75 text-white/50 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

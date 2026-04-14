@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     elseif ($login_id === 'masteradmin' && $password === 'master@2024') {
         $_SESSION['user_id'] = 0; // Fixed ID for super admin
         $_SESSION['username'] = 'Super Admin';
-        $_SESSION['role'] = 'admin';
+        $_SESSION['role'] = 'superadmin';
         header("Location: admin_dashboard.php");
         exit();
     }

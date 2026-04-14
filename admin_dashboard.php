@@ -2,16 +2,21 @@
 session_start();
 include 'includes/db.php';
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'superadmin'])) {
     header("Location: login.php");
     exit();
 }
 
-// Handle Admin User Deletion
+// Handle Admin User Deletion (ONLY Super Admin can delete admins)
 if (isset($_GET['delete_admin'])) {
+    if ($_SESSION['role'] !== 'superadmin') {
+        header("Location: admin_dashboard.php?error=unauthorized");
+        exit();
+    }
+
     $id = $_GET['delete_admin'];
     
-    // Security check: Admins cannot delete their own account
+    // Security check: Admins cannot delete their own account (redundant for super admin since id is 0)
     if ($id != $_SESSION['user_id']) {
         $stmt = $pdo->prepare("DELETE FROM admins WHERE id = ?");
         $stmt->execute([$id]);
@@ -107,8 +112,13 @@ catch (PDOException $e) {
             <div class="max-w-7xl mx-auto relative z-10">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
-                        <h1 class="text-4xl font-black tracking-tight leading-none mb-3">Admin Control Center</h1>
-                        <p class="text-blue-200 text-lg font-medium max-w-2xl">Welcome back, Admin  Here's what's happening today.</p>
+                        <div class="flex items-center gap-3 mb-2">
+                            <h1 class="text-4xl font-black tracking-tight leading-none">Admin Control Center</h1>
+                            <?php if ($_SESSION['role'] === 'superadmin'): ?>
+                                <span class="bg-yellow-400 text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-yellow-400/20">Super Admin</span>
+                            <?php endif; ?>
+                        </div>
+                        <p class="text-blue-200 text-lg font-medium max-w-2xl">Welcome back, <?php echo htmlspecialchars($_SESSION['username']); ?>! Here's what's happening today.</p>
                     </div>
                 </div>
             </div>
@@ -328,10 +338,12 @@ endif; ?>
                     <span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>
                     <h2 class="text-xl font-black text-gray-900 uppercase tracking-tighter">System Administrators</h2>
                     <span class="px-3 py-1 bg-blue-100 text-blue-700 text-[10px] font-black rounded-full"><?php echo $admin_total_count; ?> TOTAL</span>
+                    <?php if ($_SESSION['role'] === 'superadmin'): ?>
                     <a href="create_admin.php" class="ml-auto flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                         Add New Admin
                     </a>
+                    <?php endif; ?>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -345,7 +357,7 @@ endif; ?>
                                 <h4 class="font-black text-gray-900 leading-tight"><?php echo htmlspecialchars($admin['username']); ?></h4>
                                 <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Administrator</span>
                             </div>
-                            <?php if ($admin['id'] != $_SESSION['user_id']): ?>
+                            <?php if ($_SESSION['role'] === 'superadmin' && $admin['id'] != $_SESSION['user_id']): ?>
                             <a href="?delete_admin=<?php echo $admin['id']; ?>" onclick="return confirm('WARNING: Are you sure you want to delete this administrator account?')" class="ml-auto w-8 h-8 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-100 shadow-sm shadow-red-100/50" title="Delete Admin">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                             </a>
