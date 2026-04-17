@@ -408,13 +408,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
-                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-2">Home Parish / Church</label>
-                                <select name="church" class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-700 focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all">
-                                    <option value="">Select Church</option>
-                                    <?php foreach($churches_list as $c): ?>
-                                        <option value="<?php echo $c; ?>" <?php echo $candidate['church'] === $c ? 'selected' : ''; ?>><?php echo $c; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-2">
+                                    <?php echo $candidate['denomination'] === 'Catholic' ? 'Parish / Church Name' : 'Denomination / Ministry'; ?>
+                                </label>
+
+                                <?php if ($candidate['denomination'] === 'Catholic'): ?>
+                                    <!-- Catholic: free-text input -->
+                                    <div id="church_text_wrapper">
+                                        <input type="text" name="church" id="church_text_input"
+                                            value="<?php echo htmlspecialchars($candidate['church']); ?>"
+                                            placeholder="Enter Parish / Church Name"
+                                            class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-700 focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all">
+                                    </div>
+                                    <!-- Christian: dropdown (hidden initially) -->
+                                    <div id="church_select_wrapper" class="hidden">
+                                        <select name="church_select" id="church_select_input"
+                                            class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-700 focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all">
+                                            <option value="">Select Denomination / Ministry</option>
+                                            <?php foreach($churches_list as $c): ?>
+                                                <option value="<?php echo $c; ?>" <?php echo $candidate['church'] === $c ? 'selected' : ''; ?>><?php echo $c; ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                <?php else: ?>
+                                    <!-- Christian: dropdown -->
+                                    <div id="church_select_wrapper">
+                                        <select name="church" id="church_select_input"
+                                            class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-700 focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all">
+                                            <option value="">Select Denomination / Ministry</option>
+                                            <?php foreach($churches_list as $c): ?>
+                                                <option value="<?php echo $c; ?>" <?php echo $candidate['church'] === $c ? 'selected' : ''; ?>><?php echo $c; ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <!-- Catholic: free-text input (hidden initially) -->
+                                    <div id="church_text_wrapper" class="hidden">
+                                        <input type="text" name="church_text" id="church_text_input"
+                                            value="<?php echo htmlspecialchars($candidate['church']); ?>"
+                                            placeholder="Enter Parish / Church Name"
+                                            class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-700 focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all">
+                                    </div>
+                                <?php endif; ?>
                             </div>
                             <div>
                                 <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-2">Pastor / Priest Name</label>
@@ -455,13 +489,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Listen for denomination changes
     const radios = document.querySelectorAll('input[name="denomination"]');
     const catholicFields = document.getElementById('catholicFields');
+    const churchTextWrapper  = document.getElementById('church_text_wrapper');
+    const churchSelectWrapper = document.getElementById('church_select_wrapper');
+    const churchTextInput   = document.getElementById('church_text_input');
+    const churchSelectInput = document.getElementById('church_select_input');
 
     radios.forEach(radio => {
         radio.addEventListener('change', (e) => {
             if (e.target.value === 'Catholic') {
                 catholicFields.classList.remove('hidden');
+                // Show text input, hide dropdown
+                churchTextWrapper.classList.remove('hidden');
+                churchSelectWrapper.classList.add('hidden');
+                // Ensure correct name attribute so it posts as 'church'
+                churchTextInput.name  = 'church';
+                churchSelectInput.name = 'church_select';
             } else {
                 catholicFields.classList.add('hidden');
+                // Show dropdown, hide text input
+                churchSelectWrapper.classList.remove('hidden');
+                churchTextWrapper.classList.add('hidden');
+                // Ensure correct name attribute so it posts as 'church'
+                churchSelectInput.name = 'church';
+                churchTextInput.name   = 'church_text';
             }
         });
     });
